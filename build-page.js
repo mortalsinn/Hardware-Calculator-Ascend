@@ -3,76 +3,35 @@ const { SEATS, SCENARIOS, data, CSV, USAGE } = require('./build-hardware.js');
 
 const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 const b64 = Buffer.from(CSV, 'utf8').toString('base64');
-// The workbook rides along inside the page, so a single HTML file carries the
-// Excel version too -- nothing to fetch, nothing to lose in an email thread.
-const XLSX_PATH = path.join(__dirname, 'AscendOS-Hardware-Requirements.xlsx');
-const xb64 = fs.existsSync(XLSX_PATH) ? fs.readFileSync(XLSX_PATH).toString('base64') : '';
-const U = `${USAGE.low.compass}–${USAGE.high.compass}`;
-const I = `${USAGE.low.inspector}–${USAGE.high.inspector}`;
-const KEY_SEATS = [100, 200, 400, 600, 840];
-const jobs = (lo, hi) => `<b>${lo.concurrent.toFixed(1)} &ndash; ${hi.concurrent.toFixed(1)} jobs running at once</b> means that at the
-  busiest moment of the busiest hour, that many searches and scans are in flight simultaneously &mdash;
-  not per day, and not the number of people signed in. The pair is a range because usage is: the
-  lower figure assumes ${USAGE.low.compass} searches per seat per day, the higher assumes ${USAGE.high.compass}. Everything to the
-  right of it is sized on the higher figure.`;
+const XP = path.join(__dirname, 'AscendOS-Hardware-Requirements.xlsx');
+const xb64 = fs.existsSync(XP) ? fs.readFileSync(XP).toString('base64') : '';
+
+const U = `${USAGE.low.compass}&ndash;${USAGE.high.compass}`;
+const I = `${USAGE.low.inspector}&ndash;${USAGE.high.inspector}`;
+const STAGES = [20, 100, 200, 300, 400, 500, 600, 700, 840];
 const at = (k,n) => data[k][SEATS.indexOf(n)];
 const last = k => data[k][data[k].length-1].hi;
-const lastLo = k => data[k][data[k].length-1].lo;
-const splitAt = (k,b) => { const a=data[k];
-  for (let i=1;i<a.length;i++) if (a[i-1][b].azVmColocated && !a[i][b].azVmColocated) return a[i].seats;
-  return a[0][b].azVmColocated ? null : 20; };
 
-// A row is worth a second look when the index moves onto its own machine:
-// total cores and memory can legitimately FALL there, because one shared box
-// had to satisfy the larger demand in every dimension at once.
-const splitRows = (rows, key) => { let prev=null;
-  return rows.map(r => { const s = prev && r.hi[key] !== prev[key]; prev = r.hi; return s; }); };
-
-function optionTable(scKey, cols, cells, splitKey) {
-  const rows = data[scKey], flags = splitRows(rows, splitKey);
-  return `<table>
-<thead><tr>${cols.map(c=>`<th${c[1]?` class="${c[1]}"`:''}>${c[0]}</th>`).join('')}</tr></thead>
+const reqTable = (seatList) => `<div class="scroll"><table>
+<thead>
+ <tr class="grp"><th></th>
+  <th colspan="3" class="g1">Compass only &mdash; light case</th>
+  <th colspan="3" class="g2">All modules &mdash; heavy case</th>
+  <th colspan="2" class="g3">Search index</th></tr>
+ <tr><th class="t">Seats<br><span class="lt">reference</span></th>
+  <th class="g1">Jobs at once</th><th class="g1">vCPU</th><th class="g1">RAM GB</th>
+  <th class="g2">Jobs at once</th><th class="g2">vCPU</th><th class="g2">RAM GB</th>
+  <th class="g3">RAM GB</th><th class="g3">Disk GB</th></tr>
+</thead>
 <tbody>
-${rows.map((r,i)=>`<tr${flags[i]?' class="split"':''}>${cells(r, flags[i]).map((v,j)=>
-  `<td${cols[j][1]?` class="${cols[j][1]}"`:''}>${v}</td>`).join('')}</tr>`).join('\n')}
-</tbody></table>`;
-}
-
-const conc = r => [`${r.lo.concurrent.toFixed(1)} <span class="dash">&ndash;</span> ${r.hi.concurrent.toFixed(1)}`];
-
-const CONC_H = `Jobs running at once<br><span class="lt">quiet usage &rarr; busy usage</span>`;
-const HW_COLS = [['Seats','t'],[CONC_H,'rng'],
-  ['Web tier<br><span class="lt">size &times; how many</span>','t'],
-  ['Index host<br><span class="lt">size &times; how many</span>','t'],
-  ['Machines to buy<br><span class="lt">web + index</span>',''],
-  ['Total vCPU<br><span class="lt">across all</span>',''],
-  ['Total RAM GB<br><span class="lt">across all</span>',''],['Index<br>disk GB','']];
-// Container Apps replicas are NOT machines anyone buys -- they come and go with
-// traffic. Adding them to a machine count implied a standing fleet that does
-// not exist. Only the index is a machine on this option.
-const CA_COLS = [['Seats','t'],[CONC_H,'rng'],
-  ['Peak replicas<br><span class="lt">at busiest moment</span>',''],
-  ['Warm replicas<br><span class="lt">kept alive</span>',''],
-  ['vCPU per<br>replica',''],['RAM GB per<br>replica',''],
-  ['Index host<br><span class="lt">size &times; how many</span>','t'],
-  ['Machines to buy<br><span class="lt">index only</span>','']];
-const IX_COLS = [['Seats','t'],['Index<br>RAM GB',''],['Index<br>disk GB',''],
-  ['Self-hosted VM<br><span class="lt">Qdrant</span>','t'],['AI Search tier<br><span class="lt">alternative</span>','t'],
-  ['Partitions',''],['Vector quota<br>needed GB','']];
-
-const WORKED_SEATS = 400;
-const optionPanel = (id, letter, title, blurb, cols, cells, splitKey, foot, worked) => `
-<section class="panel" id="p-${id}">
-  <h2><span class="badge">${letter}</span>${title}</h2>
-  <p class="lede">${blurb}</p>
-  <div class="note worked"><b>How to read a row.</b> ${worked(at('insp250', WORKED_SEATS).lo, at('insp250', WORKED_SEATS).hi)}</div>
-  ${SCENARIOS.map(sc => `<div class="block">
-    <h3>${esc(sc.title)}</h3>
-    <p class="sub">${esc(sc.sub)}</p>
-    <div class="scroll">${optionTable(sc.key, cols, cells, splitKey)}</div>
-  </div>`).join('')}
-  <p class="foot">${foot}</p>
-</section>`;
+${seatList.map(n => { const c = at('compass',n), f = at('insp250',n);
+ return `  <tr><td class="t"><b>${n}</b></td>
+    <td class="rng">${c.lo.concurrent.toFixed(1)} <span class="dash">&ndash;</span> ${c.hi.concurrent.toFixed(1)}</td>
+    <td>${c.hi.vcpu.toFixed(1)}</td><td>${c.hi.appRam.toFixed(1)}</td>
+    <td class="rng">${f.lo.concurrent.toFixed(1)} <span class="dash">&ndash;</span> ${f.hi.concurrent.toFixed(1)}</td>
+    <td>${f.hi.vcpu.toFixed(1)}</td><td>${f.hi.appRam.toFixed(1)}</td>
+    <td>${f.hi.indexGb.toFixed(1)}</td><td>${f.hi.indexDisk}</td></tr>`;}).join('\n')}
+</tbody></table></div>`;
 
 const page = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
@@ -80,367 +39,230 @@ const page = `<!doctype html>
 <title>AscendOS — Hardware Requirements</title>
 <style>
  :root{--ink:#151a23;--mut:#5d6675;--fade:#8b93a3;--line:#dee2e9;--bg:#fff;--panel:#f6f8fa;
-  --accent:#1f4f8f;--accentb:#e8eef8;--split:#fff4dc;--splitb:#e0b877;--head:#1f4f8f}
+  --accent:#1f4f8f;--accentb:#e8eef8;--head:#1f4f8f;--g1:#2c5f9e;--g2:#2f6b57;--g3:#6b4a86}
  *{box-sizing:border-box}
  body{margin:0;font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,sans-serif;
    color:var(--ink);background:var(--bg);-webkit-print-color-adjust:exact;print-color-adjust:exact}
- .wrap{max-width:1180px;margin:0 auto;padding:30px 24px 96px}
+ .wrap{max-width:1000px;margin:0 auto;padding:30px 24px 96px}
  .masthead{border-bottom:2px solid var(--accent);padding-bottom:14px;margin-bottom:20px;
    display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
  h1{font-size:24px;margin:0;letter-spacing:-.02em}
  .for{font-size:13px;color:var(--mut);margin:3px 0 0}
  .meta{font-size:12px;color:var(--fade);text-align:right;line-height:1.5}
- h2{font-size:19px;margin:0 0 6px;letter-spacing:-.01em;display:flex;align-items:center;gap:9px}
- .badge{display:inline-flex;align-items:center;justify-content:center;width:25px;height:25px;
-   border-radius:5px;background:var(--accent);color:#fff;font-size:13px;font-weight:700}
- h3{font-size:14px;margin:26px 0 2px;color:var(--accent)}
- .lede{color:var(--mut);max-width:80ch;margin:0 0 8px;font-size:13.5px}
- .sub{color:var(--fade);font-size:12.5px;margin:0 0 9px}
- .foot{font-size:12px;color:var(--fade);margin:14px 0 0}
+ h2{font-size:19px;margin:0 0 7px;letter-spacing:-.01em}
+ h3{font-size:13px;margin:26px 0 6px;color:var(--accent);text-transform:uppercase;letter-spacing:.05em}
+ .lede{color:var(--mut);max-width:82ch;margin:0 0 16px;font-size:13.5px}
  .bar{display:flex;gap:9px;flex-wrap:wrap;margin:0 0 8px}
  .btn{display:inline-block;padding:8px 15px;border-radius:6px;background:var(--accent);color:#fff;
    text-decoration:none;font-weight:600;font-size:13.5px;border:0;cursor:pointer;font-family:inherit}
  .btn.alt{background:var(--panel);color:var(--ink);border:1px solid var(--line)}
  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
- .hint{font-size:12px;color:var(--fade);margin:0 0 24px;max-width:80ch}
- #raw{width:100%;height:260px;margin:0 0 20px;font:11.5px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
+ .hint{font-size:12px;color:var(--fade);margin:0 0 22px;max-width:82ch}
+ #raw{width:100%;height:240px;margin:0 0 20px;font:11.5px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
    border:1px solid var(--line);border-radius:7px;padding:10px;background:var(--panel);color:var(--ink);
    white-space:pre;overflow:auto;resize:vertical}
  #raw[hidden]{display:none}
- .scroll{overflow-x:auto}
- table{border-collapse:collapse;width:100%;font-size:12.5px;font-variant-numeric:tabular-nums}
- th,td{padding:4px 9px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
- thead th{background:var(--head);color:#fff;font-weight:600;font-size:10.5px;text-transform:uppercase;
-   letter-spacing:.045em;vertical-align:bottom;padding:6px 9px;border-bottom:0}
- .lt{font-weight:400;text-transform:none;letter-spacing:0;font-size:9.5px;opacity:.75}
+ .scroll{overflow-x:auto;margin:4px 0 0}
+ table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+ th,td{padding:5px 10px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+ thead th{background:var(--head);color:#fff;font-weight:600;font-size:11px;text-transform:uppercase;
+   letter-spacing:.045em;vertical-align:bottom;border-bottom:0}
+ tr.grp th{text-align:left;font-size:11.5px;padding-bottom:3px}
+ tr.grp th:first-child{background:var(--head)}
+ .g1{background:var(--g1)!important}.g2{background:var(--g2)!important}.g3{background:var(--g3)!important}
+ .lt{font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;opacity:.75}
  th.t,td.t{text-align:left}
- td.t{color:var(--mut);font-size:12px}
- td.rng{color:var(--mut)}
+ td.rng{text-align:left;color:var(--mut)}
  .dash{color:var(--fade)}
  tbody tr:nth-child(even) td{background:var(--panel)}
- tbody tr.split td{background:var(--split);border-top:1px solid var(--splitb);border-bottom:1px solid var(--splitb);font-weight:600}
  tbody tr:hover td{background:var(--accentb)}
- .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:11px;margin:16px 0 22px}
- .card{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:0 7px 7px 0;padding:12px 15px;background:var(--panel)}
- .card h4{margin:0 0 3px;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);font-weight:600}
- .card .n{font-size:20px;font-weight:700;letter-spacing:-.02em}
- .card p{margin:4px 0 0;font-size:12px;color:var(--mut);line-height:1.45}
- .note{border-left:3px solid var(--accent);background:var(--panel);padding:11px 15px;
+ .note{border-left:3px solid var(--accent);background:var(--panel);padding:12px 16px;
    margin:16px 0;font-size:13px;color:var(--mut);max-width:88ch}
  .note b{color:var(--ink)}
- .note.worked{border-left-color:#7a9a3f;background:var(--panel)}
- .note.legend dl{margin:0}
- .note.legend dt{margin-top:9px;font-size:13px}
- .note.legend dd{margin:1px 0 0}
- .mini.arith{margin:9px 0;font-size:12.5px;width:auto;max-width:560px}
- .mini.arith td{border:0;border-bottom:1px solid var(--line);padding:3px 10px 3px 0;text-align:left;color:var(--mut)}
- .mini.arith td.v{text-align:right;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
- .mini.arith tr.tot td{border-bottom:0;border-top:1px solid var(--accent);padding-top:5px}
- @media (prefers-color-scheme:dark){.note.worked{border-left-color:#9dbd5f}}
- dl{margin:0;font-size:13px;color:var(--mut);max-width:88ch}
- dt{font-weight:600;color:var(--ink);margin-top:12px}
- dd{margin:2px 0 0}
- .panel{display:none}
- .panel.on{display:block}
- /* Worksheet tabs, along the bottom the way a spreadsheet puts them. */
+ .note.key{border-left-color:#7a9a3f}
+ .arith{border-collapse:collapse;margin:10px 0 4px;font-size:12.5px;max-width:560px;width:auto}
+ .arith td{border:0;border-bottom:1px solid var(--line);padding:3px 12px 3px 0;text-align:left;color:var(--mut);white-space:normal}
+ .arith td.v{text-align:right;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
+ .arith tr.tot td{border-bottom:0;border-top:1px solid var(--accent);padding-top:5px}
+ dl{margin:0;font-size:13.5px;color:var(--mut);max-width:88ch}
+ dt{font-weight:600;color:var(--ink);margin-top:14px}
+ dd{margin:3px 0 0}
+ dd.hard{border-left:3px solid #b4553a;padding-left:11px}
+ .panel{display:none}.panel.on{display:block}
  .tabs{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);
    display:flex;gap:2px;padding:0 24px;overflow-x:auto;z-index:9;box-shadow:0 -2px 8px rgba(0,0,0,.05)}
  .tab{border:1px solid var(--line);border-bottom:0;border-radius:6px 6px 0 0;background:var(--panel);
    color:var(--mut);font:600 12.5px/1 inherit;padding:10px 15px;cursor:pointer;white-space:nowrap;
    margin-top:5px;font-family:inherit}
- .tab[aria-selected="true"]{background:var(--bg);color:var(--accent);border-color:var(--line);
+ .tab[aria-selected="true"]{background:var(--bg);color:var(--accent);
    box-shadow:inset 0 3px 0 var(--accent);margin-top:0;padding-top:15px}
  .tab:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
  @media (prefers-color-scheme:dark){
   :root{--ink:#e7ecf3;--mut:#98a1b2;--fade:#727b8c;--line:#2a313f;--bg:#12151c;--panel:#1a1f28;
-   --accent:#5b9bf0;--accentb:#1c2635;--split:#33290f;--splitb:#7a6023;--head:#1e3a63}}
+   --accent:#5b9bf0;--accentb:#1c2635;--head:#1e3a63;--g1:#24487a;--g2:#1f5142;--g3:#4a3566}}
  :root[data-theme="dark"]{--ink:#e7ecf3;--mut:#98a1b2;--fade:#727b8c;--line:#2a313f;--bg:#12151c;
-   --panel:#1a1f28;--accent:#5b9bf0;--accentb:#1c2635;--split:#33290f;--splitb:#7a6023;--head:#1e3a63}
+  --panel:#1a1f28;--accent:#5b9bf0;--accentb:#1c2635;--head:#1e3a63;--g1:#24487a;--g2:#1f5142;--g3:#4a3566}
  :root[data-theme="light"]{--ink:#151a23;--mut:#5d6675;--fade:#8b93a3;--line:#dee2e9;--bg:#fff;
-   --panel:#f6f8fa;--accent:#1f4f8f;--accentb:#e8eef8;--split:#fff4dc;--splitb:#e0b877;--head:#1f4f8f}
-
- /* PRINT: every tab prints, each starting its own page, headers repeating
-    across page breaks and no row split down the middle. */
- @page{size:A4 landscape;margin:12mm}
+  --panel:#f6f8fa;--accent:#1f4f8f;--accentb:#e8eef8;--head:#1f4f8f;--g1:#2c5f9e;--g2:#2f6b57;--g3:#6b4a86}
+ @page{size:A4 portrait;margin:14mm}
  @media print{
-  body{font-size:10px;background:#fff}
-  .wrap{max-width:none;padding:0}
+  body{font-size:10.5px;background:#fff}.wrap{max-width:none;padding:0}
   .bar,.hint,#raw,.tabs{display:none!important}
   .panel{display:block!important;page-break-before:always}
   .panel:first-of-type{page-break-before:avoid}
-  .masthead{margin-bottom:12px}
-  h1{font-size:17px}h2{font-size:14px}h3{font-size:11px;margin:14px 0 2px}
-  table{font-size:8.4px}th,td{padding:2px 5px}
-  thead{display:table-header-group}
-  tr{page-break-inside:avoid}
-  .block{page-break-inside:auto}
-  .card{break-inside:avoid}
-  .scroll{overflow:visible}
+  h1{font-size:17px}h2{font-size:14px}
+  table{font-size:9px}th,td{padding:3px 6px}
+  thead{display:table-header-group}tr{page-break-inside:avoid}
+  .note,dd,.arith{break-inside:avoid}.scroll{overflow:visible}
   a{text-decoration:none;color:inherit}
  }
 </style></head><body><div class="wrap">
 
 <div class="masthead">
   <div><h1>AscendOS &mdash; Hardware Requirements</h1>
-  <p class="for">Prepared for ShiftIT &middot; Microsoft Azure &middot; hardware specification only, no pricing</p></div>
+  <p class="for">Prepared for ShiftIT &middot; what the software needs, not what to buy</p></div>
   <div class="meta">Code Compass ${U} searches / seat / day<br>
-  Code Inspector ${I} scans / user / day<br>20&ndash;840 seats in steps of 20</div>
+  Code Inspector ${I} scans / user / day<br>20&ndash;840 seats</div>
 </div>
 
 <div class="bar">
   <a class="btn" id="dx" download="AscendOS-Hardware-Requirements.xlsx">Download Excel workbook</a>
-  <a class="btn alt" id="dl" download="AscendOS-Hardware-Requirements.csv">Download CSV</a>
   <button class="btn alt" id="pr">Print / save as PDF</button>
+  <a class="btn alt" id="dl" download="AscendOS-Hardware-Requirements.csv">CSV</a>
   <button class="btn alt" id="cp">Copy CSV</button>
   <button class="btn alt" id="sh">Show raw CSV</button>
 </div>
-<p class="hint">The Excel workbook has the same five tabs, formatted and ready to send on.
-Printing outputs every tab, each starting on its own page, in landscape.
-If the download button does nothing, this page is inside a sandbox that blocks downloads &mdash; use
-<b>Copy CSV</b> and paste into a blank spreadsheet.</p>
+<p class="hint">The workbook carries the same four sheets. Printing outputs every tab, each starting on
+its own page. If a download does nothing, this page is inside a sandbox that blocks them &mdash; use
+<b>Copy CSV</b> instead.</p>
 <textarea id="raw" spellcheck="false" hidden></textarea>
 
-<section class="panel on" id="p-summary">
-  <h2><span class="badge">&#9632;</span>Start here</h2>
-  <p class="lede">Three ways to run AscendOS on Azure. They are alternatives, not layers &mdash; you would
-  supply one of them. Each has its own tab, carrying every seat count from 20 to 840 in steps of 20.
-  Hardware is sized on the high end of the usage range, because a fleet sized on average usage is
-  under-provisioned on every busy day. The two column names below are the ones worth reading first.</p>
+<section class="panel on" id="p-start">
+  <h2>Start here</h2>
+  <p class="lede">This says what AscendOS needs in order to run, at a range of load levels. It does not
+  specify machines, instance types or topology &mdash; that is your call. These are the figures it has to
+  add up to.</p>
 
-  <div class="cards">
-   <div class="card"><h4>840 seats, Compass only</h4><div class="n">${last('compass').azAppCpu} vCPU &middot; ${last('compass').azAppRam} GB</div>
-    <p>${lastLo('compass').concurrent.toFixed(0)}&ndash;${last('compass').concurrent.toFixed(0)} jobs in flight at peak. ${esc(last('compass').azAppWeb)} on App Service, or ${last('compass').azVmMachines} VMs.</p></div>
-   <div class="card"><h4>The index cannot share</h4><div class="n">Always separate</div>
-    <p>On App Service and Container Apps the vector index needs its own machine at every seat count &mdash; neither has block storage.</p></div>
-   <div class="card"><h4>200 vs 250 Inspector</h4><div class="n">Identical at 840</div>
-    <p>Both need ${last('insp250').azAppMachines} machines on App Service. They differ lower down the range.</p></div>
-  </div>
+  <h3>What the software does</h3>
+  <p class="lede">AscendOS is browser-delivered. Code Compass answers building-code questions against an
+  ingested vector index; Code Inspector analyses site photographs; the estimating modules price work.
+  Every one of them is a short job that holds a CPU core for seconds and then releases it, and most of
+  that time is spent waiting on an external model API rather than computing. That is why the sizing is
+  driven by <b>how many jobs run at the same moment</b> &mdash; not by seat count, and not by requests per day.</p>
 
-  <div class="note legend"><b>Two column names worth pinning down before you read the tabs.</b>
-  <dl style="margin-top:7px">
-   <dt>&ldquo;Jobs at once&rdquo;</dt>
-   <dd>The number of searches and scans <em>in flight at the same instant</em>, averaged across the busiest
-   hour of the day. Not jobs per day, and not people signed in &mdash; a search holds a CPU core for about
-   twelve seconds and then lets go, so this is what actually determines how much hardware you need. It is
-   shown as a range because usage is a range: the lower number assumes ${USAGE.low.compass} searches per seat per day, the
-   higher assumes ${USAGE.high.compass}. <b>Every machine figure is sized on the higher one.</b>
-   <b>A value below 1 is normal and is explained below.</b></dd>
-   <dt>&ldquo;Machines to buy&rdquo;</dt>
-   <dd>Physical things ShiftIT would provision, added up: the application tier plus the search index host.
-   On App Service and Container Apps the index is always its own machine, so it is always at least +1.
-   On Container Apps the replicas are <em>not</em> counted &mdash; the platform starts and stops those on its own,
-   and only the index is a standing machine.</dd>
-  </dl></div>
-
-  <div class="note worked"><b>What a number like 0.5 means &mdash; and why it is not half a machine.</b>
-  It is the number of jobs running at the same moment, averaged over the busy hour, and it is perfectly
-  normal for it to be less than one. <b>0.5 means that during the busiest hour a job is in progress about
-  half the time, and nothing is running the rest of it.</b> Worked through at 20 seats:
-  <table class="mini arith">
+  <div class="note key"><b>&ldquo;Jobs at once&rdquo; &mdash; the number everything else follows from.</b>
+  It is the count of searches and scans running at the same moment, averaged across the busiest hour of
+  the day. <b>A value below 1 is normal</b> and simply means the work is intermittent. Worked through at
+  20 seats:
+  <table class="arith">
    <tr><td>20 seats &times; ${USAGE.high.compass} searches a day</td><td class="v">400 searches a day</td></tr>
    <tr><td>spread across an 8-hour working day</td><td class="v">50 an hour</td></tr>
    <tr><td>the busy hour runs at 3&times; the daily average</td><td class="v">150 an hour</td></tr>
    <tr><td>each search occupies a core for about 12 seconds</td><td class="v">150 &times; 12s = 1,800 core-seconds</td></tr>
    <tr class="tot"><td>1,800 seconds of work inside a 3,600-second hour</td><td class="v"><b>0.5 jobs at once</b></td></tr>
   </table>
-  <b>You cannot buy half a server, and nothing here suggests you should.</b> Every option starts at one
-  machine; this figure describes how hard that machine is worked. It only begins to drive the hardware once
-  it climbs past 1, and it climbs in proportion to seats.
-  <br><br><b>It is an average, not a ceiling.</b> Arrivals are random, so a figure of 0.5 still produces brief
-  moments with two or three jobs at once. Absorbing those is exactly what the gap between the computed
-  requirement and the provisioned machines is for.
-  <br><br>Job lengths differ by module: a Compass search runs about <b>12 seconds</b>, an Inspector photo
-  scan about <b>55 seconds</b>. That is why a few hundred Inspector users move this number more than
-  several hundred extra Compass seats do.</div>
+  <b>It is not a fraction of a machine.</b> It describes how heavily the application tier is worked, and
+  only begins to drive the requirement once it passes 1. It is also an average rather than a ceiling:
+  arrivals are random, so 0.5 still produces brief moments with two or three jobs at once, and the
+  platform needs the headroom to absorb them.
+  <br><br>Job lengths differ by module &mdash; a Compass search runs about <b>12 seconds</b>, an Inspector photo
+  scan about <b>55</b> &mdash; which is why a few hundred Inspector users move the figure more than several
+  hundred extra Compass seats do.</div>
 
-  <div class="note"><b>Does Azure change the requirement? No.</b> Peak concurrency, cores, memory and
-  disk are properties of the workload, not the vendor &mdash; those columns are identical whoever hosts it.
-  What Azure changes is the ladder of purchasable units, and two things about the deployment&rsquo;s shape:
-  the search index can never share a machine on options A or C, and App Service Standard&rsquo;s 10-instance
-  cap makes Premium v3 the tier for this range.</div>
+  <h3>The two scenarios</h3>
+  <p class="lede"><b>Compass only</b> is every seat running Code Compass and nothing else &mdash; the light
+  case. <b>All modules</b> adds 250 users running Code Inspector as well, the heaviest realistic
+  configuration. Any actual deployment sits between the two. Each is shown as a range because usage is a
+  range: Code Compass ${U} searches per seat per working day, Code Inspector ${I} scans per user per day.
+  <b>The vCPU and RAM figures beside each range are sized on the busy end of it</b> &mdash; a platform sized on
+  average usage is short on every busy day.</p>
 
-  <div class="note"><b>Where the index needs its own machine on Option B</b>, the only option where it
-  can share at all. On A and C it is separate from the first seat.
-  <div class="scroll"><table style="max-width:620px;margin-top:9px">
-  <thead><tr><th class="t">Scenario</th><th>Low usage (${USAGE.low.compass}/${USAGE.low.inspector} per day)</th><th>High usage (${USAGE.high.compass}/${USAGE.high.inspector} per day)</th></tr></thead>
-  <tbody>${SCENARIOS.map(sc=>`<tr><td class="t">${esc(sc.title)}</td><td>${splitAt(sc.key,'lo')||'&mdash;'} seats</td><td>${splitAt(sc.key,'hi')||'&mdash;'} seats</td></tr>`).join('')}</tbody></table></div></div>
+  <div class="note"><b>What the figures cover.</b> vCPU and RAM are the <b>application tier only</b>. The
+  search index is listed separately because it is a fixed working set that grows with the size of the
+  code corpus rather than with load, and because it has storage requirements the application tier does
+  not &mdash; see Platform requirements. <b>The two are never summed.</b>
+  <br><br>Everything here is <b>capacity</b>, not availability. Redundancy and failover are a separate
+  conversation and would change the shape of anything built from these numbers.</div>
 </section>
 
-${optionPanel('a','A','App Service &mdash; managed platform (PaaS)',
- 'Premium v3 instances behind the platform&rsquo;s own load balancer. Premium rather than Standard is deliberate: HTTP-driven autoscaling is Premium-only, Standard cannot be made zone-redundant, and Standard caps at 10 instances &mdash; a ceiling this range reaches. P0v3 (1 vCPU / 4 GB) is the scaling unit because 1-core steps waste the least; <b>P1v3 or P2v3 substitute directly at half or a quarter of the count.</b> The search index is always a separate machine here &mdash; see the Search index tab.',
- HW_COLS, r => { const h=r.hi; return [`<b>${r.seats}</b>`, ...conc(r), esc(h.azAppWeb), esc(h.azAppIdx), h.azAppMachines, h.azAppCpu, h.azAppRam, h.indexDisk]; },
- null,
- 'Instance count stays well inside the 30-instance Premium v3 limit across this whole range. Zone redundancy, if required, enforces a minimum of two instances and bills for both.',
- (lo,hi) => `Take the <b>${WORKED_SEATS}-seat</b> row. ${jobs(lo,hi)}
-  To carry that you run <b>${esc(hi.azAppWeb)}</b> &mdash; ${hi.azAppWeb.split(' x')[1]} App Service instances, each 1 vCPU and 4 GB &mdash;
-  and <b>one separate VM</b> (${esc(hi.azAppIdx)}) holding the search index, because App Service cannot store it.
-  So you are buying <b>${hi.azAppMachines} machines</b> in total: ${hi.azAppWeb.split(' x')[1]} for the app plus 1 for the index.
-  Added up that is <b>${hi.azAppCpu} vCPU and ${hi.azAppRam} GB</b>.`)}
-
-${optionPanel('b','B','Virtual Machines &mdash; raw infrastructure',
- 'Bsv2 burstable VMs, the right family for this workload: short CPU spikes on a low average. B2s_v2 and larger bank credits at a 40% base, and average utilisation here sits well below that, so credits accumulate rather than drain. <b>Note there is no Azure equivalent of AWS &ldquo;Unlimited&rdquo; mode</b> &mdash; an exhausted credit bank throttles to base and cannot be bought past. Sized for fewest machines, since operating them is the real cost of this option.',
- HW_COLS, r => { const h=r.hi; return [`<b>${r.seats}</b>`, ...conc(r), esc(h.azVmWeb), esc(h.azVmIdx), h.azVmMachines, h.azVmCpu, h.azVmRam, h.indexDisk]; },
- 'azVmColocated',
- 'Shaded rows are where the search index moves onto its own VM. This is the only option of the three where it can share the web machine at all, because it is the only one with block storage.',
- (lo,hi) => `Take the <b>${WORKED_SEATS}-seat</b> row. ${jobs(lo,hi)}
-  To carry that you run <b>${esc(hi.azVmWeb)}</b> for the application${hi.azVmColocated
-    ? `, with the search index sitting on that same server &mdash; still small enough to fit`
-    : `, plus <b>${esc(hi.azVmIdx)}</b> holding the search index on its own`}.
-  So you are buying <b>${hi.azVmMachines} machine${hi.azVmMachines>1?'s':''}</b>, totalling
-  <b>${hi.azVmCpu} vCPU and ${hi.azVmRam} GB</b>.`)}
-
-${optionPanel('c','C','Container Apps &mdash; request-scaled containers',
- 'Replicas exist only while requests are in flight and scale to zero. Allocation is fixed at a 1 vCPU : 2 GiB ratio, capped at 4 vCPU / 8 GiB per replica. <b>This option is unavoidably a hybrid:</b> Container Apps offers only ephemeral storage and Azure Files, so the search index cannot live here and needs its own machine regardless. Replica count follows a configured concurrency threshold, not a platform limit &mdash; Container Apps has no per-replica request cap.',
- CA_COLS, r => { const h=r.hi; return [`<b>${r.seats}</b>`, ...conc(r), h.azCaPeak, h.azCaWarm, 1, 2, esc(h.azCaIdx), h.azCaMachines - h.azCaPeak]; },
- null,
- 'One replica absorbs this whole range at the assumed 45 concurrent requests per replica. For availability rather than capacity, run at least two.',
- (lo,hi) => `Take the <b>${WORKED_SEATS}-seat</b> row. ${jobs(lo,hi)}
-  Container Apps starts and stops replicas by itself as traffic moves, so <b>you do not buy replicas</b> &mdash;
-  <b>${hi.azCaPeak}</b> is simply how many are running at the busiest moment, each 1 vCPU and 2 GB.
-  The only machine you actually buy on this option is the one holding the search index
-  (<b>${esc(hi.azCaIdx)}</b>), because Container Apps has nowhere to store it.
-  So: <b>${hi.azCaMachines - hi.azCaPeak} standing machine</b>, and the web tier bills by traffic instead.`)}
-
-<section class="panel" id="p-index">
-  <h2><span class="badge">&#9679;</span>Search index &mdash; the one real decision</h2>
-  <p class="lede">Code Compass answers against a vector index of the ingested building codes. It is
-  currently Qdrant, self-hosted. On Azure this is the only part of the platform where the hosting
-  choice is forced rather than preferred, so it is worth deciding deliberately.</p>
-
-  <div class="note"><b>Qdrant requires block-level storage with a POSIX filesystem, and explicitly
-  does not run on network filesystems.</b> That single requirement rules out two of the three
-  options above as a home for it:
-  <ul style="margin:8px 0 0;padding-left:20px">
-   <li><b>App Service</b> &mdash; persistent <code>/home</code> is an SMB share, which cannot take the
-   exclusive file locks a database needs; local disk does not survive a restart. No configuration
-   gives durable, lockable and adequately sized disk together.</li>
-   <li><b>Container Apps</b> &mdash; offers ephemeral storage and Azure Files (SMB/NFS) only. No block
-   storage exists. Ephemeral volumes are destroyed on every scale-in and revision change.</li>
-   <li><b>Virtual Machines or AKS</b> &mdash; managed disks are block storage. Either works.</li>
-  </ul></div>
-
-  <div class="note"><b>There is no first-party managed Qdrant on Azure.</b> The Marketplace listing
-  is Qdrant Cloud, operated by Qdrant Solutions GmbH on their own infrastructure and sold through
-  Marketplace for billing convenience &mdash; it does not deploy into your subscription. The Container Apps
-  add-on that previously offered Qdrant in preview has been retired.</div>
-
-  <h3>The two viable routes</h3>
-  <p class="sub">Both are shown per seat count below. They are alternatives, not additions.</p>
-  <div class="scroll">${(() => {
-    const rows = data.insp250;
-    return `<table><thead><tr>${IX_COLS.map(c=>`<th${c[1]?` class="${c[1]}"`:''}>${c[0]}</th>`).join('')}</tr></thead><tbody>
-${rows.map(r => { const h=r.hi; return `<tr><td class="t"><b>${r.seats}</b></td><td>${h.indexGb.toFixed(1)}</td><td>${h.indexDisk}</td>
-  <td class="t">${esc(h.azCaIdx)}</td><td class="t">${esc(h.azSearchTier)}</td><td>${h.azSearchPart}</td><td>${h.azSearchGb.toFixed(1)}</td></tr>`;}).join('\n')}
-</tbody></table>`; })()}</div>
-
-  <dl>
-  <dt>Route 1 &mdash; keep Qdrant, on a VM or AKS</dt><dd>No application change. A single burstable VM
-  with a Premium SSD data disk covers this entire range; AKS with <code>managed-csi-premium</code> is the
-  same thing with orchestration. The index must fit in memory, which is what the Index RAM column
-  sizes. Note that VM disk IOPS are capped by <em>both</em> disk size and VM size &mdash; a larger disk does
-  nothing if the VM tier is the bottleneck.</dd>
-
-  <dt>Route 2 &mdash; Azure AI Search</dt><dd>Fully managed, native vector and hybrid search, no machine
-  to operate. The governing limit is the vector index quota per partition, which is a memory limit on
-  the graph &mdash; not the larger storage quota. Sizing allows for graph overhead and deleted-document
-  slack on top of the raw vectors, which is why the quota needed exceeds the index RAM figure.
-  <b>This is an API rewrite, not a drop-in replacement for the Qdrant client</b> &mdash; the cost is
-  engineering time, not hardware.</dd>
-
-  <dt>Which tier</dt><dd>Basic carries 5 GB of vector quota per partition and covers this range until
-  the index approaches that ceiling, at which point S1 (35 GB) is the next single-partition step.
-  Sharding a smaller tier across partitions reaches the same quota but is a more fragile deployment
-  for no benefit; the table above always shows the smallest tier that fits on one partition.</dd>
-
-  <dt>Regional caveat</dt><dd>The higher post-2024 quotas are not available in every region &mdash; Israel
-  Central, Qatar Central, Spain Central and South India remain on the older, smaller limits. Confirm
-  the target region before committing to a tier.</dd>
-  </dl>
+<section class="panel" id="p-req">
+  <h2>Requirements by load stage</h2>
+  <p class="lede">Nine reference points across the range. Application tier vCPU and RAM, with the search
+  index sized separately. Between these points the requirement rises smoothly &mdash; there is no threshold
+  or step change anywhere in this range.</p>
+  ${reqTable(STAGES)}
+  <div class="note"><b>At the top of the range</b>, 840 seats with 250 Inspector users needs
+  <b>${last('insp250').vcpu.toFixed(1)} vCPU and ${last('insp250').appRam.toFixed(1)} GB</b> for the application tier, plus
+  <b>${last('insp250').indexGb.toFixed(1)} GB of RAM and ${last('insp250').indexDisk} GB of disk</b> for the search index. Compass alone at the same
+  seat count needs ${last('compass').vcpu.toFixed(1)} vCPU and ${last('compass').appRam.toFixed(1)} GB.</div>
 </section>
 
-<section class="panel" id="p-notes">
-  <h2><span class="badge">?</span>Assumptions &amp; method</h2>
-  <p class="lede">Everything the numbers depend on, stated plainly. If any of it is wrong for the
-  deployment you have in mind, the figures move accordingly.</p>
+<section class="panel" id="p-detail">
+  <h2>Full detail</h2>
+  <p class="lede">The same figures at every 20 seats, if a specific number is needed. Columns are
+  identical to the load stage table.</p>
+  ${reqTable(SEATS)}
+</section>
+
+<section class="panel" id="p-plat">
+  <h2>Platform requirements</h2>
+  <p class="lede">Independent of topology. These hold whatever the deployment is built from.</p>
 <dl>
-<dt>What the workload is</dt><dd>AscendOS is browser-delivered. Code Compass answers building-code
-questions against an ingested vector corpus; Code Inspector analyses site photographs. Both are short,
-bursty jobs that hold a CPU core for seconds and then release it, so the fleet is sized on how many run at
-the same instant &mdash; not on seat count. Both spend most of their time waiting on a model API rather
-than computing, which is why concurrency rather than raw compute drives the sizing.</dd>
+<dt>Compute</dt>
+<dd>The application tier is <b>stateless and scales horizontally</b> &mdash; instances hold no data between
+requests and need no knowledge of each other. Adding capacity means adding instances.</dd>
+<dd>No GPU. No specific CPU architecture; x64 and Arm are both acceptable. The workload is bursty and
+spends most of its time waiting on external APIs, so burstable or credit-based instance families suit it
+well, provided sustained utilisation stays inside whatever baseline they allow.</dd>
 
-<dt>What does <em>not</em> change with the vendor</dt><dd>Peak concurrency, required cores, required
-memory and index size are properties of the workload. They would be identical on any provider. Only
-the ladder of purchasable units changes &mdash; plus, on Azure, two constraints on the deployment&rsquo;s shape:
-the index cannot share a machine on App Service or Container Apps, and Standard&rsquo;s instance cap forces
-Premium for this range.</dd>
+<dt>Storage &mdash; the one hard constraint</dt>
+<dd class="hard">The search index is <b>Qdrant</b>, a vector database. It requires <b>block-level storage
+with a POSIX-compatible filesystem</b>. Qdrant memory-maps its segment files, so this is not a preference.
+<b>It will not run on a network filesystem</b> &mdash; NFS, SMB or CIFS &mdash; nor on object storage. Network block
+protocols such as iSCSI are fine. SSD strongly preferred.</dd>
+<dd>The index must also <b>fit in memory</b>: the Search index RAM column is the working set, not the disk
+footprint. Disk should be roughly 1.3&times; that. Both grow with the size of the ingested code corpus rather
+than with user load.</dd>
+<dd><b>On Azure specifically:</b> App Service cannot satisfy this &mdash; its persistent storage is an SMB share
+and its local disk does not survive a restart. Container Apps cannot either; it offers ephemeral storage
+and Azure Files only. A Virtual Machine or AKS with a managed disk can. Azure AI Search is a managed
+alternative, but it is an API rewrite on our side rather than a drop-in, so please treat it as a separate
+discussion rather than an equivalent option.</dd>
+<dd>The <b>application tier needs no persistent storage.</b> Ephemeral disk is fine, and instances do not
+need a shared filesystem between them.</dd>
 
-<dt>Usage assumed</dt><dd>Code Compass ${U} searches per seat per working day. Code Inspector ${I}
-scans per user per working day, for the subset of users named in each block.</dd>
+<dt>Network</dt>
+<dd><b>Outbound HTTPS to external model APIs</b> (Google Gemini and fal.ai) is required from every
+application instance. No inbound requirements beyond ordinary HTTPS.</dd>
+<dd class="hard"><b>Every in-flight job holds one long-lived streaming HTTP response</b>, so concurrent
+streaming connections equal the &ldquo;jobs at once&rdquo; figure. Two things follow. Any load balancer, proxy or
+gateway in front of the application must allow idle connections of <b>at least 120 seconds</b> &mdash; an
+Inspector scan streams for around 55, and a shorter timeout cuts the job off mid-answer. And <b>response
+buffering must be disabled</b>, or results arrive in one lump at the end instead of streaming.</dd>
+<dd>Where a platform limits outbound connections per instance, note that every job makes several outbound
+API calls. Connection pooling is in place, but a low per-instance cap is worth raising with us early &mdash; on
+Azure App Service this is the 128-SNAT-port limit, which has no metric and so cannot be autoscaled on.</dd>
+<dd>Egress volume is modest: JSON responses and rendered images.</dd>
 
-<dt>Peak concurrent, low &ndash; high</dt><dd>How many jobs run at the same instant during the busiest
-hour, by Little&rsquo;s Law: arrival rate &times; average job duration. The two figures are the bottom and top
-of the usage range. Peak hour is sized at 3&times; the flat daily average, because real usage clusters at
-the start of the day and after lunch rather than spreading evenly.</dd>
+<dt>Not required</dt>
+<dd>No GPU. No shared filesystem between application instances. No session affinity beyond the lifetime of
+a single request. No inbound VPN or private link. No database engine to host &mdash; the application uses
+managed Firestore, which sits outside anything deployed here.</dd>
 
-<dt>Why hardware follows the high end</dt><dd>A fleet sized on average usage is under-provisioned on
-every busy day, so all machine columns use ${USAGE.high.compass} searches and ${USAGE.high.inspector} scans per day. If real usage
-settles at the bottom of the range, the low concurrency figure shows what you would have needed.</dd>
-
-<dt>Required vs. provisioned</dt><dd>The requirement is what the model computes. The machine columns
-show the smallest sensible allocation covering it, which is almost always more. That gap is
-deliberate headroom, not waste.</dd>
-
-<dt>App memory and index memory are never summed</dt><dd>Application memory scales with concurrent
-jobs. The search index is a fixed working set that grows with the size of the code corpus, not with
-seats. Past the threshold they live on different machines, so adding them would be meaningless.</dd>
-
-<dt>Modelling a subset of users</dt><dd>Where only some seats run Code Inspector, that subset is
-expressed as its equivalent fleet-wide rate. The model is linear in job volume, so 200 users at ${USAGE.high.inspector}
-scans a day is exactly the same total work, and the same peak concurrency, as the equivalent
-average spread across all seats.</dd>
-
-<dt>Azure-specific constraints reflected in these tables</dt><dd>App Service Premium v3 is used
-throughout rather than Standard: HTTP-driven autoscaling is Premium-only, Standard cannot be made
-zone-redundant, and Standard caps at 10 instances. Premium v4 exists and is GA, but its vCPU and RAM
-are identical to v3 &mdash; the gain is faster processors and NVMe local storage, so <b>no extra capacity
-should be budgeted for v4</b>. Note Premium v4 has no stable outbound IP addresses; if anything
-downstream IP-allowlists us, that requires a NAT Gateway or staying on v3.</dd>
-
-<dt>Why Bsv2 for the VM option</dt><dd>The workload is short spikes on a low average, which is
-exactly what burstable credits are for. B2s_v2 and larger bank at a 40% base and average utilisation
-here sits well below it, so credits accumulate rather than drain. Two cautions: the original Bs-series
-is retiring in November 2028 and has no 1-vCPU successor, and there is no Azure equivalent of AWS
-&ldquo;Unlimited&rdquo; mode &mdash; an exhausted bank throttles to base and cannot be bought past.</dd>
-
-<dt>Things to confirm against your own subscription</dt><dd>Regional vCPU quota is not published by
-Microsoft and varies by subscription type, age and region; a new subscription can have very low or
-zero quota in a given region. Quota and capacity are also checked separately, so sufficient quota does
-not guarantee the region has the sizes available. Confirm before committing to a region.</dd>
-
-<dt>A known Azure surprise worth designing around</dt><dd>Each App Service instance gets only 128
-preallocated SNAT ports, and closed connections are not reclaimed for four minutes. An application
-that opens connections rapidly to the same host exhausts this and sees intermittent 5xx errors. There
-is no metric for it, so it cannot be autoscaled on. Connection pooling, private endpoints or a NAT
-Gateway are the mitigations. Relevant here because every job calls out to a model API.</dd>
-
-<dt>What is not here</dt><dd>Pricing, of any kind. Also excluded: high availability and redundancy,
-which is a separate decision that would at minimum double the web tier; developer and staging
-environments; CI; and off-site backup targets. This is the production serving fleet only.</dd>
-
+<dt>Availability</dt>
+<dd>Everything in this document is <b>capacity</b>. A single instance of anything is a single point of
+failure; designing for high availability is a separate decision and would change these numbers.</dd>
 </dl>
-<p class="foot">Generated from the same model as the interactive planner, so the two cannot disagree.
-${SEATS.length} rows per scenario &middot; 20 to 840 seats in steps of 20.</p>
+<p class="hint" style="margin-top:22px">Generated from the same model as our internal capacity planner,
+so the two cannot disagree. ${SEATS.length} detail rows &middot; 20 to 840 seats in steps of 20.</p>
 </section>
 
 </div>
-<nav class="tabs" role="tablist" aria-label="Worksheets">
- <button class="tab" role="tab" aria-selected="true"  aria-controls="p-summary" data-t="summary">Start here</button>
- <button class="tab" role="tab" aria-selected="false" aria-controls="p-a" data-t="a">A &middot; App Service</button>
- <button class="tab" role="tab" aria-selected="false" aria-controls="p-b" data-t="b">B &middot; Virtual Machines</button>
- <button class="tab" role="tab" aria-selected="false" aria-controls="p-c" data-t="c">C &middot; Container Apps</button>
- <button class="tab" role="tab" aria-selected="false" aria-controls="p-index" data-t="index">Search index</button>
- <button class="tab" role="tab" aria-selected="false" aria-controls="p-notes" data-t="notes">Assumptions</button>
+<nav class="tabs" role="tablist" aria-label="Sheets">
+ <button class="tab" role="tab" aria-selected="true"  aria-controls="p-start"  data-t="start">Start here</button>
+ <button class="tab" role="tab" aria-selected="false" aria-controls="p-req"    data-t="req">Requirements by load</button>
+ <button class="tab" role="tab" aria-selected="false" aria-controls="p-detail" data-t="detail">Full detail</button>
+ <button class="tab" role="tab" aria-selected="false" aria-controls="p-plat"   data-t="plat">Platform requirements</button>
 </nav>
 <script>
 var CSV_B64="${b64}";
@@ -457,22 +279,18 @@ var XLSX_B64="${xb64}";
   }
   tabs.forEach(function(b){
     b.addEventListener('click',function(){show(b.dataset.t)});
-    // Arrow keys move between tabs, as they do in a spreadsheet.
     b.addEventListener('keydown',function(e){
       var i=tabs.indexOf(b), n=e.key==='ArrowRight'?i+1:e.key==='ArrowLeft'?i-1:-1;
       if(n>=0&&n<tabs.length){tabs[n].focus();show(tabs[n].dataset.t);e.preventDefault();}
     });
   });
-
   document.getElementById('pr').addEventListener('click',function(){window.print()});
 
   var bin=atob(CSV_B64), b=new Uint8Array(bin.length);
   for(var i=0;i<bin.length;i++) b[i]=bin.charCodeAt(i);
   var text=new TextDecoder('utf-8').decode(b);
 
-  // A sandboxed frame can block a programmatic download outright, and does it
-  // SILENTLY -- so this is a plain anchor with nothing to intercept, backed by
-  // two manual routes.
+  // Plain anchors: a sandboxed frame can block a scripted download silently.
   document.getElementById('dl').href='data:text/csv;charset=utf-8;base64,'+CSV_B64;
   var dx=document.getElementById('dx');
   if(XLSX_B64) dx.href='data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,'+XLSX_B64;
@@ -493,7 +311,6 @@ var XLSX_B64="${xb64}";
       document.body.removeChild(t);done(ok);
     }
   });
-
   var sh=document.getElementById('sh'), raw=document.getElementById('raw');
   sh.addEventListener('click',function(){
     if(raw.hidden){raw.value=text;raw.hidden=false;raw.focus();raw.select();sh.textContent='Hide raw CSV';}
@@ -504,4 +321,4 @@ var XLSX_B64="${xb64}";
 </body></html>`;
 
 fs.writeFileSync(path.join(__dirname,'hardware.html'), page);
-console.log('hardware.html', (page.length/1024).toFixed(1)+'KB | xlsx embedded: '+(xb64?(xb64.length/1024).toFixed(0)+'KB':'NO')+' | 5 tabs | print: all panels, landscape, page-break per tab');
+console.log('hardware.html', (page.length/1024).toFixed(1)+'KB | 4 tabs | xlsx embedded:', xb64?(xb64.length/1024).toFixed(0)+'KB':'NO');

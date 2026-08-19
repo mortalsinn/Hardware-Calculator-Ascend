@@ -140,38 +140,31 @@ const data = {};
 for (const sc of SCENARIOS) data[sc.key] = SEATS.map(n => row(n, Math.min(sc.insp, n)));
 
 // ---------------------------------------------------------------- CSV
-const HEAD = ['Seats',
-  'Jobs running at once - quiet usage','Jobs running at once - busy usage',
-  'vCPU required (high)','App RAM required GB (high)','Search index RAM GB','Search index disk GB',
-  'A App Service: web tier (size x how many)','A App Service: plan tier','A App Service: index host (size x how many)','A: machines to buy (web + index)','A: total vCPU','A: total RAM GB',
-  'B VMs: web tier (size x how many)','B VMs: index host (size x how many)','B: machines to buy (web + index)','B: total vCPU','B: total RAM GB',
-  'C Container Apps: peak replicas (platform-managed)','C: warm replicas','C: vCPU per replica','C: RAM GB per replica','C: index host (size x how many)','C: machines to buy (index only)',
-  'Azure AI Search tier (alternative to self-hosting)','AI Search partitions','AI Search vector quota needed GB'];
+// Requirements only. What the software needs; not what to buy.
+const HEAD = ['Seats (reference)',
+  'Compass only: jobs at once (quiet usage)','Compass only: jobs at once (busy usage)',
+  'Compass only: vCPU required','Compass only: RAM GB required',
+  'All modules: jobs at once (quiet usage)','All modules: jobs at once (busy usage)',
+  'All modules: vCPU required','All modules: RAM GB required',
+  'Search index: RAM GB','Search index: disk GB'];
 
 const csv = [];
-csv.push('AscendOS - Hardware Requirements by Seat Count');
-csv.push('"Jobs running at once" = searches and scans in flight at the SAME INSTANT during the busiest hour. Not jobs per day, not users signed in. Shown as a range because usage is a range; all hardware is sized on the busy figure.');
-csv.push('"Machines to buy" = things ShiftIT provisions, summed: application tier + search index host. On Container Apps the replicas are NOT counted - the platform starts and stops those itself, so only the index is a standing machine.');
-csv.push('Hardware specification only, on Microsoft Azure. Three deployment options: A App Service (PaaS), B Virtual Machines, C Container Apps.');
-csv.push(`Usage: Code Compass ${USAGE.low.compass}-${USAGE.high.compass} searches per seat per working day. Code Inspector ${USAGE.low.inspector}-${USAGE.high.inspector} scans per user per working day.`);
-csv.push('Hardware columns are sized on the HIGH end of that range. Peak hour sized at 3x the daily average.');
-csv.push('Totals include the search index host. On App Service and Container Apps the index is ALWAYS a separate machine: neither offers the durable block storage a vector database needs.');
-csv.push('AI Search columns are an alternative to self-hosting the index, not an addition to it.');
+csv.push('AscendOS - Software Hardware Requirements');
+csv.push('What the software needs in order to run, at a range of load levels. It does not specify machines, instance types or topology.');
+csv.push('"Jobs at once" = searches and scans running at the SAME MOMENT, averaged over the busiest hour. Not jobs per day, not users signed in. A value below 1 is normal and means the work is intermittent; it is not a fraction of a machine.');
+csv.push(`Usage assumed: Code Compass ${USAGE.low.compass}-${USAGE.high.compass} searches per seat per working day; Code Inspector ${USAGE.low.inspector}-${USAGE.high.inspector} scans per user per working day. Busiest hour taken at 3x the flat daily average.`);
+csv.push('vCPU and RAM are sized on the BUSY end of each usage range, and cover the APPLICATION TIER ONLY. The search index is listed separately and is never added to them.');
+csv.push('"Compass only" = every seat running Code Compass alone (light case). "All modules" = the same plus 250 users also running Code Inspector (heavy case). A real deployment sits between them.');
+csv.push('The search index requires block-level storage with a POSIX filesystem and must fit in RAM. It will not run on NFS, SMB or object storage. See the Platform requirements sheet of the workbook.');
+csv.push('These are capacity figures, not availability figures.');
 csv.push('');
-for (const sc of SCENARIOS) {
-  csv.push(sc.title);
-  csv.push(sc.sub);
-  csv.push(HEAD.join(','));
-  for (const r of data[sc.key]) {
-    const h = r.hi;
-    csv.push([r.seats, r.lo.concurrent.toFixed(2), h.concurrent.toFixed(2),
-      h.vcpu.toFixed(2), h.appRam.toFixed(2), h.indexGb.toFixed(2), h.indexDisk,
-      `"${h.azAppWeb}"`, `"${h.azAppTier}"`, `"${h.azAppIdx}"`, h.azAppMachines, h.azAppCpu, h.azAppRam,
-      `"${h.azVmWeb}"`, `"${h.azVmIdx}"`, h.azVmMachines, h.azVmCpu, h.azVmRam,
-      h.azCaPeak, h.azCaWarm, 1, 2, `"${h.azCaIdx}"`, h.azCaMachines - h.azCaPeak,
-      `"${h.azSearchTier}"`, h.azSearchPart, h.azSearchGb].join(','));
-  }
-  csv.push('');
+csv.push(HEAD.join(','));
+for (let i = 0; i < SEATS.length; i++) {
+  const c = data.compass[i], f = data.insp250[i];
+  csv.push([SEATS[i],
+    c.lo.concurrent.toFixed(2), c.hi.concurrent.toFixed(2), c.hi.vcpu.toFixed(2), c.hi.appRam.toFixed(2),
+    f.lo.concurrent.toFixed(2), f.hi.concurrent.toFixed(2), f.hi.vcpu.toFixed(2), f.hi.appRam.toFixed(2),
+    f.hi.indexGb.toFixed(2), f.hi.indexDisk].join(','));
 }
 const CSV = csv.join('\n');
 fs.writeFileSync(path.join(__dirname, 'hardware.csv'), CSV);

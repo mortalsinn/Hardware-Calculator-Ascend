@@ -1,21 +1,26 @@
 // ========================================================
-// build-xlsx.js — the workbook sent to ShiftIT, on Azure.
+// build-xlsx.js — the requirements spec sent to ShiftIT.
 //
-// One tab per hosting option, because a supplier quotes ONE of them, plus a
-// tab for the search index, which is the only forced decision in the design.
+// This says what the SOFTWARE needs at a given load. It does not say what
+// machines to buy: the topology is the hosting provider's decision, and an
+// earlier draft that mapped everything onto specific SKUs was answering a
+// question nobody asked.
+//
+// Four sheets: what this is, requirements by load stage, the same at every
+// 20 seats, and the constraints the platform has to satisfy whatever shape
+// it ends up being.
 // ========================================================
 const { SEATS, SCENARIOS, data, USAGE } = require('./build-hardware.js');
 const { write, S } = require('./xlsx.js');
 
-const KEY_SEATS = [100, 200, 400, 600, 840];
-const at = (k,n) => data[k][SEATS.indexOf(n)];
+const at = (k, n) => data[k][SEATS.indexOf(n)];
+const STAGES = [20, 100, 200, 300, 400, 500, 600, 700, 840];
 const U = `${USAGE.low.compass}-${USAGE.high.compass}`;
 const I = `${USAGE.low.inspector}-${USAGE.high.inspector}`;
-const B = t => [t,S.bold], H = t => [t,S.head], HL = t => [t,S.headL];
-const N1 = v => [v,S.num1], T = t => [t,S.title], NOTE = t => [t,S.note];
 
-// Prose rows: merged across the table and given a height that matches the text,
-// so the application never has to guess and never guesses a screen-high row.
+const B = t => [t, S.bold], H = t => [t, S.head], HL = t => [t, S.headL];
+const T = t => [t, S.title], N1 = v => [v, S.num1], NUM = v => [v, S.num];
+
 const LINE_PT = 13.2;
 function prose(text, widths, style = S.note) {
   const chars = widths.reduce((a, b) => a + b, 0) * 1.02;
@@ -24,156 +29,129 @@ function prose(text, widths, style = S.note) {
            height: +(lines * LINE_PT + 3).toFixed(1) };
 }
 const spacer = h => ({ cells: [], height: h || 6 });
+const band = (text, n) => ({ cells: [[text, S.band], ...Array(n - 1).fill(['', S.band])],
+                             mergeAcross: n, height: 19 });
 
-const splitAt = (k,b) => { const a=data[k];
-  for (let i=1;i<a.length;i++) if (a[i-1][b].azVmColocated && !a[i][b].azVmColocated) return a[i].seats+' seats';
-  return a[0][b].azVmColocated ? 'never in range' : 'from the start'; };
+// ---------------------------------------------------------------- columns
+// A two-row header: the group on top, the measure beneath. Stacking
+// "Compass only / vCPU" into one cell needed three lines and clipped.
+const REQ_GROUP = ['', 'Compass only — light case', '', '',
+                   'All modules — heavy case', '', '', 'Search index', ''];
+const REQ_H = ['Seats\n(reference)',
+  'Jobs at once', 'vCPU', 'RAM GB',
+  'Jobs at once', 'vCPU', 'RAM GB',
+  'RAM GB', 'Disk GB'];
+const REQ_W = [11, 15, 10, 10, 15, 10, 10, 12, 12];
+// Group cells span their measures. Row number is supplied per sheet.
+const groupMerges = (r) => [`B${r}:D${r}`, `E${r}:G${r}`, `H${r}:I${r}`];
+const groupRow = () => ({ cells: REQ_GROUP.map(t => [t, t ? S.band : S.plain]), height: 18 });
 
+const reqRow = (n, style = S.num) => {
+  const c = at('compass', n), f = at('insp250', n);
+  return [[n, S.left],
+    [`${c.lo.concurrent.toFixed(1)} – ${c.hi.concurrent.toFixed(1)}`, S.left],
+    N1(+c.hi.vcpu.toFixed(1)), N1(+c.hi.appRam.toFixed(1)),
+    [`${f.lo.concurrent.toFixed(1)} – ${f.hi.concurrent.toFixed(1)}`, S.left],
+    N1(+f.hi.vcpu.toFixed(1)), N1(+f.hi.appRam.toFixed(1)),
+    N1(+f.hi.indexGb.toFixed(1)), [f.hi.indexDisk, style]];
+};
+
+// ---------------------------------------------------------------- 1. Read Me
 const RW = [112];
-const readme = { name:'Read Me', cols:RW, rows:[
+const readme = { name: 'Read Me', cols: RW, rows: [
   spacer(4),
-  [T('AscendOS — Hardware Requirements on Microsoft Azure')],
-  prose('Prepared for ShiftIT. Hardware specification only: machine counts, CPU cores, memory and disk. No pricing.', RW),
+  [T('AscendOS — Software Hardware Requirements')],
+  prose('Prepared for ShiftIT. What the software needs in order to run, at a range of load levels. It does not specify machines, instance types or topology — that is your call, and these figures are what it has to add up to.', RW),
   spacer(),
-  [B('What this is')],
-  prose('AscendOS is a browser-delivered platform. Code Compass answers building-code questions against an ingested vector corpus; Code Inspector analyses site photographs. Both are short, bursty jobs that hold a CPU core for seconds and then release it, and both spend most of their time waiting on a model API rather than computing. The fleet is therefore sized on how many jobs run AT THE SAME INSTANT, not on seat count.', RW),
+  [B('What the software is')],
+  prose('AscendOS is browser-delivered. Code Compass answers building-code questions against an ingested vector index; Code Inspector analyses site photographs; the estimating modules price work. Every one of them is a short job that holds a CPU core for seconds and then releases it, and most of that time is spent waiting on an external model API rather than computing.', RW),
+  prose('That behaviour is why the sizing is driven by HOW MANY JOBS RUN AT THE SAME MOMENT rather than by seat count or by requests per day. A few thousand searches spread across a working day resolve to a handful running simultaneously.', RW),
   spacer(),
-  [B('Two column names worth pinning down')],
-  prose('"Jobs at once" - the number of searches and photo scans in flight at the SAME INSTANT, at the busiest moment of the busiest day. Not jobs per day, and not people signed in. A Compass search holds a CPU core for about 12 seconds and an Inspector scan about 55, then releases it, which is why a few thousand searches a day resolve to a handful running at any one moment. This is the figure that determines hardware. It appears as two columns because usage is a range, and every machine figure is sized on the busier of the two.', RW),
-  prose('"Machines to buy" - everything ShiftIT would actually provision, added together: the application tier plus the machine holding the search index. On App Service that is N plan instances plus one index VM. On Virtual Machines it is the web servers plus an index server, or one server carrying both at small scale. On Container Apps only the index counts, because the platform starts and stops replicas itself - counting those would imply a standing fleet that does not exist.', RW),
+  [B('"Jobs at once" — what the number means')],
+  prose('The count of searches and scans running at the same moment, averaged across the busiest hour of the day. A value below 1 is normal and means the work is intermittent. Worked through at 20 seats:', RW),
+  prose('   20 seats x 20 searches a day                        =  400 searches a day', RW, S.plain),
+  prose('   spread across an 8-hour working day                 =   50 an hour', RW, S.plain),
+  prose('   the busy hour runs at 3x the daily average          =  150 an hour', RW, S.plain),
+  prose('   each search occupies a core for about 12 seconds    =  150 x 12s = 1,800 core-seconds', RW, S.plain),
+  prose('   1,800 seconds of work inside a 3,600-second hour    =  0.5 JOBS AT ONCE', RW, S.bold),
+  prose('It is not a fraction of a machine. It describes how heavily the application tier is worked, and it only begins to drive the requirement once it passes 1. It is also an average rather than a ceiling: arrivals are random, so 0.5 still produces brief moments with two or three jobs at once, and the platform should have the headroom to absorb them.', RW),
+  prose('Job lengths differ by module: a Compass search runs about 12 seconds, an Inspector photo scan about 55. That is why a few hundred Inspector users move the figure more than several hundred extra Compass seats do.', RW),
   spacer(),
-  [B('What a number like 0.5 means — and why it is not half a machine')],
-  prose('A value below 1 is normal. 0.5 means that during the busiest hour a job is in progress about half the time, and nothing is running the rest of it. Worked through at 20 seats:', RW),
-  prose('   20 seats x 20 searches a day                          =  400 searches a day', RW, S.plain),
-  prose('   spread across an 8-hour working day                   =   50 an hour', RW, S.plain),
-  prose('   the busy hour runs at 3x the daily average            =  150 an hour', RW, S.plain),
-  prose('   each search occupies a core for about 12 seconds      =  150 x 12s = 1,800 core-seconds', RW, S.plain),
-  prose('   1,800 seconds of work inside a 3,600-second hour      =  0.5 JOBS AT ONCE', RW, S.bold),
-  prose('You cannot buy half a server, and nothing here suggests you should. Every option starts at one machine; this figure describes how hard that machine is worked. It only begins to drive the hardware once it climbs past 1, and it climbs in proportion to seats.', RW),
-  prose('It is an average, not a ceiling. Arrivals are random, so a figure of 0.5 still produces brief moments with two or three jobs at once. Absorbing those is exactly what the gap between the computed requirement and the provisioned machines is for.', RW),
-  prose('Job lengths differ by module: a Compass search runs about 12 seconds, an Inspector photo scan about 55 seconds. That is why a few hundred Inspector users move this number more than several hundred extra Compass seats do.', RW),
+  [B('The two columns of scenarios')],
+  prose('"Compass only" is every seat running Code Compass and nothing else — the light case. "All modules" adds 250 users running Code Inspector as well, which is the heaviest realistic configuration. Any actual deployment sits between the two.', RW),
+  prose(`Each is shown as a range, because usage is a range: Code Compass ${U} searches per seat per working day, Code Inspector ${I} scans per user per working day. The vCPU and RAM figures beside each range are sized on the BUSY end of it — a platform sized on average usage is short on every busy day.`, RW),
+  prose('The busiest hour is taken at 3x the flat daily average, because real usage clusters at the start of the day and after lunch rather than spreading evenly.', RW),
   spacer(),
-  prose('These are CAPACITY figures, not availability figures. A single instance of anything is a single point of failure; designing for redundancy would at minimum double the application tier and is a separate decision.', RW),
+  [B('What the figures cover, and what they do not')],
+  prose('The vCPU and RAM columns are the APPLICATION TIER only. The search index is listed separately because it is a fixed working set that grows with the size of the code corpus rather than with load, and because it has storage requirements the application tier does not — see the Platform requirements sheet. The two are never summed.', RW),
+  prose('These are CAPACITY figures, not availability figures. Redundancy, failover and zone spread are a separate conversation and would change the shape of any deployment built from them.', RW),
+  prose('Not included: developer and staging environments, CI, backup targets, and pricing of any kind.', RW),
   spacer(),
-  [B('The three options — alternatives, not layers')],
-  prose('A · App Service (PaaS) — Premium v3 instances. Premium rather than Standard is deliberate: HTTP-driven autoscaling is Premium-only, Standard cannot be made zone-redundant, and Standard caps at 10 instances, a ceiling this range reaches. P0v3 (1 vCPU / 4 GB) is the scaling unit; P1v3 or P2v3 substitute at half or a quarter of the count.', RW),
-  prose('B · Virtual Machines — Bsv2 burstable, the right family for spiky low-average load. B2s_v2 and larger bank credits at a 40% base and utilisation here sits well below that. Sized for fewest machines, since operating them is the real cost of this option.', RW),
-  prose('C · Container Apps — request-scaled replicas at a fixed 1 vCPU : 2 GiB ratio, max 4 vCPU / 8 GiB each, scaling to zero. Unavoidably a hybrid: the search index cannot live here.', RW),
-  spacer(),
-  [B('Does Azure change the requirement? No.')],
-  prose('Peak concurrency, required cores, required memory and index size are properties of the workload and would be identical on any provider. What Azure changes is the ladder of purchasable units, plus two constraints on the shape of the deployment: the search index can never share a machine on options A or C, and Standard App Service\u2019s instance cap forces Premium for this range.', RW),
-  spacer(),
-  [B('The search index is the one forced decision')],
-  prose('The index is Qdrant, which requires block-level storage with a POSIX filesystem and explicitly does not run on network filesystems. App Service persistent storage is an SMB share and cannot take the exclusive locks a database needs; Container Apps offers only ephemeral storage and Azure Files. Neither can host it. A VM or AKS can, and Azure AI Search is the managed alternative — though that is an API rewrite, not a drop-in. There is no first-party managed Qdrant on Azure; the Marketplace listing is third-party SaaS. See the Search index tab.', RW),
-  spacer(),
-  [B('Usage assumed')],
-  prose(`Code Compass: ${U} searches per seat per working day. Code Inspector: ${I} scans per user per working day, for the subset named in each block.`, RW),
-  prose('Peak hour is sized at 3x the flat daily average, because real usage clusters at the start of the day and after lunch rather than spreading evenly.', RW),
-  prose(`Usage is a range, so every row is computed twice. All hardware figures follow the HIGH bound (${USAGE.high.compass} searches, ${USAGE.high.inspector} scans) — a fleet sized on average usage is under-provisioned on every busy day. The low bound appears beside it in the concurrency columns.`, RW),
-  spacer(),
-  [B('Reading the tables')],
-  prose('"Required" is what the model computes. The machine columns show the smallest sensible allocation covering it, which is almost always more — that gap is deliberate headroom, not waste.', RW),
-  prose('App RAM and index RAM are never summed. Application memory scales with concurrent jobs; the index is a fixed working set that grows with the corpus. On options A and C they are always on different machines.', RW),
-  prose(`On Option B the index shares the web VM at small scale and separates later — Compass only at ${splitAt('compass','hi')}, with 250 Inspector users at ${splitAt('insp250','hi')} (high usage). Those rows are shaded, and totals can fall there: one shared box had to satisfy the larger demand in every dimension at once, so two right-sized machines can total less than one oversized one.`, RW),
-  spacer(),
-  [B('To confirm against your own subscription')],
-  prose('Regional vCPU quota is not published by Microsoft and varies by subscription type, age and region; a new subscription may have very low or zero quota in a given region. Quota and capacity are checked separately, so sufficient quota does not guarantee the sizes are available there.', RW),
-  prose('Azure AI Search higher quotas are unavailable in Israel Central, Qatar Central, Spain Central and South India, which remain on older limits.', RW),
-  prose('Premium v4 is GA with identical vCPU and RAM to v3 — faster processors and NVMe local storage only, so no extra capacity should be budgeted for it. It has no stable outbound IP addresses.', RW),
-  spacer(),
-  [B('Not included')],
-  prose('Pricing. Also excluded: high availability and redundancy, which would at minimum double the web tier; developer and staging environments; CI; off-site backup targets. This is the production serving fleet only.', RW),
-  spacer(),
-  prose(`Scope: 20 to 840 seats in steps of 20, ${SEATS.length} rows per scenario.`, RW),
+  prose(`Load stages sheet: nine reference points. Full detail sheet: every 20 seats from 20 to 840, ${SEATS.length} rows.`, RW),
 ]};
 
-function optionSheet(name, title, blurb, header, widths, rowFor, splitKey, machinesNote) {
-  const rows = [[T(title)], prose(blurb, widths), spacer(), ...HOW_TO_READ(machinesNote, widths)];
-  for (const sc of SCENARIOS) {
-    rows.push({ cells: [[sc.title,S.band], ...header.slice(1).map(()=>['',S.band])],
-                mergeAcross: header.length, height: 19 });
-    rows.push(prose(sc.sub, widths));
-    rows.push({ cells: header.map(H), height: 30 });
-    let prev = null;
-    for (const r of data[sc.key]) {
-      const split = splitKey && prev && r.hi[splitKey] !== prev[splitKey];
-      rows.push(rowFor(r, split)); prev = r.hi;
-    }
-    rows.push(spacer(10));
-  }
-  if (splitKey) rows.push(prose('Shaded rows: the search index moves onto its own machine here.', widths));
-  return { name, cols:widths, freeze:{y:7}, rows };
-}
-const cc = r => [N1(+r.lo.concurrent.toFixed(1)), N1(+r.hi.concurrent.toFixed(1))];
-
-const HW_H = ['Seats','Jobs at once (quiet usage)','Jobs at once (busy usage)',
-  'Web tier (size x how many)','Index host (size x how many)','Machines to buy (web + index)',
-  'Total vCPU (all machines)','Total RAM GB (all machines)','Index disk GB'];
-const HW_W = [8,15,15,20,20,15,14,14,12];
-
-// Repeated at the top of every option sheet: the two column names that are not
-// self-explanatory, in plain words, before any numbers appear.
-const HOW_TO_READ = (verb, W) => ([
-  [B('How to read this sheet')],
-  prose('"Jobs at once" - searches and photo scans running at the SAME MOMENT, averaged across the busiest hour. Not jobs per day, and not people signed in. A Compass search holds a CPU core for about 12 seconds and an Inspector scan about 55, so this is what determines the hardware. Two columns because usage is a range; everything to the right is sized on the busy figure.', W),
-  prose('A value below 1 is normal and is NOT a fraction of a machine. 0.5 means a job is in progress about half the busy hour and nothing is running the rest of it. Every option starts at one machine regardless; this figure says how hard that machine is worked. It is an average, so brief moments with two or three jobs at once still occur - that is what the headroom is for. Full worked example on the Read Me tab.', W),
-  prose(verb, W),
+// ---------------------------------------------------------------- 2. Load stages
+const STAGE_GROUP_ROW = 8;
+const stages = { name: 'Requirements by load', cols: REQ_W, freeze: { y: 9 },
+  merges: groupMerges(STAGE_GROUP_ROW), rows: [
+  [T('What the software needs, by load stage')],
+  prose('Application tier vCPU and RAM, plus the search index sized separately. Figures are what the software requires; how that is packaged into machines is your decision.', REQ_W),
   spacer(),
-]);
+  prose('"Jobs at once" = searches and scans running at the same moment, averaged over the busiest hour. Shown low-to-high because assumed usage is a range. A value below 1 is normal and means the work is intermittent — it is not a fraction of a machine. Full explanation on the Read Me sheet.', REQ_W),
+  prose('"Compass only" is the light case: every seat running Code Compass alone. "All modules" is the heavy case: the same, plus 250 users also running Code Inspector. A real deployment sits between them.', REQ_W),
+  prose('vCPU and RAM cover the APPLICATION TIER only and are sized on the busy end of each range. The search index is separate and is never added to them.', REQ_W),
+  spacer(),
+  groupRow(),
+  { cells: REQ_H.map(H), height: 28 },
+  ...STAGES.map(n => reqRow(n)),
+  spacer(10),
+  prose('Between these points the requirement rises smoothly — there is no threshold or step change anywhere in this range. The Full detail sheet gives every 20 seats if a specific figure is needed.', REQ_W),
+]};
 
-const appService = optionSheet('A - App Service',
-  'Option A — Azure App Service (Premium v3)',
-  'Premium rather than Standard is deliberate: HTTP-driven autoscaling is Premium-only, Standard cannot be made zone-redundant, and Standard caps at 10 instances. P0v3 is 1 vCPU / 4 GB; P1v3 (2/8) or P2v3 (4/16) substitute at half or a quarter of the count. The index is always a separate VM — App Service has no durable, lockable block storage. Instance counts stay well inside the 30-instance Premium limit throughout.',
-  HW_H, HW_W,
-  r => { const h=r.hi; return [[r.seats,S.left],...cc(r),[h.azAppWeb,S.left],[h.azAppIdx,S.left],
-    [h.azAppMachines,S.num],[h.azAppCpu,S.num],[h.azAppRam,S.num],[h.indexDisk,S.num]]; },
-  null,
-  '"Machines to buy" - App Service plan instances plus the one VM holding the search index. "P0v3 x7" means seven instances of 1 vCPU / 4 GB each; with the index VM that is 8 machines.');
+// ---------------------------------------------------------------- 3. Full detail
+const DETAIL_GROUP_ROW = 4;
+const detail = { name: 'Full detail', cols: REQ_W, freeze: { y: 5 },
+  merges: groupMerges(DETAIL_GROUP_ROW), rows: [
+  [T('Every 20 seats, 20 to 840')],
+  prose('The same figures as the Load stages sheet, at every increment. Columns are identical.', REQ_W),
+  spacer(),
+  groupRow(),
+  { cells: REQ_H.map(H), height: 28 },
+  ...SEATS.map(n => reqRow(n)),
+]};
 
-const vms = optionSheet('B - Virtual Machines',
-  'Option B — Azure Virtual Machines (Bsv2 burstable)',
-  'Burstable is the right family for spiky, low-average load: B2s_v2 and larger bank credits at a 40% base and utilisation here sits well below it. There is no Azure equivalent of AWS "Unlimited" mode — an exhausted bank throttles to base and cannot be bought past. Sized for fewest machines, since operating them is the real cost of this option. This is the only option where the index can share the web machine, because it is the only one with block storage.',
-  HW_H, HW_W,
-  (r,split) => { const h=r.hi, st=split?S.splitNum:S.num, lt=split?S.split:S.left;
-    return [[r.seats,lt],...cc(r),[h.azVmWeb,lt],[h.azVmIdx,lt],
-      [h.azVmMachines,st],[h.azVmCpu,st],[h.azVmRam,st],[h.indexDisk,st]]; },
-  'azVmColocated',
-  '"Machines to buy" - web servers plus the index server, or a single server carrying both at small scale. Where the index host reads "on web server" the count is 1, and both workloads share it.');
-
-const containerApps = optionSheet('C - Container Apps',
-  'Option C — Azure Container Apps',
-  'Replicas exist only while requests are in flight and scale to zero. Allocation is fixed at 1 vCPU : 2 GiB, capped at 4 vCPU / 8 GiB per replica. Replica count follows a configured concurrency threshold, not a platform limit — Container Apps has no per-replica request cap. One replica absorbs this whole range at the assumed 45 concurrent requests per replica; for availability rather than capacity, run at least two. The index cannot live here and needs its own machine at every seat count.',
-  ['Seats','Jobs at once (quiet usage)','Jobs at once (busy usage)','Peak replicas (platform-managed)',
-   'Warm replicas','vCPU per replica','RAM GB per replica','Index host (size x how many)','Machines to buy (index only)'],
-  [8,15,15,18,13,13,14,20,15],
-  r => { const h=r.hi; return [[r.seats,S.left],...cc(r),[h.azCaPeak,S.num],[h.azCaWarm,S.num],
-    [1,S.num],[2,S.num],[h.azCaIdx,S.left],[h.azCaMachines - h.azCaPeak,S.num]]; },
-  null,
-  '"Machines to buy" - the index host ONLY. Replicas are not machines you provision: Container Apps starts and stops them as traffic moves, and bills by request. The peak replica column says how many run at the busiest moment, not what you order.');
-
-const IXW = [8,13,13,20,18,11,16];
-const indexSheet = { name:'Search index', freeze:{y:10}, cols:IXW, rows:[
-  [T('The search index — the one forced decision')],
-  prose('Code Compass answers against a vector index of the ingested building codes. It is currently Qdrant, self-hosted.', IXW),
-  [],
-  [B('Qdrant requires block-level storage with a POSIX filesystem, and explicitly does not run on network filesystems.')],
-  prose('App Service — persistent /home is an SMB share, which cannot take the exclusive file locks a database needs; local disk does not survive a restart. Cannot host it.', IXW),
-  prose('Container Apps — ephemeral storage and Azure Files (SMB/NFS) only. No block storage. Ephemeral volumes are destroyed on every scale-in and revision change. Cannot host it.', IXW),
-  prose('Virtual Machines or AKS — managed disks are block storage. Either works. Note VM disk IOPS are capped by BOTH disk size and VM size; a larger disk does nothing if the VM tier is the bottleneck.', IXW),
-  prose('There is no first-party managed Qdrant on Azure. The Marketplace listing is Qdrant Cloud, operated by Qdrant Solutions GmbH on their own infrastructure. The Container Apps add-on that offered it in preview has been retired.', IXW),
-  [],
-  { cells: ['Seats','Index RAM GB','Index disk GB','Route 1: self-hosted VM','Route 2: AI Search tier','Partitions','Vector quota needed GB'].map(H), height: 30 },
-  ...data.insp250.map(r => { const h=r.hi;
-    return [[r.seats,S.left],N1(+h.indexGb.toFixed(1)),[h.indexDisk,S.num],
-      [h.azCaIdx,S.left],[h.azSearchTier,S.left],[h.azSearchPart,S.num],N1(h.azSearchGb)]; }),
-  [],
-  [B('Route 1 — keep Qdrant on a VM or AKS')],
-  prose('No application change. A single burstable VM with a Premium SSD data disk covers this entire range. The index must fit in memory, which is what the Index RAM column sizes.', IXW),
-  [B('Route 2 — Azure AI Search')],
-  prose('Fully managed, native vector and hybrid search, no machine to operate. The governing limit is vector index quota per partition — a memory limit on the graph, not the larger storage quota. Sizing allows for graph overhead and deleted-document slack on top of the raw vectors, which is why the quota needed exceeds the index RAM figure. THIS IS AN API REWRITE, not a drop-in replacement for the Qdrant client: the cost is engineering time, not hardware.', IXW),
-  prose('The table always shows the smallest tier that fits on a single partition. Sharding a smaller tier across partitions reaches the same quota but is a more fragile deployment for no measurable benefit. Higher quotas are unavailable in Israel Central, Qatar Central, Spain Central and South India.', IXW),
+// ---------------------------------------------------------------- 4. Constraints
+const CW = [112];
+const constraints = { name: 'Platform requirements', cols: CW, rows: [
+  spacer(4),
+  [T('What the platform has to provide')],
+  prose('Independent of topology. These hold whatever the deployment is built from.', CW),
+  spacer(),
+  [B('COMPUTE')],
+  prose('The application tier is stateless and scales horizontally — instances hold no data between requests and need no knowledge of each other. Adding capacity means adding instances.', CW),
+  prose('No GPU is required. No specific CPU architecture is required; x64 and Arm are both acceptable. The workload is bursty and spends most of its time waiting on external APIs, so burstable or credit-based instance families suit it well, provided sustained utilisation stays inside whatever baseline they allow.', CW),
+  prose('The vCPU and RAM figures are for the application tier only, and are sized on the busy end of the usage range.', CW),
+  spacer(),
+  [B('STORAGE — the one hard constraint')],
+  prose('The search index is Qdrant, a vector database. It requires BLOCK-LEVEL STORAGE WITH A POSIX-COMPATIBLE FILESYSTEM. Qdrant memory-maps its segment files, so this is not a preference.', CW),
+  prose('It will NOT run on a network filesystem — NFS, SMB or CIFS — nor on object storage. Network block protocols such as iSCSI are acceptable. SSD is strongly preferred.', CW),
+  prose('The index must also fit in memory: see the Search index RAM column, which is the working set, not the disk footprint. Disk should be roughly 1.3x that, and both grow with the size of the ingested code corpus rather than with user load.', CW),
+  prose('ON AZURE SPECIFICALLY: App Service cannot satisfy this — its persistent storage is an SMB share and its local disk does not survive a restart. Container Apps cannot either; it offers ephemeral storage and Azure Files only. A Virtual Machine or AKS with a managed disk can. Azure AI Search is a managed alternative but is an API rewrite on our side, not a drop-in, so please treat it as a separate discussion rather than an equivalent option.', CW),
+  prose('The application tier itself needs NO persistent storage. Ephemeral disk is fine, and instances do not need a shared filesystem between them.', CW),
+  spacer(),
+  [B('NETWORK')],
+  prose('Outbound HTTPS to external model APIs (Google Gemini and fal.ai) is required from every application instance. There are no inbound requirements beyond ordinary HTTPS.', CW),
+  prose('EVERY IN-FLIGHT JOB HOLDS ONE LONG-LIVED STREAMING HTTP RESPONSE, so the number of concurrent streaming connections equals the "jobs at once" figure. Two things follow: any load balancer, proxy or gateway in front of the application must allow idle connections of AT LEAST 120 SECONDS — an Inspector scan streams for around 55 and a timeout below that cuts the job off mid-answer — and response buffering must be disabled, or results arrive in one lump at the end instead of streaming.', CW),
+  prose('Where a platform limits outbound connections per instance, note that every job makes several outbound API calls; connection pooling is in place, but a low per-instance cap on outbound ports is worth flagging to us early. On Azure App Service this is the 128-SNAT-port limit, which has no metric and therefore cannot be autoscaled on.', CW),
+  prose('Egress volume is modest — JSON responses and rendered images.', CW),
+  spacer(),
+  [B('WHAT IS NOT REQUIRED')],
+  prose('No GPU. No shared filesystem between application instances. No session affinity beyond the lifetime of a single request. No inbound VPN or private link. No specific database engine — the application uses managed Firestore, which is external to anything hosted here.', CW),
+  spacer(),
+  [B('AVAILABILITY')],
+  prose('Everything in this document is CAPACITY. Redundancy and failover are a separate decision: a single instance of anything is a single point of failure, and designing for high availability would change these numbers.', CW),
 ]};
 
 const OUT = 'AscendOS-Hardware-Requirements.xlsx';
-const size = write(OUT, [readme, appService, vms, containerApps, indexSheet]);
-console.log(`${OUT}  ${(size/1024).toFixed(1)}KB  |  5 tabs  |  ${SEATS.length} rows x ${SCENARIOS.length} scenarios per option tab`);
+const size = write(OUT, [readme, stages, detail, constraints]);
+console.log(`${OUT}  ${(size/1024).toFixed(1)}KB  |  4 sheets  |  ${STAGES.length} load stages, ${SEATS.length} detail rows`);

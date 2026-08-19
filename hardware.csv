@@ -1,146 +1,52 @@
-AscendOS - Hardware Requirements by Seat Count
-"Jobs running at once" = searches and scans in flight at the SAME INSTANT during the busiest hour. Not jobs per day, not users signed in. Shown as a range because usage is a range; all hardware is sized on the busy figure.
-"Machines to buy" = things ShiftIT provisions, summed: application tier + search index host. On Container Apps the replicas are NOT counted - the platform starts and stops those itself, so only the index is a standing machine.
-Hardware specification only, on Microsoft Azure. Three deployment options: A App Service (PaaS), B Virtual Machines, C Container Apps.
-Usage: Code Compass 15-20 searches per seat per working day. Code Inspector 5-7 scans per user per working day.
-Hardware columns are sized on the HIGH end of that range. Peak hour sized at 3x the daily average.
-Totals include the search index host. On App Service and Container Apps the index is ALWAYS a separate machine: neither offers the durable block storage a vector database needs.
-AI Search columns are an alternative to self-hosting the index, not an addition to it.
+AscendOS - Software Hardware Requirements
+What the software needs in order to run, at a range of load levels. It does not specify machines, instance types or topology.
+"Jobs at once" = searches and scans running at the SAME MOMENT, averaged over the busiest hour. Not jobs per day, not users signed in. A value below 1 is normal and means the work is intermittent; it is not a fraction of a machine.
+Usage assumed: Code Compass 15-20 searches per seat per working day; Code Inspector 5-7 scans per user per working day. Busiest hour taken at 3x the flat daily average.
+vCPU and RAM are sized on the BUSY end of each usage range, and cover the APPLICATION TIER ONLY. The search index is listed separately and is never added to them.
+"Compass only" = every seat running Code Compass alone (light case). "All modules" = the same plus 250 users also running Code Inspector (heavy case). A real deployment sits between them.
+The search index requires block-level storage with a POSIX filesystem and must fit in RAM. It will not run on NFS, SMB or object storage. See the Platform requirements sheet of the workbook.
+These are capacity figures, not availability figures.
 
-Code Compass only
-Every seat runs 15–20 Code Compass searches per working day.
-Seats,Jobs running at once - quiet usage,Jobs running at once - busy usage,vCPU required (high),App RAM required GB (high),Search index RAM GB,Search index disk GB,A App Service: web tier (size x how many),A App Service: plan tier,A App Service: index host (size x how many),A: machines to buy (web + index),A: total vCPU,A: total RAM GB,B VMs: web tier (size x how many),B VMs: index host (size x how many),B: machines to buy (web + index),B: total vCPU,B: total RAM GB,C Container Apps: peak replicas (platform-managed),C: warm replicas,C: vCPU per replica,C: RAM GB per replica,C: index host (size x how many),C: machines to buy (index only),Azure AI Search tier (alternative to self-hosting),AI Search partitions,AI Search vector quota needed GB
-20,0.38,0.50,0.50,1.38,0.44,1,"P0v3 x1","Premium v3","B2ls_v2 x1",2,3,8,"B2ls_v2 x1","on web server",1,2,4,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,0.56
-40,0.75,1.00,0.65,1.55,0.52,1,"P0v3 x1","Premium v3","B2ls_v2 x1",2,3,8,"B2ls_v2 x1","on web server",1,2,4,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,0.65
-60,1.13,1.50,0.80,1.72,0.63,1,"P0v3 x1","Premium v3","B2ls_v2 x1",2,3,8,"B2ls_v2 x1","on web server",1,2,4,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,0.79
-80,1.50,2.00,0.95,1.90,0.70,1,"P0v3 x1","Premium v3","B2ls_v2 x1",2,3,8,"B2ls_v2 x1","on web server",1,2,4,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,0.89
-100,1.88,2.50,1.10,2.08,0.81,2,"P0v3 x2","Premium v3","B2ls_v2 x1",3,4,12,"B2ls_v2 x1","on web server",1,2,4,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.03
-120,2.25,3.00,1.25,2.25,0.89,2,"P0v3 x2","Premium v3","B2ls_v2 x1",3,4,12,"B2ls_v2 x1","on web server",1,2,4,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.12
-140,2.63,3.50,1.40,2.42,1.00,2,"P0v3 x2","Premium v3","B2ls_v2 x1",3,4,12,"B2ls_v2 x1","on web server",1,2,4,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.26
-160,3.00,4.00,1.55,2.60,1.07,2,"P0v3 x2","Premium v3","B2ls_v2 x1",3,4,12,"B2ls_v2 x1","on web server",1,2,4,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.35
-180,3.38,4.50,1.70,2.77,1.18,2,"P0v3 x2","Premium v3","B2ls_v2 x1",3,4,12,"B2ls_v2 x1","on web server",1,2,4,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.49
-200,3.75,5.00,1.85,2.95,1.25,2,"P0v3 x2","Premium v3","B2ls_v2 x1",3,4,12,"B2s_v2 x1","on web server",1,2,8,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.59
-220,4.13,5.50,2.00,3.13,1.37,2,"P0v3 x2","Premium v3","B2ls_v2 x1",3,4,12,"B2s_v2 x1","on web server",1,2,8,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.73
-240,4.50,6.00,2.15,3.30,1.44,2,"P0v3 x3","Premium v3","B2ls_v2 x1",4,5,16,"B4s_v2 x1","on web server",1,4,16,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.82
-260,4.88,6.50,2.30,3.47,1.55,3,"P0v3 x3","Premium v3","B2ls_v2 x1",4,5,16,"B4s_v2 x1","on web server",1,4,16,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.96
-280,5.25,7.00,2.45,3.65,1.62,3,"P0v3 x3","Premium v3","B2ls_v2 x1",4,5,16,"B4s_v2 x1","on web server",1,4,16,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.05
-300,5.63,7.50,2.60,3.83,1.73,3,"P0v3 x3","Premium v3","B2ls_v2 x1",4,5,16,"B4s_v2 x1","on web server",1,4,16,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.19
-320,6.00,8.00,2.75,4.00,1.81,3,"P0v3 x3","Premium v3","B2ls_v2 x1",4,5,16,"B4s_v2 x1","on web server",1,4,16,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.29
-340,6.38,8.50,2.90,4.17,1.92,3,"P0v3 x3","Premium v3","B2ls_v2 x1",4,5,16,"B4s_v2 x1","on web server",1,4,16,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.43
-360,6.75,9.00,3.05,4.35,1.99,3,"P0v3 x4","Premium v3","B2ls_v2 x1",5,6,20,"B4s_v2 x1","on web server",1,4,16,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.52
-380,7.13,9.50,3.20,4.52,2.10,3,"P0v3 x4","Premium v3","B2ls_v2 x1",5,6,20,"B4s_v2 x1","on web server",1,4,16,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.66
-400,7.50,10.00,3.35,4.70,2.18,3,"P0v3 x4","Premium v3","B2ls_v2 x1",5,6,20,"B4s_v2 x1","on web server",1,4,16,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.75
-420,7.88,10.50,3.50,4.88,2.29,3,"P0v3 x4","Premium v3","B2ls_v2 x1",5,6,20,"B4s_v2 x1","on web server",1,4,16,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.89
-440,8.25,11.00,3.65,5.05,2.36,4,"P0v3 x4","Premium v3","B2ls_v2 x1",5,6,20,"B4s_v2 x1","on web server",1,4,16,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.99
-460,8.63,11.50,3.80,5.22,2.47,4,"P0v3 x4","Premium v3","B2ls_v2 x1",5,6,20,"B4s_v2 x1","on web server",1,4,16,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,3.13
-480,9.00,12.00,3.95,5.40,2.55,4,"P0v3 x4","Premium v3","B2ls_v2 x1",5,6,20,"B4s_v2 x1","B2ls_v2 x1",2,6,20,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,3.22
-500,9.38,12.50,4.10,5.58,2.66,4,"P0v3 x5","Premium v3","B2ls_v2 x1",6,7,24,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,3.36
-520,9.75,13.00,4.25,5.75,2.73,4,"P0v3 x5","Premium v3","B2ls_v2 x1",6,7,24,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,3.45
-540,10.13,13.50,4.40,5.92,2.84,4,"P0v3 x5","Premium v3","B2ls_v2 x1",6,7,24,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,3.59
-560,10.50,14.00,4.55,6.10,2.92,4,"P0v3 x5","Premium v3","B2ls_v2 x1",6,7,24,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,3.69
-580,10.88,14.50,4.70,6.27,3.03,4,"P0v3 x5","Premium v3","B2ls_v2 x1",6,7,24,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,3.83
-600,11.25,15.00,4.85,6.45,3.10,5,"P0v3 x5","Premium v3","B2ls_v2 x1",6,7,24,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,3.92
-620,11.63,15.50,5.00,6.63,3.21,5,"P0v3 x5","Premium v3","B2ls_v2 x1",6,7,24,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,4.06
-640,12.00,16.00,5.15,6.80,3.28,5,"P0v3 x6","Premium v3","B2ls_v2 x1",7,8,28,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,4.15
-660,12.38,16.50,5.30,6.97,3.40,5,"P0v3 x6","Premium v3","B2ls_v2 x1",7,8,28,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,4.29
-680,12.75,17.00,5.45,7.15,3.47,5,"P0v3 x6","Premium v3","B2ls_v2 x1",7,8,28,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,4.39
-700,13.13,17.50,5.60,7.33,3.58,5,"P0v3 x6","Premium v3","B2ls_v2 x1",7,8,28,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,4.53
-720,13.50,18.00,5.75,7.50,3.65,5,"P0v3 x6","Premium v3","B2ls_v2 x1",7,8,28,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,4.62
-740,13.88,18.50,5.90,7.67,3.76,5,"P0v3 x6","Premium v3","B2ls_v2 x1",7,8,28,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,4.76
-760,14.25,19.00,6.05,7.85,3.84,5,"P0v3 x7","Premium v3","B2ls_v2 x1",8,9,32,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,4.86
-780,14.63,19.50,6.20,8.02,3.95,6,"P0v3 x7","Premium v3","B2ls_v2 x1",8,9,32,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,5
-800,15.00,20.00,6.35,8.20,4.02,6,"P0v3 x7","Premium v3","B2s_v2 x1",8,9,36,"B8s_v2 x1","B2s_v2 x1",2,10,40,1,1,1,2,"B2s_v2 x1",1,"S1",1,5.09
-820,15.38,20.50,6.50,8.38,4.13,6,"P0v3 x7","Premium v3","B2s_v2 x1",8,9,36,"B8s_v2 x1","B2s_v2 x1",2,10,40,1,1,1,2,"B2s_v2 x1",1,"S1",1,5.23
-840,15.75,21.00,6.65,8.55,4.21,6,"P0v3 x7","Premium v3","B2s_v2 x1",8,9,36,"B8s_v2 x1","B2s_v2 x1",2,10,40,1,1,1,2,"B2s_v2 x1",1,"S1",1,5.32
-
-Code Compass, plus 200 Code Inspector users
-All seats run Compass. 200 of them also run Code Inspector 5–7 times per working day.
-Seats,Jobs running at once - quiet usage,Jobs running at once - busy usage,vCPU required (high),App RAM required GB (high),Search index RAM GB,Search index disk GB,A App Service: web tier (size x how many),A App Service: plan tier,A App Service: index host (size x how many),A: machines to buy (web + index),A: total vCPU,A: total RAM GB,B VMs: web tier (size x how many),B VMs: index host (size x how many),B: machines to buy (web + index),B: total vCPU,B: total RAM GB,C Container Apps: peak replicas (platform-managed),C: warm replicas,C: vCPU per replica,C: RAM GB per replica,C: index host (size x how many),C: machines to buy (index only),Azure AI Search tier (alternative to self-hosting),AI Search partitions,AI Search vector quota needed GB
-20,0.95,1.30,0.74,1.66,0.44,1,"P0v3 x1","Premium v3","B2ls_v2 x1",2,3,8,"B2ls_v2 x1","on web server",1,2,4,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,0.56
-40,1.90,2.60,1.13,2.11,0.52,1,"P0v3 x2","Premium v3","B2ls_v2 x1",3,4,12,"B2ls_v2 x1","on web server",1,2,4,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,0.65
-60,2.84,3.91,1.52,2.57,0.63,1,"P0v3 x2","Premium v3","B2ls_v2 x1",3,4,12,"B2ls_v2 x1","on web server",1,2,4,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,0.79
-80,3.79,5.21,1.91,3.02,0.70,1,"P0v3 x2","Premium v3","B2ls_v2 x1",3,4,12,"B2ls_v2 x1","on web server",1,2,4,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,0.89
-100,4.74,6.51,2.30,3.48,0.81,2,"P0v3 x3","Premium v3","B2ls_v2 x1",4,5,16,"B4s_v2 x1","on web server",1,4,16,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.03
-120,5.69,7.81,2.69,3.93,0.89,2,"P0v3 x3","Premium v3","B2ls_v2 x1",4,5,16,"B4s_v2 x1","on web server",1,4,16,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.12
-140,6.64,9.11,3.08,4.39,1.00,2,"P0v3 x4","Premium v3","B2ls_v2 x1",5,6,20,"B4s_v2 x1","on web server",1,4,16,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.26
-160,7.58,10.42,3.48,4.85,1.07,2,"P0v3 x4","Premium v3","B2ls_v2 x1",5,6,20,"B4s_v2 x1","on web server",1,4,16,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.35
-180,8.53,11.72,3.87,5.30,1.18,2,"P0v3 x4","Premium v3","B2ls_v2 x1",5,6,20,"B4s_v2 x1","on web server",1,4,16,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.49
-200,9.48,13.02,4.26,5.76,1.25,2,"P0v3 x5","Premium v3","B2ls_v2 x1",6,7,24,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.59
-220,9.85,13.52,4.41,5.93,1.37,2,"P0v3 x5","Premium v3","B2ls_v2 x1",6,7,24,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.73
-240,10.23,14.02,4.56,6.11,1.44,2,"P0v3 x5","Premium v3","B2ls_v2 x1",6,7,24,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.82
-260,10.60,14.52,4.71,6.28,1.55,3,"P0v3 x5","Premium v3","B2ls_v2 x1",6,7,24,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.96
-280,10.98,15.02,4.86,6.46,1.62,3,"P0v3 x5","Premium v3","B2ls_v2 x1",6,7,24,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.05
-300,11.35,15.52,5.01,6.63,1.73,3,"P0v3 x6","Premium v3","B2ls_v2 x1",7,8,28,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.19
-320,11.73,16.02,5.16,6.81,1.81,3,"P0v3 x6","Premium v3","B2ls_v2 x1",7,8,28,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.29
-340,12.10,16.52,5.31,6.98,1.92,3,"P0v3 x6","Premium v3","B2ls_v2 x1",7,8,28,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.43
-360,12.48,17.02,5.46,7.16,1.99,3,"P0v3 x6","Premium v3","B2ls_v2 x1",7,8,28,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.52
-380,12.85,17.52,5.61,7.33,2.10,3,"P0v3 x6","Premium v3","B2ls_v2 x1",7,8,28,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.66
-400,13.23,18.02,5.76,7.51,2.18,3,"P0v3 x6","Premium v3","B2ls_v2 x1",7,8,28,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.75
-420,13.60,18.52,5.91,7.68,2.29,3,"P0v3 x6","Premium v3","B2ls_v2 x1",7,8,28,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.89
-440,13.98,19.02,6.06,7.86,2.36,4,"P0v3 x7","Premium v3","B2ls_v2 x1",8,9,32,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.99
-460,14.35,19.52,6.21,8.03,2.47,4,"P0v3 x7","Premium v3","B2ls_v2 x1",8,9,32,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,3.13
-480,14.73,20.02,6.36,8.21,2.55,4,"P0v3 x7","Premium v3","B2ls_v2 x1",8,9,32,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,3.22
-500,15.10,20.52,6.51,8.38,2.66,4,"P0v3 x7","Premium v3","B2ls_v2 x1",8,9,32,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,3.36
-520,15.48,21.02,6.66,8.56,2.73,4,"P0v3 x7","Premium v3","B2ls_v2 x1",8,9,32,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,3.45
-540,15.85,21.52,6.81,8.73,2.84,4,"P0v3 x7","Premium v3","B2ls_v2 x1",8,9,32,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,3.59
-560,16.23,22.02,6.96,8.91,2.92,4,"P0v3 x7","Premium v3","B2ls_v2 x1",8,9,32,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,3.69
-580,16.60,22.52,7.11,9.08,3.03,4,"P0v3 x8","Premium v3","B2ls_v2 x1",9,10,36,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,3.83
-600,16.98,23.02,7.26,9.26,3.10,5,"P0v3 x8","Premium v3","B2ls_v2 x1",9,10,36,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,3.92
-620,17.35,23.52,7.41,9.43,3.21,5,"P0v3 x8","Premium v3","B2ls_v2 x1",9,10,36,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,4.06
-640,17.73,24.02,7.56,9.61,3.28,5,"P0v3 x8","Premium v3","B2ls_v2 x1",9,10,36,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,4.15
-660,18.10,24.52,7.71,9.78,3.40,5,"P0v3 x8","Premium v3","B2ls_v2 x1",9,10,36,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,4.29
-680,18.48,25.02,7.86,9.96,3.47,5,"P0v3 x8","Premium v3","B2ls_v2 x1",9,10,36,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,4.39
-700,18.85,25.52,8.01,10.13,3.58,5,"P0v3 x9","Premium v3","B2ls_v2 x1",10,11,40,"B16s_v2 x1","B2ls_v2 x1",2,18,68,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,4.53
-720,19.23,26.02,8.16,10.31,3.65,5,"P0v3 x9","Premium v3","B2ls_v2 x1",10,11,40,"B16s_v2 x1","B2ls_v2 x1",2,18,68,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,4.62
-740,19.60,26.52,8.31,10.48,3.76,5,"P0v3 x9","Premium v3","B2ls_v2 x1",10,11,40,"B16s_v2 x1","B2ls_v2 x1",2,18,68,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,4.76
-760,19.98,27.02,8.46,10.66,3.84,5,"P0v3 x9","Premium v3","B2ls_v2 x1",10,11,40,"B16s_v2 x1","B2ls_v2 x1",2,18,68,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,4.86
-780,20.35,27.52,8.61,10.83,3.95,6,"P0v3 x9","Premium v3","B2ls_v2 x1",10,11,40,"B16s_v2 x1","B2ls_v2 x1",2,18,68,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,5
-800,20.73,28.02,8.76,11.01,4.02,6,"P0v3 x9","Premium v3","B2s_v2 x1",10,11,44,"B16s_v2 x1","B2s_v2 x1",2,18,72,1,1,1,2,"B2s_v2 x1",1,"S1",1,5.09
-820,21.10,28.52,8.91,11.18,4.13,6,"P0v3 x9","Premium v3","B2s_v2 x1",10,11,44,"B16s_v2 x1","B2s_v2 x1",2,18,72,1,1,1,2,"B2s_v2 x1",1,"S1",1,5.23
-840,21.48,29.02,9.06,11.36,4.21,6,"P0v3 x10","Premium v3","B2s_v2 x1",11,12,48,"B16s_v2 x1","B2s_v2 x1",2,18,72,1,1,1,2,"B2s_v2 x1",1,"S1",1,5.32
-
-Code Compass, plus 250 Code Inspector users
-All seats run Compass. 250 of them also run Code Inspector 5–7 times per working day.
-Seats,Jobs running at once - quiet usage,Jobs running at once - busy usage,vCPU required (high),App RAM required GB (high),Search index RAM GB,Search index disk GB,A App Service: web tier (size x how many),A App Service: plan tier,A App Service: index host (size x how many),A: machines to buy (web + index),A: total vCPU,A: total RAM GB,B VMs: web tier (size x how many),B VMs: index host (size x how many),B: machines to buy (web + index),B: total vCPU,B: total RAM GB,C Container Apps: peak replicas (platform-managed),C: warm replicas,C: vCPU per replica,C: RAM GB per replica,C: index host (size x how many),C: machines to buy (index only),Azure AI Search tier (alternative to self-hosting),AI Search partitions,AI Search vector quota needed GB
-20,0.95,1.30,0.74,1.66,0.44,1,"P0v3 x1","Premium v3","B2ls_v2 x1",2,3,8,"B2ls_v2 x1","on web server",1,2,4,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,0.56
-40,1.90,2.60,1.13,2.11,0.52,1,"P0v3 x2","Premium v3","B2ls_v2 x1",3,4,12,"B2ls_v2 x1","on web server",1,2,4,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,0.65
-60,2.84,3.91,1.52,2.57,0.63,1,"P0v3 x2","Premium v3","B2ls_v2 x1",3,4,12,"B2ls_v2 x1","on web server",1,2,4,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,0.79
-80,3.79,5.21,1.91,3.02,0.70,1,"P0v3 x2","Premium v3","B2ls_v2 x1",3,4,12,"B2ls_v2 x1","on web server",1,2,4,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,0.89
-100,4.74,6.51,2.30,3.48,0.81,2,"P0v3 x3","Premium v3","B2ls_v2 x1",4,5,16,"B4s_v2 x1","on web server",1,4,16,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.03
-120,5.69,7.81,2.69,3.93,0.89,2,"P0v3 x3","Premium v3","B2ls_v2 x1",4,5,16,"B4s_v2 x1","on web server",1,4,16,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.12
-140,6.64,9.11,3.08,4.39,1.00,2,"P0v3 x4","Premium v3","B2ls_v2 x1",5,6,20,"B4s_v2 x1","on web server",1,4,16,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.26
-160,7.58,10.42,3.48,4.85,1.07,2,"P0v3 x4","Premium v3","B2ls_v2 x1",5,6,20,"B4s_v2 x1","on web server",1,4,16,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.35
-180,8.53,11.72,3.87,5.30,1.18,2,"P0v3 x4","Premium v3","B2ls_v2 x1",5,6,20,"B4s_v2 x1","on web server",1,4,16,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.49
-200,9.48,13.02,4.26,5.76,1.25,2,"P0v3 x5","Premium v3","B2ls_v2 x1",6,7,24,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.59
-220,10.43,14.32,4.65,6.21,1.37,2,"P0v3 x5","Premium v3","B2ls_v2 x1",6,7,24,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.73
-240,11.38,15.63,5.04,6.67,1.44,2,"P0v3 x6","Premium v3","B2ls_v2 x1",7,8,28,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.82
-260,12.04,16.53,5.31,6.98,1.55,3,"P0v3 x6","Premium v3","B2ls_v2 x1",7,8,28,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,1.96
-280,12.41,17.03,5.46,7.16,1.62,3,"P0v3 x6","Premium v3","B2ls_v2 x1",7,8,28,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.05
-300,12.79,17.53,5.61,7.33,1.73,3,"P0v3 x6","Premium v3","B2ls_v2 x1",7,8,28,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.19
-320,13.16,18.03,5.76,7.51,1.81,3,"P0v3 x6","Premium v3","B2ls_v2 x1",7,8,28,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.29
-340,13.54,18.53,5.91,7.68,1.92,3,"P0v3 x6","Premium v3","B2ls_v2 x1",7,8,28,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.43
-360,13.91,19.03,6.06,7.86,1.99,3,"P0v3 x7","Premium v3","B2ls_v2 x1",8,9,32,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.52
-380,14.29,19.53,6.21,8.03,2.10,3,"P0v3 x7","Premium v3","B2ls_v2 x1",8,9,32,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.66
-400,14.66,20.03,6.36,8.21,2.18,3,"P0v3 x7","Premium v3","B2ls_v2 x1",8,9,32,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.75
-420,15.04,20.53,6.51,8.38,2.29,3,"P0v3 x7","Premium v3","B2ls_v2 x1",8,9,32,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.89
-440,15.41,21.03,6.66,8.56,2.36,4,"P0v3 x7","Premium v3","B2ls_v2 x1",8,9,32,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,2.99
-460,15.79,21.53,6.81,8.73,2.47,4,"P0v3 x7","Premium v3","B2ls_v2 x1",8,9,32,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,3.13
-480,16.16,22.03,6.96,8.91,2.55,4,"P0v3 x7","Premium v3","B2ls_v2 x1",8,9,32,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,3.22
-500,16.54,22.53,7.11,9.08,2.66,4,"P0v3 x8","Premium v3","B2ls_v2 x1",9,10,36,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,3.36
-520,16.91,23.03,7.26,9.26,2.73,4,"P0v3 x8","Premium v3","B2ls_v2 x1",9,10,36,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,3.45
-540,17.29,23.53,7.41,9.43,2.84,4,"P0v3 x8","Premium v3","B2ls_v2 x1",9,10,36,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,3.59
-560,17.66,24.03,7.56,9.61,2.92,4,"P0v3 x8","Premium v3","B2ls_v2 x1",9,10,36,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,3.69
-580,18.04,24.53,7.71,9.78,3.03,4,"P0v3 x8","Premium v3","B2ls_v2 x1",9,10,36,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,3.83
-600,18.41,25.03,7.86,9.96,3.10,5,"P0v3 x8","Premium v3","B2ls_v2 x1",9,10,36,"B8s_v2 x1","B2ls_v2 x1",2,10,36,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,3.92
-620,18.79,25.53,8.01,10.13,3.21,5,"P0v3 x9","Premium v3","B2ls_v2 x1",10,11,40,"B16s_v2 x1","B2ls_v2 x1",2,18,68,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,4.06
-640,19.16,26.03,8.16,10.31,3.28,5,"P0v3 x9","Premium v3","B2ls_v2 x1",10,11,40,"B16s_v2 x1","B2ls_v2 x1",2,18,68,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,4.15
-660,19.54,26.53,8.31,10.48,3.40,5,"P0v3 x9","Premium v3","B2ls_v2 x1",10,11,40,"B16s_v2 x1","B2ls_v2 x1",2,18,68,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,4.29
-680,19.91,27.03,8.46,10.66,3.47,5,"P0v3 x9","Premium v3","B2ls_v2 x1",10,11,40,"B16s_v2 x1","B2ls_v2 x1",2,18,68,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,4.39
-700,20.29,27.53,8.61,10.83,3.58,5,"P0v3 x9","Premium v3","B2ls_v2 x1",10,11,40,"B16s_v2 x1","B2ls_v2 x1",2,18,68,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,4.53
-720,20.66,28.03,8.76,11.01,3.65,5,"P0v3 x9","Premium v3","B2ls_v2 x1",10,11,40,"B16s_v2 x1","B2ls_v2 x1",2,18,68,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,4.62
-740,21.04,28.53,8.91,11.18,3.76,5,"P0v3 x9","Premium v3","B2ls_v2 x1",10,11,40,"B16s_v2 x1","B2ls_v2 x1",2,18,68,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,4.76
-760,21.41,29.03,9.06,11.36,3.84,5,"P0v3 x10","Premium v3","B2ls_v2 x1",11,12,44,"B16s_v2 x1","B2ls_v2 x1",2,18,68,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,4.86
-780,21.79,29.53,9.21,11.53,3.95,6,"P0v3 x10","Premium v3","B2ls_v2 x1",11,12,44,"B16s_v2 x1","B2ls_v2 x1",2,18,68,1,1,1,2,"B2ls_v2 x1",1,"Basic",1,5
-800,22.16,30.03,9.36,11.71,4.02,6,"P0v3 x10","Premium v3","B2s_v2 x1",11,12,48,"B16s_v2 x1","B2s_v2 x1",2,18,72,1,1,1,2,"B2s_v2 x1",1,"S1",1,5.09
-820,22.54,30.53,9.51,11.88,4.13,6,"P0v3 x10","Premium v3","B2s_v2 x1",11,12,48,"B16s_v2 x1","B2s_v2 x1",2,18,72,1,1,1,2,"B2s_v2 x1",1,"S1",1,5.23
-840,22.91,31.03,9.66,12.06,4.21,6,"P0v3 x10","Premium v3","B2s_v2 x1",11,12,48,"B16s_v2 x1","B2s_v2 x1",2,18,72,1,1,1,2,"B2s_v2 x1",1,"S1",1,5.32
+Seats (reference),Compass only: jobs at once (quiet usage),Compass only: jobs at once (busy usage),Compass only: vCPU required,Compass only: RAM GB required,All modules: jobs at once (quiet usage),All modules: jobs at once (busy usage),All modules: vCPU required,All modules: RAM GB required,Search index: RAM GB,Search index: disk GB
+20,0.38,0.50,0.50,1.38,0.95,1.30,0.74,1.66,0.44,1
+40,0.75,1.00,0.65,1.55,1.90,2.60,1.13,2.11,0.52,1
+60,1.13,1.50,0.80,1.72,2.84,3.91,1.52,2.57,0.63,1
+80,1.50,2.00,0.95,1.90,3.79,5.21,1.91,3.02,0.70,1
+100,1.88,2.50,1.10,2.08,4.74,6.51,2.30,3.48,0.81,2
+120,2.25,3.00,1.25,2.25,5.69,7.81,2.69,3.93,0.89,2
+140,2.63,3.50,1.40,2.42,6.64,9.11,3.08,4.39,1.00,2
+160,3.00,4.00,1.55,2.60,7.58,10.42,3.48,4.85,1.07,2
+180,3.38,4.50,1.70,2.77,8.53,11.72,3.87,5.30,1.18,2
+200,3.75,5.00,1.85,2.95,9.48,13.02,4.26,5.76,1.25,2
+220,4.13,5.50,2.00,3.13,10.43,14.32,4.65,6.21,1.37,2
+240,4.50,6.00,2.15,3.30,11.38,15.63,5.04,6.67,1.44,2
+260,4.88,6.50,2.30,3.47,12.04,16.53,5.31,6.98,1.55,3
+280,5.25,7.00,2.45,3.65,12.41,17.03,5.46,7.16,1.62,3
+300,5.63,7.50,2.60,3.83,12.79,17.53,5.61,7.33,1.73,3
+320,6.00,8.00,2.75,4.00,13.16,18.03,5.76,7.51,1.81,3
+340,6.38,8.50,2.90,4.17,13.54,18.53,5.91,7.68,1.92,3
+360,6.75,9.00,3.05,4.35,13.91,19.03,6.06,7.86,1.99,3
+380,7.13,9.50,3.20,4.52,14.29,19.53,6.21,8.03,2.10,3
+400,7.50,10.00,3.35,4.70,14.66,20.03,6.36,8.21,2.18,3
+420,7.88,10.50,3.50,4.88,15.04,20.53,6.51,8.38,2.29,3
+440,8.25,11.00,3.65,5.05,15.41,21.03,6.66,8.56,2.36,4
+460,8.63,11.50,3.80,5.22,15.79,21.53,6.81,8.73,2.47,4
+480,9.00,12.00,3.95,5.40,16.16,22.03,6.96,8.91,2.55,4
+500,9.38,12.50,4.10,5.58,16.54,22.53,7.11,9.08,2.66,4
+520,9.75,13.00,4.25,5.75,16.91,23.03,7.26,9.26,2.73,4
+540,10.13,13.50,4.40,5.92,17.29,23.53,7.41,9.43,2.84,4
+560,10.50,14.00,4.55,6.10,17.66,24.03,7.56,9.61,2.92,4
+580,10.88,14.50,4.70,6.27,18.04,24.53,7.71,9.78,3.03,4
+600,11.25,15.00,4.85,6.45,18.41,25.03,7.86,9.96,3.10,5
+620,11.63,15.50,5.00,6.63,18.79,25.53,8.01,10.13,3.21,5
+640,12.00,16.00,5.15,6.80,19.16,26.03,8.16,10.31,3.28,5
+660,12.38,16.50,5.30,6.97,19.54,26.53,8.31,10.48,3.40,5
+680,12.75,17.00,5.45,7.15,19.91,27.03,8.46,10.66,3.47,5
+700,13.13,17.50,5.60,7.33,20.29,27.53,8.61,10.83,3.58,5
+720,13.50,18.00,5.75,7.50,20.66,28.03,8.76,11.01,3.65,5
+740,13.88,18.50,5.90,7.67,21.04,28.53,8.91,11.18,3.76,5
+760,14.25,19.00,6.05,7.85,21.41,29.03,9.06,11.36,3.84,5
+780,14.63,19.50,6.20,8.02,21.79,29.53,9.21,11.53,3.95,6
+800,15.00,20.00,6.35,8.20,22.16,30.03,9.36,11.71,4.02,6
+820,15.38,20.50,6.50,8.38,22.54,30.53,9.51,11.88,4.13,6
+840,15.75,21.00,6.65,8.55,22.91,31.03,9.66,12.06,4.21,6
