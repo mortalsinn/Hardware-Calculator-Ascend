@@ -132,6 +132,10 @@ const page = `<!doctype html>
  .note.legend dl{margin:0}
  .note.legend dt{margin-top:9px;font-size:13px}
  .note.legend dd{margin:1px 0 0}
+ .mini.arith{margin:9px 0;font-size:12.5px;width:auto;max-width:560px}
+ .mini.arith td{border:0;border-bottom:1px solid var(--line);padding:3px 10px 3px 0;text-align:left;color:var(--mut)}
+ .mini.arith td.v{text-align:right;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
+ .mini.arith tr.tot td{border-bottom:0;border-top:1px solid var(--accent);padding-top:5px}
  @media (prefers-color-scheme:dark){.note.worked{border-left-color:#9dbd5f}}
  dl{margin:0;font-size:13px;color:var(--mut);max-width:88ch}
  dt{font-weight:600;color:var(--ink);margin-top:12px}
@@ -214,18 +218,40 @@ If the download button does nothing, this page is inside a sandbox that blocks d
 
   <div class="note legend"><b>Two column names worth pinning down before you read the tabs.</b>
   <dl style="margin-top:7px">
-   <dt>&ldquo;Jobs running at once&rdquo;</dt>
-   <dd>The number of searches and scans <em>in flight at the same instant</em>, at the busiest moment of the
-   busiest hour. Not jobs per day, and not people signed in &mdash; a search holds a CPU core for a second or
-   two and then lets go, so this is what actually determines how much hardware you need. It is shown as a
-   range because usage is a range: the lower number assumes ${USAGE.low.compass} searches per seat per day, the higher
-   assumes ${USAGE.high.compass}. <b>Every machine figure is sized on the higher one.</b></dd>
+   <dt>&ldquo;Jobs at once&rdquo;</dt>
+   <dd>The number of searches and scans <em>in flight at the same instant</em>, averaged across the busiest
+   hour of the day. Not jobs per day, and not people signed in &mdash; a search holds a CPU core for about
+   twelve seconds and then lets go, so this is what actually determines how much hardware you need. It is
+   shown as a range because usage is a range: the lower number assumes ${USAGE.low.compass} searches per seat per day, the
+   higher assumes ${USAGE.high.compass}. <b>Every machine figure is sized on the higher one.</b>
+   <b>A value below 1 is normal and is explained below.</b></dd>
    <dt>&ldquo;Machines to buy&rdquo;</dt>
    <dd>Physical things ShiftIT would provision, added up: the application tier plus the search index host.
    On App Service and Container Apps the index is always its own machine, so it is always at least +1.
    On Container Apps the replicas are <em>not</em> counted &mdash; the platform starts and stops those on its own,
    and only the index is a standing machine.</dd>
   </dl></div>
+
+  <div class="note worked"><b>What a number like 0.5 means &mdash; and why it is not half a machine.</b>
+  It is the number of jobs running at the same moment, averaged over the busy hour, and it is perfectly
+  normal for it to be less than one. <b>0.5 means that during the busiest hour a job is in progress about
+  half the time, and nothing is running the rest of it.</b> Worked through at 20 seats:
+  <table class="mini arith">
+   <tr><td>20 seats &times; ${USAGE.high.compass} searches a day</td><td class="v">400 searches a day</td></tr>
+   <tr><td>spread across an 8-hour working day</td><td class="v">50 an hour</td></tr>
+   <tr><td>the busy hour runs at 3&times; the daily average</td><td class="v">150 an hour</td></tr>
+   <tr><td>each search occupies a core for about 12 seconds</td><td class="v">150 &times; 12s = 1,800 core-seconds</td></tr>
+   <tr class="tot"><td>1,800 seconds of work inside a 3,600-second hour</td><td class="v"><b>0.5 jobs at once</b></td></tr>
+  </table>
+  <b>You cannot buy half a server, and nothing here suggests you should.</b> Every option starts at one
+  machine; this figure describes how hard that machine is worked. It only begins to drive the hardware once
+  it climbs past 1, and it climbs in proportion to seats.
+  <br><br><b>It is an average, not a ceiling.</b> Arrivals are random, so a figure of 0.5 still produces brief
+  moments with two or three jobs at once. Absorbing those is exactly what the gap between the computed
+  requirement and the provisioned machines is for.
+  <br><br>Job lengths differ by module: a Compass search runs about <b>12 seconds</b>, an Inspector photo
+  scan about <b>55 seconds</b>. That is why a few hundred Inspector users move this number more than
+  several hundred extra Compass seats do.</div>
 
   <div class="note"><b>Does Azure change the requirement? No.</b> Peak concurrency, cores, memory and
   disk are properties of the workload, not the vendor &mdash; those columns are identical whoever hosts it.
@@ -339,7 +365,7 @@ ${rows.map(r => { const h=r.hi; return `<tr><td class="t"><b>${r.seats}</b></td>
 <dl>
 <dt>What the workload is</dt><dd>AscendOS is browser-delivered. Code Compass answers building-code
 questions against an ingested vector corpus; Code Inspector analyses site photographs. Both are short,
-bursty jobs that hold a CPU core briefly and release it, so the fleet is sized on how many run at
+bursty jobs that hold a CPU core for seconds and then release it, so the fleet is sized on how many run at
 the same instant &mdash; not on seat count. Both spend most of their time waiting on a model API rather
 than computing, which is why concurrency rather than raw compute drives the sizing.</dd>
 
