@@ -17,6 +17,12 @@ external AI calls, so compute follows concurrency rather than headcount. One 1-c
 AscendOS and McLean's run on today, and the model's idle floor is calibrated to it.
 A hundred seats needs two instances.
 
+**The architecture collapses as well as grows.** Below the point where the app and its
+index stop fitting together, they are not separated — one box runs both, which is what
+Ironwood actually does. Splitting Qdrant onto its own service is a decision the numbers
+should *force*, not a shape assumed from the start. At one seat with no usage the answer
+is a single $25 instance, not a production split.
+
 **2. Cost per seat hits a floor and never improves — and the floor is AI, not iron.** It falls steeply from one seat to
 about a hundred — that early number is mostly the minimum viable server — and then
 flattens permanently. Servers amortise across customers; tokens do not, because every

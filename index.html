@@ -128,6 +128,12 @@
       <div class="hint">Flash · ~13 calls, 3 consensus passes. Rare but heavy.</div>
     </div>
     <div>
+      <label>Code regions ingested <span class="val" id="vReg">1</span></label>
+      <input type="range" id="reg" min="1" max="13" step="1" value="1">
+      <div class="hint">Each is one code book, ~45k vectors. Ironwood serves Alberta today — a fixed
+      cost that does not grow with seats, only with provinces.</div>
+    </div>
+    <div>
       <label>Peak vs average <span class="val" id="vPeak">3.0×</span></label>
       <input type="range" id="peak" min="10" max="80" step="1" value="30">
       <div class="hint">Everyone quotes Monday morning. Sizing follows the peak.</div>
@@ -253,7 +259,7 @@ function fitRender(cpu, ram, {minRam=0, maxCount=24, minCount=1}={}){
 const SEATS_PER_ORG = 8, ACTIVE_FRACTION = .45, WORK_HOURS = 8, WORK_DAYS = 21;
 const SAM_COST = 0.004;           // per mask call, external segmentation
 const VEC_BYTES = 768*4 + 2200;   // 768 dims float32 + payload text, per vector
-const CODE_VECTORS = 420000;      // ingested code books across regions
+const VECTORS_PER_REGION = 45000; // one ingested code book, chunked
 const TENANT_VECTORS = 5000;      // shop_knowledge + vision_training + visual_sops
 
 const TIERS = [
@@ -335,20 +341,34 @@ function calc(){
   const needCpu = peakConc*0.3 + 0.35;
   const needRam = peakConc*0.35 + 1.2;
   const webN    = Math.max(1, Math.ceil(peakConc/45));   // ~45 live SSE per process
+
+  // The index has to be sized BEFORE the app, because at small scale they
+  // share a box and the app's plan has to hold both.
+  const regions = +$('reg').value;
+  const codeVectors = regions * VECTORS_PER_REGION;
+  const vectors = codeVectors + orgs*TENANT_VECTORS;
+  const qGb = Math.max(0.4, vectors*VEC_BYTES*1.4/1e9);
+  // THE ARCHITECTURE COLLAPSES AT SMALL SCALE — it does not merely shrink.
+  //
+  // This always provisioned a separate Qdrant service, so a one-seat, zero-usage
+  // deployment still billed for a production split: ~$137/month of fixed cost
+  // before a single search. That is not what anyone runs, and not what Ironwood
+  // runs — AscendOS and McLean's each put the app AND its index on one small box.
+  //
+  // So below the point where they stop fitting together, they do not get
+  // separated. Splitting is a decision the numbers should FORCE, not a shape
+  // assumed from the start.
+  const colocated = (needRam + qGb) <= 14 && peakConc < 12 && webN === 1;
+
   // 2 GB floor per instance: sharp buffers and PDF rendering need it.
   // webN is the CONNECTION floor; capacity may demand more, never fewer.
-  const web     = fitRender(needCpu, needRam, {minRam:2, maxCount:64, minCount:webN});
+  const web = fitRender(needCpu, needRam + (colocated ? qGb : 0),
+                        {minRam:2, maxCount:64, minCount:webN});
   const webCost = web.plan.$ * web.count;
 
-  // Qdrant as a Render private service — RAM is the binding constraint.
-  const vectors = CODE_VECTORS + orgs*TENANT_VECTORS;
-  const qGb = Math.max(2, Math.ceil(vectors*VEC_BYTES*1.4/1e9));
-  // ONE BOX. Qdrant is stateful: two instances is a CLUSTER, not a bigger
-  // machine, and cannot be conjured to satisfy a RAM number. The plan must
-  // hold the whole index on its own, or we are off the ladder entirely.
-  const qdr = fitRender(2, qGb, {minRam:qGb, maxCount:1});
-  const qdrCost = qdr.plan.$ * qdr.count;
-  const diskGb = Math.ceil(qGb*1.3);
+  const qdr = colocated ? null : fitRender(2, qGb, {minRam:qGb, maxCount:1});
+  const qdrCost = qdr ? qdr.plan.$ * qdr.count : 0;
+  const diskGb = Math.max(1, Math.ceil(qGb*1.3));
   const diskCost = diskGb*0.25;
   const offLadder = qGb > 32;
 
@@ -356,14 +376,17 @@ function calc(){
   const fsCost = (fsOps/100000)*0.06 + orgs*0.35;
 
   const egressGb = jobsMo*0.008 + seats*0.4;
-  const wsPlan = egressGb>1000 ? {n:'Scale',$:499,inc:1000} : {n:'Pro',$:25,inc:25};
+  // Render's workspace tiers scale down as well: Hobby is free with 5 GB.
+  const wsPlan = egressGb>1000 ? {n:'Scale',$:499,inc:1000}
+               : egressGb>5     ? {n:'Pro',$:25,inc:25}
+               : {n:'Hobby',$:0,inc:5};
   const bwCost = wsPlan.$ + Math.max(0, egressGb-wsPlan.inc)*0.15;
 
   const infraCost = webCost + qdrCost + diskCost + bwCost;
   const total = aiCost + infraCost + fsCost;
 
   const tier = TIERS.find(t => seats <= t.max);
-  return {seats,orgs,jobsMo,callsMo,tokens,peakConc,vectors,qGb,fsOps,fsCost,mix,
+  return {seats,orgs,jobsMo,callsMo,tokens,peakConc,vectors,qGb,fsOps,fsCost,mix,regions,codeVectors,colocated,
     flashCost,proCost,samCost,aiCost,samCalls,
     web,webN,webCost,needCpu,needRam,qdr,qdrCost,diskGb,diskCost,offLadder,
     egressGb,wsPlan,bwCost,infraCost,total,tier,tierIdx:TIERS.indexOf(tier),R};
@@ -414,9 +437,9 @@ function render(){
       d.webN>1 ? 'Multiple instances needed for CONNECTIONS, not CPU — a scan holds an SSE connection open for its whole life. This is the point to move scans onto background workers.' : ''],
     ['Qdrant · private service', qS, qT, 'Render has no managed vector database, so this is a Private Service with a persistent disk. RAM is the binding constraint — the index wants to be resident.',
       [['Total vectors', fmt(d.vectors)],
-       ['Code books', fmt(CODE_VECTORS)+' (fixed)'],
-       ['RAM for index', d.qGb+' GB'],
-       ['Plan', d.offLadder ? 'Off the standard ladder' : d.qdr.plan.n+' ('+d.qdr.plan.ram+' GB)'],
+       ['Code books', fmt(d.codeVectors)+' · '+d.regions+' region'+(d.regions>1?'s':'')],
+       ['RAM for index', (d.qGb<1 ? (d.qGb*1000).toFixed(0)+' MB' : d.qGb.toFixed(1)+' GB')],
+       ['Plan', d.colocated ? 'Shares the web instance' : d.offLadder ? 'Off the standard ladder' : d.qdr.plan.n+' ('+d.qdr.plan.ram+' GB)'],
        ['Disk '+d.diskGb+' GB', money(d.diskCost)+'/mo'],
        ['Qdrant cost', money(d.qdrCost+d.diskCost)+'/mo']],
       d.qGb>2000 ? 'Terabytes of index. This is vector search as its own service with its own team — and per-tenant knowledge almost certainly needs ageing out rather than keeping forever.'
