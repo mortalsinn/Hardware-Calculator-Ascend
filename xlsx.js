@@ -14,7 +14,7 @@ const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>
 const colName = n => { let s=''; n=n+1; while(n>0){ const m=(n-1)%26; s=String.fromCharCode(65+m)+s; n=(n-m-1)/26; } return s; };
 
 // Style slots, referenced by name so the sheets never hardcode an index.
-const S = { plain:0, bold:1, title:2, head:3, num1:4, num2:5, note:6, band:7, split:8, left:9, sub:10, headL:11 };
+const S = { plain:0, bold:1, title:2, head:3, num1:4, num2:5, note:6, band:7, split:8, left:9, sub:10, headL:11, num:12, splitNum:13 };
 
 const STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
@@ -39,19 +39,21 @@ const STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
  <border><left style="thin"><color rgb="FFBFC7D4"/></left><right style="thin"><color rgb="FFBFC7D4"/></right><top style="thin"><color rgb="FFBFC7D4"/></top><bottom style="thin"><color rgb="FFBFC7D4"/></bottom><diagonal/></border>
 </borders>
 <cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
-<cellXfs count="12">
+<cellXfs count="14">
  <xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>
  <xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0"/>
  <xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0"/>
  <xf numFmtId="0" fontId="3" fillId="2" borderId="1" xfId="0" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>
  <xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyAlignment="1"><alignment horizontal="right"/></xf>
  <xf numFmtId="165" fontId="0" fillId="0" borderId="1" xfId="0" applyAlignment="1"><alignment horizontal="right"/></xf>
- <xf numFmtId="0" fontId="4" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf>
+ <xf numFmtId="0" fontId="4" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment horizontal="left" vertical="top" wrapText="1"/></xf>
  <xf numFmtId="0" fontId="5" fillId="3" borderId="1" xfId="0" applyAlignment="1"><alignment horizontal="left"/></xf>
  <xf numFmtId="0" fontId="1" fillId="4" borderId="1" xfId="0" applyAlignment="1"><alignment horizontal="right"/></xf>
  <xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyAlignment="1"><alignment horizontal="left"/></xf>
  <xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf>
  <xf numFmtId="0" fontId="3" fillId="2" borderId="1" xfId="0" applyAlignment="1"><alignment horizontal="left" vertical="center" wrapText="1"/></xf>
+ <xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyAlignment="1"><alignment horizontal="right"/></xf>
+ <xf numFmtId="0" fontId="1" fillId="4" borderId="1" xfId="0" applyAlignment="1"><alignment horizontal="right"/></xf>
 </cellXfs>
 <cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
 </styleSheet>`.replace('numFmtId="model"','numFmtId="164"');
@@ -64,15 +66,31 @@ function cellXml(v, s, ref) {
   return `<c r="${ref}" s="${s|0}" t="inlineStr"><is><t xml:space="preserve">${esc(v)}</t></is></c>`;
 }
 
+// A row may be a plain array of cells, or {cells, height, mergeAcross}.
+//
+// WHY mergeAcross AND height EXIST. A long line of prose in a single cell with
+// wrapText on is laid out inside THAT COLUMN's width. The first column here is
+// 8 characters wide, so a 300-character note wrapped to ~40 lines and Excel
+// grew the row to fit -- a screen-high band of white with one sentence in it.
+// Merging the prose across the full table width gives it somewhere to wrap to,
+// and an explicit height stops the application guessing.
 function sheetXml({ rows, cols = [], freeze = null, merges = [] }) {
+  const autoMerges = [];
   const body = rows.map((row, i) => {
     if (!row) return `<row r="${i+1}"/>`;
-    const cells = row.map((c, j) => {
-      const [v, s] = Array.isArray(c) ? c : [c, 0];
-      return cellXml(v, s, colName(j) + (i+1));
+    const isSpec = !Array.isArray(row);
+    const cells = (isSpec ? row.cells : row) || [];
+    const r = i + 1;
+    if (isSpec && row.mergeAcross > 1 && cells.length)
+      autoMerges.push(`A${r}:${colName(row.mergeAcross - 1)}${r}`);
+    const xml = cells.map((c, j) => {
+      const [v, st] = Array.isArray(c) ? c : [c, 0];
+      return cellXml(v, st, colName(j) + r);
     }).join('');
-    return `<row r="${i+1}">${cells}</row>`;
+    const attrs = isSpec && row.height ? ` ht="${row.height}" customHeight="1"` : '';
+    return `<row r="${r}"${attrs}>${xml}</row>`;
   }).join('');
+  merges = merges.concat(autoMerges);
   const colsXml = cols.length
     ? `<cols>${cols.map((w,i)=>`<col min="${i+1}" max="${i+1}" width="${w}" customWidth="1"/>`).join('')}</cols>` : '';
   const pane = freeze
@@ -82,10 +100,12 @@ function sheetXml({ rows, cols = [], freeze = null, merges = [] }) {
     ? `<mergeCells count="${merges.length}">${merges.map(m=>`<mergeCell ref="${m}"/>`).join('')}</mergeCells>` : '';
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<sheetPr><pageSetUpPr fitToPage="1"/></sheetPr>
 <sheetViews><sheetView showGridLines="0"${rows.length?' workbookViewId="0"':''}>${pane}</sheetView></sheetViews>
 <sheetFormatPr defaultRowHeight="15"/>${colsXml}
 <sheetData>${body}</sheetData>${mergeXml}
-<pageMargins left="0.4" right="0.4" top="0.5" bottom="0.5" header="0.3" footer="0.3"/>
+<printOptions horizontalCentered="0"/>
+<pageMargins left="0.3" right="0.3" top="0.4" bottom="0.4" header="0.2" footer="0.2"/>
 <pageSetup orientation="landscape" fitToWidth="1" fitToHeight="0"/>
 </worksheet>`;
 }

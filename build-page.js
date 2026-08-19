@@ -197,10 +197,11 @@ If the download button does nothing, this page is inside a sandbox that blocks d
 <textarea id="raw" spellcheck="false" hidden></textarea>
 
 <section class="panel on" id="p-summary">
-  <h2><span class="badge">&#9632;</span>Summary</h2>
+  <h2><span class="badge">&#9632;</span>Start here</h2>
   <p class="lede">Three ways to run AscendOS on Azure. They are alternatives, not layers &mdash; you would
-  supply one of them. Each has its own tab with the full 20-seat detail. Hardware is sized on the high
-  end of the usage range, because a fleet sized on average usage is under-provisioned on every busy day.</p>
+  supply one of them. Each has its own tab, carrying every seat count from 20 to 840 in steps of 20.
+  Hardware is sized on the high end of the usage range, because a fleet sized on average usage is
+  under-provisioned on every busy day. The two column names below are the ones worth reading first.</p>
 
   <div class="cards">
    <div class="card"><h4>840 seats, Compass only</h4><div class="n">${last('compass').azAppCpu} vCPU &middot; ${last('compass').azAppRam} GB</div>
@@ -231,20 +232,6 @@ If the download button does nothing, this page is inside a sandbox that blocks d
   What Azure changes is the ladder of purchasable units, and two things about the deployment&rsquo;s shape:
   the search index can never share a machine on options A or C, and App Service Standard&rsquo;s 10-instance
   cap makes Premium v3 the tier for this range.</div>
-
-  <h3>What to quote, at key seat counts</h3>
-  <p class="sub">Sized on high usage. Totals include the index host. Full detail on the option tabs.</p>
-  <div class="scroll"><table>
-  <thead><tr><th class="t">Seats</th><th class="t">Usage scenario</th><th>Peak<br>concurrent</th>
-   <th class="t">A&nbsp;App&nbsp;Service</th><th>A&nbsp;Mach</th><th>A&nbsp;vCPU</th><th>A&nbsp;RAM</th>
-   <th class="t">B&nbsp;VMs</th><th>B&nbsp;Mach</th><th>B&nbsp;vCPU</th><th>B&nbsp;RAM</th>
-   <th>C&nbsp;Replicas</th><th class="t">C&nbsp;Index</th></tr></thead>
-  <tbody>${KEY_SEATS.flatMap(n => SCENARIOS.map((sc,i) => { const h = at(sc.key,n).hi;
-    return `<tr><td class="t">${i===0?`<b>${n}</b>`:''}</td><td class="t">${esc(sc.title)}</td>
-    <td>${h.concurrent.toFixed(1)}</td>
-    <td class="t">${esc(h.azAppWeb)}</td><td>${h.azAppMachines}</td><td>${h.azAppCpu}</td><td>${h.azAppRam}</td>
-    <td class="t">${esc(h.azVmWeb)}</td><td>${h.azVmMachines}</td><td>${h.azVmCpu}</td><td>${h.azVmRam}</td>
-    <td>${h.azCaPeak}</td><td class="t">${esc(h.azCaIdx)}</td></tr>`;})).join('')}</tbody></table></div>
 
   <div class="note"><b>Where the index needs its own machine on Option B</b>, the only option where it
   can share at all. On A and C it is separate from the first seat.
@@ -422,7 +409,7 @@ ${SEATS.length} rows per scenario &middot; 20 to 840 seats in steps of 20.</p>
 
 </div>
 <nav class="tabs" role="tablist" aria-label="Worksheets">
- <button class="tab" role="tab" aria-selected="true"  aria-controls="p-summary" data-t="summary">Summary</button>
+ <button class="tab" role="tab" aria-selected="true"  aria-controls="p-summary" data-t="summary">Start here</button>
  <button class="tab" role="tab" aria-selected="false" aria-controls="p-a" data-t="a">A &middot; App Service</button>
  <button class="tab" role="tab" aria-selected="false" aria-controls="p-b" data-t="b">B &middot; Virtual Machines</button>
  <button class="tab" role="tab" aria-selected="false" aria-controls="p-c" data-t="c">C &middot; Container Apps</button>
