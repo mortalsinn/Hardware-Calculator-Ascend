@@ -4,62 +4,70 @@
 <title>AscendOS — Hardware Requirements</title>
 <style>
  :root{--ink:#141821;--mut:#5c6577;--line:#dfe3ea;--bg:#fff;--panel:#f7f8fa;
-  --need:#eef1f6;--mg:#e8f0fb;--vp:#eaf5ec;--sv:#f6eef8;--up:#fff6e0;--split:#e6f0ff;--splitb:#7ba7e0;--accent:#1f4f8f}
+  --need:#eef1f6;--mg:#e8f0fb;--vp:#eaf5ec;--sv:#f6eef8;--up:#fff6e0;
+  --split:#e6f0ff;--splitb:#7ba7e0;--accent:#1f4f8f}
  *{box-sizing:border-box}
  body{margin:0;font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg)}
- .wrap{max-width:1500px;margin:0 auto;padding:34px 22px 80px}
+ .wrap{max-width:1560px;margin:0 auto;padding:34px 22px 80px}
  h1{font-size:27px;margin:0 0 6px;letter-spacing:-.02em}
  h2{font-size:19px;margin:44px 0 3px;letter-spacing:-.01em}
  .sub{color:var(--mut);margin:0 0 14px;font-size:14px}
- .lede{color:var(--mut);max-width:74ch;margin:0 0 22px}
+ .lede{color:var(--mut);max-width:76ch;margin:0 0 20px}
  .bar{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 26px}
  .btn{display:inline-block;padding:9px 16px;border-radius:7px;background:var(--accent);color:#fff;
    text-decoration:none;font-weight:600;font-size:14px;border:0;cursor:pointer;font-family:inherit}
  .btn.alt{background:var(--panel);color:var(--ink);border:1px solid var(--line)}
- .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:9px}
- table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
- th,td{padding:5px 9px;text-align:right;border-bottom:1px solid var(--line)}
- thead th{position:sticky;top:0;font-weight:600;font-size:11.5px;text-transform:uppercase;
-   letter-spacing:.04em;color:var(--mut);background:var(--panel)}
- tr.grp th{text-align:center;font-size:12px;color:var(--ink);border-bottom:1px solid var(--line)}
- .g-need{background:var(--need)!important}.g-mg{background:var(--mg)!important}
- .g-vp{background:var(--vp)!important}.g-sv{background:var(--sv)!important}
- td.seats{text-align:left;font-weight:700}
- td.plan{text-align:left;font-size:12px;color:var(--mut)}
- tr.step td{background:var(--up)}
- tr.split td{background:var(--split);box-shadow:inset 0 1px 0 var(--splitb),inset 0 -1px 0 var(--splitb)}
- td.up{font-weight:700;color:#8a5a00}
- tbody tr:hover td{background:#f1f4f9}
- .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin:20px 0 30px}
- .card{border:1px solid var(--line);border-radius:9px;padding:14px 16px;background:var(--panel)}
- .card h3{margin:0 0 4px;font-size:14px}
- .card .n{font-size:22px;font-weight:700;letter-spacing:-.02em}
- .card p{margin:5px 0 0;font-size:12.5px;color:var(--mut);line-height:1.45}
- .note{border-left:3px solid var(--accent);background:var(--panel);padding:12px 16px;border-radius:0 7px 7px 0;
-   margin:18px 0;font-size:13.5px;color:var(--mut);max-width:82ch}
- .note b{color:var(--ink)}
- dl{margin:0;font-size:13.5px;color:var(--mut);max-width:82ch}
- dt{font-weight:600;color:var(--ink);margin-top:11px}
- dd{margin:2px 0 0}
- footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);color:var(--mut);font-size:12.5px}
  .fallback{font-size:12.5px;color:var(--mut);max-width:80ch;margin:-14px 0 22px;line-height:1.5}
  #raw{width:100%;height:290px;margin:0 0 24px;font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
    border:1px solid var(--line);border-radius:8px;padding:11px;background:var(--panel);color:var(--ink);
    white-space:pre;overflow:auto;resize:vertical}
  #raw[hidden]{display:none}
  .btn:focus-visible,#raw:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
- @media print{.fallback,#raw{display:none}.bar{display:none}body{font-size:11px}table{font-size:9.5px}
+ .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:9px}
+ table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
+ th,td{padding:5px 9px;text-align:right;border-bottom:1px solid var(--line)}
+ thead th{position:sticky;top:0;font-weight:600;font-size:11.5px;text-transform:uppercase;
+   letter-spacing:.04em;color:var(--mut);background:var(--panel)}
+ .lt{font-weight:400;text-transform:none;letter-spacing:0;font-size:10.5px;opacity:.8}
+ tr.grp th{text-align:center;font-size:12px;color:var(--ink);border-bottom:1px solid var(--line)}
+ .g-need{background:var(--need)!important}.g-mg{background:var(--mg)!important}
+ .g-vp{background:var(--vp)!important}.g-sv{background:var(--sv)!important}
+ td.seats{text-align:left;font-weight:700}
+ td.rng{font-size:12.5px}
+ td.plan{text-align:left;font-size:12px;color:var(--mut)}
+ tr.step td{background:var(--up)}
+ tr.split td{background:var(--split);box-shadow:inset 0 1px 0 var(--splitb),inset 0 -1px 0 var(--splitb)}
+ td.up{font-weight:700;color:#8a5a00}
+ tbody tr:hover td{background:#f1f4f9}
+ .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin:20px 0 26px}
+ .card{border:1px solid var(--line);border-radius:9px;padding:14px 16px;background:var(--panel)}
+ .card h3{margin:0 0 4px;font-size:14px}
+ .card .n{font-size:21px;font-weight:700;letter-spacing:-.02em}
+ .card p{margin:5px 0 0;font-size:12.5px;color:var(--mut);line-height:1.45}
+ .note{border-left:3px solid var(--accent);background:var(--panel);padding:12px 16px;border-radius:0 7px 7px 0;
+   margin:18px 0;font-size:13.5px;color:var(--mut);max-width:84ch}
+ .note b{color:var(--ink)}
+ .mini{border-collapse:collapse;font-size:13px;margin:14px 0 0;font-variant-numeric:tabular-nums}
+ .mini th,.mini td{border:1px solid var(--line);padding:6px 12px;text-align:right}
+ .mini th{background:var(--panel);font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut)}
+ .mini td:first-child,.mini th:first-child{text-align:left}
+ dl{margin:0;font-size:13.5px;color:var(--mut);max-width:84ch}
+ dt{font-weight:600;color:var(--ink);margin-top:11px}
+ dd{margin:2px 0 0}
+ footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);color:var(--mut);font-size:12.5px}
+ @media print{.bar,.fallback,#raw{display:none}body{font-size:11px}table{font-size:9.5px}
    .scroll{overflow:visible;border:0}h2{page-break-after:avoid}tr{page-break-inside:avoid}}
  @media (prefers-color-scheme:dark){
   :root{--ink:#e8ecf3;--mut:#96a0b3;--line:#2a3140;--bg:#12151c;--panel:#1a1f29;
-   --need:#1c2230;--mg:#182338;--vp:#16271c;--sv:#241a2b;--up:#332a12;--split:#182a44;--splitb:#3f6698;--accent:#5b9bf0}
+   --need:#1c2230;--mg:#182338;--vp:#16271c;--sv:#241a2b;--up:#332a12;
+   --split:#182a44;--splitb:#3f6698;--accent:#5b9bf0}
   tbody tr:hover td{background:#1e2431}td.up{color:#e0b060}}
 </style></head><body><div class="wrap">
 
 <h1>AscendOS — Hardware Requirements</h1>
 <p class="lede">What the platform needs to run, from 20 to 840 seats, under three deployment
-options. This is a hardware specification: server counts, CPU cores and memory. It carries no
-pricing — costs depend on vendor and contract, and live in the interactive planner.</p>
+options. This is a hardware specification &mdash; server counts, CPU cores, memory and disk. It carries
+no pricing: costs depend on vendor and contract, and live in the interactive planner.</p>
 
 <div class="bar">
   <a class="btn" id="dl" download="AscendOS-Hardware-Requirements.csv">Download spreadsheet (CSV)</a>
@@ -71,31 +79,40 @@ pricing — costs depend on vendor and contract, and live in the interactive pla
 use <b>Copy CSV to clipboard</b> and paste into a blank spreadsheet, or <b>Show raw CSV</b> to select it by hand.</p>
 <textarea id="raw" spellcheck="false" hidden></textarea>
 
+<div class="note"><b>Usage assumed throughout:</b> Code Compass 15–20 searches per seat per working
+day; Code Inspector 5–7 scans per user per working day. Because that is a range and not a number,
+every row is computed twice. The <b>hardware columns are sized on the high end</b> &mdash; you provision
+for the busy day, not the average one &mdash; and the low end is shown beside it so you can see how much
+of the fleet is driven by the top of the range.</div>
+
 <h2>What the numbers say</h2>
 <div class="cards">
- <div class="card"><h3>840 seats, Compass only</h3><div class="n">4 vCPU &middot; 8 GB</div>
-  <p>Peak load is 5.3 searches in flight at once. That is 4 managed instances,
-  or 1 VPS server at 4 vCPU / 8 GB.</p></div>
- <div class="card"><h3>Adding 200 Inspector users</h3><div class="n">5 machines</div>
-  <p>Concurrency roughly doubles, to 11.0. Image analysis is slow per job but low in
-  volume, so it buys concurrency, not fleet size.</p></div>
- <div class="card"><h3>200 &rarr; 250 Inspector users</h3><div class="n">Index splits off</div>
-  <p>Peak concurrency crosses 12.4, past which the search index no longer shares the web
-  box. This is the one genuine architectural threshold in the whole table.</p></div>
+ <div class="card"><h3>840 seats, Compass only</h3><div class="n">11 vCPU &middot; 22 GB</div>
+  <p>16&ndash;21 searches in flight at peak. That is 8 managed instances,
+  or 2 VPS servers at 12 vCPU / 24 GB.</p></div>
+ <div class="card"><h3>The index splits early</h3><div class="n">480 seats</div>
+  <p>Past this point the search index no longer shares a box with the application. With 250
+  Inspector users it happens at 200 seats. This is the one real architectural
+  threshold in the table.</p></div>
+ <div class="card"><h3>200 vs 250 Inspector users</h3><div class="n">Same hardware at 840</div>
+  <p>Both land on 11 machines. They diverge lower down, where 250 users
+  crosses the index threshold sooner.</p></div>
 </div>
 
-<div class="note"><b>Hardware is not the constraint at this scale.</b> Compass work is short and
-bursty &mdash; a search holds a core for a second or two, then releases it. Even at 840 seats the whole
-fleet is a handful of small machines, and on raw VPS it is 2. What grows with seat count
-is AI usage and the size of the search index, not the server room.</div>
+<div class="note"><b>At these rates the fleet is real, but still modest.</b> A Compass search holds a
+core for a second or two, then releases it, so 840 seats at 15–20 searches a day resolves to
+21 jobs running at the same instant. On raw VPS that is 2 servers. What grows
+fastest with seat count is AI usage and the size of the search index, not the number of machines.</div>
 
-<div class="note"><b>The threshold worth planning around is the index, not the seats.</b> Below roughly
-12 concurrent jobs the application and its search index share a machine, which is how AscendOS and
-McLean&rsquo;s run today. Above it they separate. Everything else on this page is a smooth curve; that
-is the one step change, and it is the row marked &dagger;.</div>
+<div class="note"><b>Where the index needs its own machine</b>, by scenario and by where usage lands
+in the range. This is the number worth planning around &mdash; everything else on this page is a smooth
+curve.
+<table class="mini"><thead><tr><th>Scenario</th><th>Low usage (15/5 per day)</th><th>High usage (20/7 per day)</th></tr></thead>
+<tbody><tr><td>Code Compass only</td><td>640 seats</td><td>480 seats</td></tr><tr><td>Code Compass, plus 200 Code Inspector users</td><td>340 seats</td><td>200 seats</td></tr><tr><td>Code Compass, plus 250 Code Inspector users</td><td>260 seats</td><td>200 seats</td></tr></tbody></table></div>
 
 <h2>Code Compass only</h2>
-<p class="sub">Every seat runs 5 Code Compass searches per working day. Highlighted rows are where the machine count changes.</p>
+<p class="sub">Every seat runs 15–20 Code Compass searches per working day. Hardware sized on the high end. Highlighted rows are where the machine
+count changes; the row marked &dagger; is where the search index moves to its own machine.</p>
 
 <div class="scroll"><table>
 <thead>
@@ -106,7 +123,7 @@ is the one step change, and it is the row marked &dagger;.</div>
     <th colspan="4" class="g-sv">Option C &middot; Serverless</th>
   </tr>
   <tr>
-    <th class="g-need">Seats</th><th class="g-need">Peak<br>concurrent</th>
+    <th class="g-need">Seats</th><th class="g-need">Peak concurrent<br><span class="lt">low &ndash; high</span></th>
     <th class="g-need">vCPU</th><th class="g-need">App RAM<br>GB</th><th class="g-need">Index RAM<br>GB</th><th class="g-need">Index disk<br>GB</th>
     <th class="g-mg">Web tier</th><th class="g-mg">Index host</th><th class="g-mg">Machines</th><th class="g-mg">Total vCPU</th><th class="g-mg">Total RAM GB</th>
     <th class="g-vp">Web tier</th><th class="g-vp">Index host</th><th class="g-vp">Machines</th><th class="g-vp">Total vCPU</th><th class="g-vp">Total RAM GB</th>
@@ -115,938 +132,1072 @@ is the one step change, and it is the row marked &dagger;.</div>
 </thead>
 <tbody>
   <tr>
-    <td class="seats">20</td><td>0.1</td>
-    <td>0.4</td><td>1.2</td><td>0.4</td><td>1</td>
-    <td class="plan">Standard x1</td><td class="plan">on web instance</td><td>1</td><td>1</td><td>2</td>
-    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">40</td><td>0.3</td>
-    <td>0.4</td><td>1.3</td><td>0.5</td><td>1</td>
-    <td class="plan">Standard x1</td><td class="plan">on web instance</td><td>1</td><td>1</td><td>2</td>
-    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">60</td><td>0.4</td>
-    <td>0.5</td><td>1.3</td><td>0.6</td><td>1</td>
+    <td class="seats">20</td>
+    <td class="rng">0.4 &ndash; 0.5</td>
+    <td>0.5</td><td>1.4</td><td>0.4</td><td>1</td>
     <td class="plan">Standard x1</td><td class="plan">on web instance</td><td>1</td><td>1</td><td>2</td>
     <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr class="step">
-    <td class="seats">80</td><td>0.5</td>
-    <td>0.5</td><td>1.4</td><td>0.7</td><td>1</td>
+    <td class="seats">40</td>
+    <td class="rng">0.8 &ndash; 1.0</td>
+    <td>0.6</td><td>1.5</td><td>0.5</td><td>1</td>
     <td class="plan">Standard x2</td><td class="plan">on web instance</td><td class="up">2</td><td>2</td><td>4</td>
     <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr>
-    <td class="seats">100</td><td>0.6</td>
-    <td>0.5</td><td>1.4</td><td>0.8</td><td>2</td>
+    <td class="seats">60</td>
+    <td class="rng">1.1 &ndash; 1.5</td>
+    <td>0.8</td><td>1.7</td><td>0.6</td><td>1</td>
     <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
     <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr>
-    <td class="seats">120</td><td>0.8</td>
-    <td>0.6</td><td>1.5</td><td>0.9</td><td>2</td>
+    <td class="seats">80</td>
+    <td class="rng">1.5 &ndash; 2.0</td>
+    <td>0.9</td><td>1.9</td><td>0.7</td><td>1</td>
     <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
     <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr>
-    <td class="seats">140</td><td>0.9</td>
-    <td>0.6</td><td>1.5</td><td>1.0</td><td>2</td>
+    <td class="seats">100</td>
+    <td class="rng">1.9 &ndash; 2.5</td>
+    <td>1.1</td><td>2.1</td><td>0.8</td><td>2</td>
     <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
     <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr>
-    <td class="seats">160</td><td>1.0</td>
-    <td>0.6</td><td>1.5</td><td>1.1</td><td>2</td>
+    <td class="seats">120</td>
+    <td class="rng">2.3 &ndash; 3.0</td>
+    <td>1.3</td><td>2.3</td><td>0.9</td><td>2</td>
     <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
     <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr>
-    <td class="seats">180</td><td>1.1</td>
-    <td>0.7</td><td>1.6</td><td>1.2</td><td>2</td>
+    <td class="seats">140</td>
+    <td class="rng">2.6 &ndash; 3.5</td>
+    <td>1.4</td><td>2.4</td><td>1.0</td><td>2</td>
     <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
     <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr>
-    <td class="seats">200</td><td>1.3</td>
-    <td>0.7</td><td>1.6</td><td>1.3</td><td>2</td>
+    <td class="seats">160</td>
+    <td class="rng">3.0 &ndash; 4.0</td>
+    <td>1.5</td><td>2.6</td><td>1.1</td><td>2</td>
     <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
     <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr>
-    <td class="seats">220</td><td>1.4</td>
-    <td>0.8</td><td>1.7</td><td>1.4</td><td>2</td>
-    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
-    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">240</td><td>1.5</td>
-    <td>0.8</td><td>1.7</td><td>1.4</td><td>2</td>
-    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
-    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">260</td><td>1.6</td>
-    <td>0.8</td><td>1.8</td><td>1.5</td><td>3</td>
-    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
-    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">280</td><td>1.8</td>
-    <td>0.9</td><td>1.8</td><td>1.6</td><td>3</td>
-    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
-    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">300</td><td>1.9</td>
-    <td>0.9</td><td>1.9</td><td>1.7</td><td>3</td>
-    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
-    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">320</td><td>2.0</td>
-    <td>0.9</td><td>1.9</td><td>1.8</td><td>3</td>
-    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
-    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">340</td><td>2.1</td>
-    <td>1.0</td><td>1.9</td><td>1.9</td><td>3</td>
-    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
-    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">360</td><td>2.3</td>
-    <td>1.0</td><td>2.0</td><td>2.0</td><td>3</td>
+    <td class="seats">180</td>
+    <td class="rng">3.4 &ndash; 4.5</td>
+    <td>1.7</td><td>2.8</td><td>1.2</td><td>2</td>
     <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
     <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr class="step">
-    <td class="seats">380</td><td>2.4</td>
-    <td>1.1</td><td>2.0</td><td>2.1</td><td>3</td>
+    <td class="seats">200</td>
+    <td class="rng">3.8 &ndash; 5.0</td>
+    <td>1.9</td><td>3.0</td><td>1.3</td><td>2</td>
     <td class="plan">Standard x3</td><td class="plan">on web instance</td><td class="up">3</td><td>3</td><td>6</td>
     <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr>
-    <td class="seats">400</td><td>2.5</td>
-    <td>1.1</td><td>2.1</td><td>2.2</td><td>3</td>
+    <td class="seats">220</td>
+    <td class="rng">4.1 &ndash; 5.5</td>
+    <td>2.0</td><td>3.1</td><td>1.4</td><td>2</td>
     <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
     <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr>
-    <td class="seats">420</td><td>2.6</td>
-    <td>1.1</td><td>2.1</td><td>2.3</td><td>3</td>
+    <td class="seats">240</td>
+    <td class="rng">4.5 &ndash; 6.0</td>
+    <td>2.1</td><td>3.3</td><td>1.4</td><td>2</td>
     <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
     <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr>
-    <td class="seats">440</td><td>2.8</td>
-    <td>1.2</td><td>2.2</td><td>2.4</td><td>4</td>
+    <td class="seats">260</td>
+    <td class="rng">4.9 &ndash; 6.5</td>
+    <td>2.3</td><td>3.5</td><td>1.5</td><td>3</td>
     <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
     <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr>
-    <td class="seats">460</td><td>2.9</td>
-    <td>1.2</td><td>2.2</td><td>2.5</td><td>4</td>
+    <td class="seats">280</td>
+    <td class="rng">5.3 &ndash; 7.0</td>
+    <td>2.5</td><td>3.6</td><td>1.6</td><td>3</td>
     <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
     <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr>
-    <td class="seats">480</td><td>3.0</td>
-    <td>1.3</td><td>2.3</td><td>2.5</td><td>4</td>
+    <td class="seats">300</td>
+    <td class="rng">5.6 &ndash; 7.5</td>
+    <td>2.6</td><td>3.8</td><td>1.7</td><td>3</td>
     <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
     <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr>
-    <td class="seats">500</td><td>3.1</td>
-    <td>1.3</td><td>2.3</td><td>2.7</td><td>4</td>
-    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">520</td><td>3.3</td>
-    <td>1.3</td><td>2.3</td><td>2.7</td><td>4</td>
-    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">540</td><td>3.4</td>
-    <td>1.4</td><td>2.4</td><td>2.8</td><td>4</td>
-    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">560</td><td>3.5</td>
-    <td>1.4</td><td>2.4</td><td>2.9</td><td>4</td>
-    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">580</td><td>3.6</td>
-    <td>1.4</td><td>2.5</td><td>3.0</td><td>4</td>
-    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">600</td><td>3.8</td>
-    <td>1.5</td><td>2.5</td><td>3.1</td><td>5</td>
-    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">620</td><td>3.9</td>
-    <td>1.5</td><td>2.6</td><td>3.2</td><td>5</td>
-    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">640</td><td>4.0</td>
-    <td>1.5</td><td>2.6</td><td>3.3</td><td>5</td>
+    <td class="seats">320</td>
+    <td class="rng">6.0 &ndash; 8.0</td>
+    <td>2.8</td><td>4.0</td><td>1.8</td><td>3</td>
     <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
     <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr class="step">
-    <td class="seats">660</td><td>4.1</td>
-    <td>1.6</td><td>2.6</td><td>3.4</td><td>5</td>
+    <td class="seats">340</td>
+    <td class="rng">6.4 &ndash; 8.5</td>
+    <td>2.9</td><td>4.2</td><td>1.9</td><td>3</td>
     <td class="plan">Standard x4</td><td class="plan">on web instance</td><td class="up">4</td><td>4</td><td>8</td>
     <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr>
-    <td class="seats">680</td><td>4.3</td>
-    <td>1.6</td><td>2.7</td><td>3.5</td><td>5</td>
+    <td class="seats">360</td>
+    <td class="rng">6.8 &ndash; 9.0</td>
+    <td>3.0</td><td>4.3</td><td>2.0</td><td>3</td>
     <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
     <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr>
-    <td class="seats">700</td><td>4.4</td>
-    <td>1.7</td><td>2.7</td><td>3.6</td><td>5</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">720</td><td>4.5</td>
-    <td>1.7</td><td>2.8</td><td>3.7</td><td>5</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">740</td><td>4.6</td>
-    <td>1.7</td><td>2.8</td><td>3.8</td><td>5</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">760</td><td>4.8</td>
-    <td>1.8</td><td>2.9</td><td>3.8</td><td>5</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">780</td><td>4.9</td>
-    <td>1.8</td><td>2.9</td><td>3.9</td><td>6</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">800</td><td>5.0</td>
-    <td>1.9</td><td>3.0</td><td>4.0</td><td>6</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">820</td><td>5.1</td>
-    <td>1.9</td><td>3.0</td><td>4.1</td><td>6</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">840</td><td>5.3</td>
-    <td>1.9</td><td>3.0</td><td>4.2</td><td>6</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-</tbody></table></div>
-<h2>Code Compass, plus 200 Code Inspector users</h2>
-<p class="sub">All seats run Compass. 200 of them also run Code Inspector 5 times per working day. Highlighted rows are where the machine count changes.</p>
-
-<div class="scroll"><table>
-<thead>
-  <tr class="grp">
-    <th colspan="6" class="g-need">Computed requirement</th>
-    <th colspan="5" class="g-mg">Option A &middot; Managed platform</th>
-    <th colspan="5" class="g-vp">Option B &middot; Raw VPS</th>
-    <th colspan="4" class="g-sv">Option C &middot; Serverless</th>
-  </tr>
-  <tr>
-    <th class="g-need">Seats</th><th class="g-need">Peak<br>concurrent</th>
-    <th class="g-need">vCPU</th><th class="g-need">App RAM<br>GB</th><th class="g-need">Index RAM<br>GB</th><th class="g-need">Index disk<br>GB</th>
-    <th class="g-mg">Web tier</th><th class="g-mg">Index host</th><th class="g-mg">Machines</th><th class="g-mg">Total vCPU</th><th class="g-mg">Total RAM GB</th>
-    <th class="g-vp">Web tier</th><th class="g-vp">Index host</th><th class="g-vp">Machines</th><th class="g-vp">Total vCPU</th><th class="g-vp">Total RAM GB</th>
-    <th class="g-sv">Peak inst.</th><th class="g-sv">Warm</th><th class="g-sv">Peak vCPU</th><th class="g-sv">Peak RAM GB</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td class="seats">20</td><td>0.7</td>
-    <td>0.6</td><td>1.4</td><td>0.4</td><td>1</td>
-    <td class="plan">Standard x1</td><td class="plan">on web instance</td><td>1</td><td>1</td><td>2</td>
-    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr class="step">
-    <td class="seats">40</td><td>1.4</td>
-    <td>0.8</td><td>1.7</td><td>0.5</td><td>1</td>
-    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td class="up">2</td><td>2</td><td>4</td>
-    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">60</td><td>2.1</td>
-    <td>1.0</td><td>1.9</td><td>0.6</td><td>1</td>
-    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
-    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">80</td><td>2.8</td>
-    <td>1.2</td><td>2.2</td><td>0.7</td><td>1</td>
-    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
-    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">100</td><td>3.5</td>
-    <td>1.4</td><td>2.4</td><td>0.8</td><td>2</td>
-    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
-    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">120</td><td>4.2</td>
-    <td>1.6</td><td>2.7</td><td>0.9</td><td>2</td>
-    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
-    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">140</td><td>4.9</td>
-    <td>1.8</td><td>2.9</td><td>1.0</td><td>2</td>
-    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
-    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr class="step">
-    <td class="seats">160</td><td>5.6</td>
-    <td>2.0</td><td>3.2</td><td>1.1</td><td>2</td>
-    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td class="up">3</td><td>3</td><td>6</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">180</td><td>6.3</td>
-    <td>2.2</td><td>3.4</td><td>1.2</td><td>2</td>
-    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">200</td><td>7.0</td>
-    <td>2.4</td><td>3.6</td><td>1.3</td><td>2</td>
-    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">220</td><td>7.1</td>
-    <td>2.5</td><td>3.7</td><td>1.4</td><td>2</td>
-    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">240</td><td>7.2</td>
-    <td>2.5</td><td>3.7</td><td>1.4</td><td>2</td>
-    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">260</td><td>7.4</td>
-    <td>2.6</td><td>3.8</td><td>1.5</td><td>3</td>
-    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">280</td><td>7.5</td>
-    <td>2.6</td><td>3.8</td><td>1.6</td><td>3</td>
-    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">300</td><td>7.6</td>
-    <td>2.6</td><td>3.9</td><td>1.7</td><td>3</td>
-    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">320</td><td>7.7</td>
-    <td>2.7</td><td>3.9</td><td>1.8</td><td>3</td>
-    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">340</td><td>7.9</td>
-    <td>2.7</td><td>3.9</td><td>1.9</td><td>3</td>
-    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">360</td><td>8.0</td>
-    <td>2.7</td><td>4.0</td><td>2.0</td><td>3</td>
-    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr class="step">
-    <td class="seats">380</td><td>8.1</td>
-    <td>2.8</td><td>4.0</td><td>2.1</td><td>3</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td class="up">4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">400</td><td>8.2</td>
-    <td>2.8</td><td>4.1</td><td>2.2</td><td>3</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">420</td><td>8.4</td>
-    <td>2.9</td><td>4.1</td><td>2.3</td><td>3</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">440</td><td>8.5</td>
-    <td>2.9</td><td>4.2</td><td>2.4</td><td>4</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">460</td><td>8.6</td>
-    <td>2.9</td><td>4.2</td><td>2.5</td><td>4</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">480</td><td>8.7</td>
-    <td>3.0</td><td>4.3</td><td>2.5</td><td>4</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">500</td><td>8.9</td>
-    <td>3.0</td><td>4.3</td><td>2.7</td><td>4</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">520</td><td>9.0</td>
-    <td>3.0</td><td>4.3</td><td>2.7</td><td>4</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">540</td><td>9.1</td>
-    <td>3.1</td><td>4.4</td><td>2.8</td><td>4</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">560</td><td>9.2</td>
-    <td>3.1</td><td>4.4</td><td>2.9</td><td>4</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">580</td><td>9.4</td>
-    <td>3.2</td><td>4.5</td><td>3.0</td><td>4</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">600</td><td>9.5</td>
-    <td>3.2</td><td>4.5</td><td>3.1</td><td>5</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">620</td><td>9.6</td>
-    <td>3.2</td><td>4.6</td><td>3.2</td><td>5</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">640</td><td>9.7</td>
-    <td>3.3</td><td>4.6</td><td>3.3</td><td>5</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr class="step">
-    <td class="seats">660</td><td>9.9</td>
-    <td>3.3</td><td>4.6</td><td>3.4</td><td>5</td>
-    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td class="up">5</td><td>5</td><td>10</td>
-    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">680</td><td>10.0</td>
-    <td>3.3</td><td>4.7</td><td>3.5</td><td>5</td>
-    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
-    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">700</td><td>10.1</td>
-    <td>3.4</td><td>4.7</td><td>3.6</td><td>5</td>
-    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
-    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">720</td><td>10.2</td>
-    <td>3.4</td><td>4.8</td><td>3.7</td><td>5</td>
-    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
-    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">740</td><td>10.4</td>
-    <td>3.5</td><td>4.8</td><td>3.8</td><td>5</td>
-    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
-    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">760</td><td>10.5</td>
-    <td>3.5</td><td>4.9</td><td>3.8</td><td>5</td>
-    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
-    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">780</td><td>10.6</td>
-    <td>3.5</td><td>4.9</td><td>3.9</td><td>6</td>
-    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
-    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">800</td><td>10.7</td>
-    <td>3.6</td><td>5.0</td><td>4.0</td><td>6</td>
-    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
-    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">820</td><td>10.9</td>
-    <td>3.6</td><td>5.0</td><td>4.1</td><td>6</td>
-    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
-    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">840</td><td>11.0</td>
-    <td>3.6</td><td>5.0</td><td>4.2</td><td>6</td>
-    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
-    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-</tbody></table></div>
-<h2>Code Compass, plus 250 Code Inspector users</h2>
-<p class="sub">All seats run Compass. 250 of them also run Code Inspector 5 times per working day. Highlighted rows are where the machine count changes.</p>
-
-<div class="scroll"><table>
-<thead>
-  <tr class="grp">
-    <th colspan="6" class="g-need">Computed requirement</th>
-    <th colspan="5" class="g-mg">Option A &middot; Managed platform</th>
-    <th colspan="5" class="g-vp">Option B &middot; Raw VPS</th>
-    <th colspan="4" class="g-sv">Option C &middot; Serverless</th>
-  </tr>
-  <tr>
-    <th class="g-need">Seats</th><th class="g-need">Peak<br>concurrent</th>
-    <th class="g-need">vCPU</th><th class="g-need">App RAM<br>GB</th><th class="g-need">Index RAM<br>GB</th><th class="g-need">Index disk<br>GB</th>
-    <th class="g-mg">Web tier</th><th class="g-mg">Index host</th><th class="g-mg">Machines</th><th class="g-mg">Total vCPU</th><th class="g-mg">Total RAM GB</th>
-    <th class="g-vp">Web tier</th><th class="g-vp">Index host</th><th class="g-vp">Machines</th><th class="g-vp">Total vCPU</th><th class="g-vp">Total RAM GB</th>
-    <th class="g-sv">Peak inst.</th><th class="g-sv">Warm</th><th class="g-sv">Peak vCPU</th><th class="g-sv">Peak RAM GB</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td class="seats">20</td><td>0.7</td>
-    <td>0.6</td><td>1.4</td><td>0.4</td><td>1</td>
-    <td class="plan">Standard x1</td><td class="plan">on web instance</td><td>1</td><td>1</td><td>2</td>
-    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr class="step">
-    <td class="seats">40</td><td>1.4</td>
-    <td>0.8</td><td>1.7</td><td>0.5</td><td>1</td>
-    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td class="up">2</td><td>2</td><td>4</td>
-    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">60</td><td>2.1</td>
-    <td>1.0</td><td>1.9</td><td>0.6</td><td>1</td>
-    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
-    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">80</td><td>2.8</td>
-    <td>1.2</td><td>2.2</td><td>0.7</td><td>1</td>
-    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
-    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">100</td><td>3.5</td>
-    <td>1.4</td><td>2.4</td><td>0.8</td><td>2</td>
-    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
-    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">120</td><td>4.2</td>
-    <td>1.6</td><td>2.7</td><td>0.9</td><td>2</td>
-    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
-    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">140</td><td>4.9</td>
-    <td>1.8</td><td>2.9</td><td>1.0</td><td>2</td>
-    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
-    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr class="step">
-    <td class="seats">160</td><td>5.6</td>
-    <td>2.0</td><td>3.2</td><td>1.1</td><td>2</td>
-    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td class="up">3</td><td>3</td><td>6</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">180</td><td>6.3</td>
-    <td>2.2</td><td>3.4</td><td>1.2</td><td>2</td>
-    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">200</td><td>7.0</td>
-    <td>2.4</td><td>3.6</td><td>1.3</td><td>2</td>
-    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">220</td><td>7.7</td>
-    <td>2.7</td><td>3.9</td><td>1.4</td><td>2</td>
-    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">240</td><td>8.4</td>
-    <td>2.9</td><td>4.1</td><td>1.4</td><td>2</td>
-    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">260</td><td>8.8</td>
-    <td>3.0</td><td>4.3</td><td>1.5</td><td>3</td>
-    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr class="step">
-    <td class="seats">280</td><td>8.9</td>
-    <td>3.0</td><td>4.3</td><td>1.6</td><td>3</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td class="up">4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">300</td><td>9.0</td>
-    <td>3.1</td><td>4.4</td><td>1.7</td><td>3</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">320</td><td>9.2</td>
-    <td>3.1</td><td>4.4</td><td>1.8</td><td>3</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">340</td><td>9.3</td>
-    <td>3.1</td><td>4.5</td><td>1.9</td><td>3</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">360</td><td>9.4</td>
-    <td>3.2</td><td>4.5</td><td>2.0</td><td>3</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">380</td><td>9.5</td>
+    <td class="seats">380</td>
+    <td class="rng">7.1 &ndash; 9.5</td>
     <td>3.2</td><td>4.5</td><td>2.1</td><td>3</td>
     <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
     <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr>
-    <td class="seats">400</td><td>9.7</td>
-    <td>3.2</td><td>4.6</td><td>2.2</td><td>3</td>
+    <td class="seats">400</td>
+    <td class="rng">7.5 &ndash; 10.0</td>
+    <td>3.4</td><td>4.7</td><td>2.2</td><td>3</td>
     <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
     <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr>
-    <td class="seats">420</td><td>9.8</td>
-    <td>3.3</td><td>4.6</td><td>2.3</td><td>3</td>
+    <td class="seats">420</td>
+    <td class="rng">7.9 &ndash; 10.5</td>
+    <td>3.5</td><td>4.9</td><td>2.3</td><td>3</td>
     <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
     <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr>
-    <td class="seats">440</td><td>9.9</td>
-    <td>3.3</td><td>4.7</td><td>2.4</td><td>4</td>
+    <td class="seats">440</td>
+    <td class="rng">8.3 &ndash; 11.0</td>
+    <td>3.6</td><td>5.0</td><td>2.4</td><td>4</td>
     <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
     <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr>
-    <td class="seats">460</td><td>10.0</td>
-    <td>3.4</td><td>4.7</td><td>2.5</td><td>4</td>
+    <td class="seats">460</td>
+    <td class="rng">8.6 &ndash; 11.5</td>
+    <td>3.8</td><td>5.2</td><td>2.5</td><td>4</td>
     <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
     <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">480</td><td>10.2</td>
-    <td>3.4</td><td>4.8</td><td>2.5</td><td>4</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">500</td><td>10.3</td>
-    <td>3.4</td><td>4.8</td><td>2.7</td><td>4</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">520</td><td>10.4</td>
-    <td>3.5</td><td>4.8</td><td>2.7</td><td>4</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">540</td><td>10.5</td>
-    <td>3.5</td><td>4.9</td><td>2.8</td><td>4</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">560</td><td>10.7</td>
-    <td>3.5</td><td>4.9</td><td>2.9</td><td>4</td>
-    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
-    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr class="step">
-    <td class="seats">580</td><td>10.8</td>
-    <td>3.6</td><td>5.0</td><td>3.0</td><td>4</td>
-    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td class="up">5</td><td>5</td><td>10</td>
-    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">600</td><td>10.9</td>
-    <td>3.6</td><td>5.0</td><td>3.1</td><td>5</td>
-    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
-    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">620</td><td>11.0</td>
-    <td>3.7</td><td>5.1</td><td>3.2</td><td>5</td>
-    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
-    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">640</td><td>11.2</td>
-    <td>3.7</td><td>5.1</td><td>3.3</td><td>5</td>
-    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
-    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">660</td><td>11.3</td>
-    <td>3.7</td><td>5.2</td><td>3.4</td><td>5</td>
-    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
-    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">680</td><td>11.4</td>
-    <td>3.8</td><td>5.2</td><td>3.5</td><td>5</td>
-    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
-    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">700</td><td>11.5</td>
-    <td>3.8</td><td>5.2</td><td>3.6</td><td>5</td>
-    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
-    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">720</td><td>11.7</td>
-    <td>3.8</td><td>5.3</td><td>3.7</td><td>5</td>
-    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
-    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">740</td><td>11.8</td>
-    <td>3.9</td><td>5.3</td><td>3.8</td><td>5</td>
-    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
-    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
-    <td>1</td><td>1</td><td>1</td><td>2</td>
-  </tr>
-  <tr>
-    <td class="seats">760</td><td>11.9</td>
-    <td>3.9</td><td>5.4</td><td>3.8</td><td>5</td>
-    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
-    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr class="split">
-    <td class="seats">780<sup>&dagger;</sup></td><td>12.0</td>
-    <td>4.0</td><td>5.4</td><td>3.9</td><td>6</td>
-    <td class="plan">Standard x4</td><td class="plan up">Pro x1</td><td>5</td><td>6</td><td>12</td>
+    <td class="seats">480<sup>&dagger;</sup></td>
+    <td class="rng">9.0 &ndash; 12.0</td>
+    <td>3.9</td><td>5.4</td><td>2.5</td><td>4</td>
+    <td class="plan">Standard x4</td><td class="plan up">Pro x1</td><td class="up">5</td><td>6</td><td>12</td>
     <td class="plan">CX33 x1</td><td class="plan up">CX23 x1</td><td class="up">2</td><td>6</td><td>12</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
+  <tr class="step">
+    <td class="seats">500</td>
+    <td class="rng">9.4 &ndash; 12.5</td>
+    <td>4.1</td><td>5.6</td><td>2.7</td><td>4</td>
+    <td class="plan">Standard x5</td><td class="plan">Pro x1</td><td class="up">6</td><td>7</td><td>14</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
   <tr>
-    <td class="seats">800</td><td>12.2</td>
-    <td>4.0</td><td>5.5</td><td>4.0</td><td>6</td>
-    <td class="plan">Standard x4</td><td class="plan">Pro Plus x1</td><td>5</td><td>8</td><td>16</td>
-    <td class="plan">CX33 x1</td><td class="plan">CX33 x1</td><td>2</td><td>8</td><td>16</td>
+    <td class="seats">520</td>
+    <td class="rng">9.8 &ndash; 13.0</td>
+    <td>4.3</td><td>5.8</td><td>2.7</td><td>4</td>
+    <td class="plan">Standard x5</td><td class="plan">Pro x1</td><td>6</td><td>7</td><td>14</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">540</td>
+    <td class="rng">10.1 &ndash; 13.5</td>
+    <td>4.4</td><td>5.9</td><td>2.8</td><td>4</td>
+    <td class="plan">Standard x5</td><td class="plan">Pro x1</td><td>6</td><td>7</td><td>14</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">560</td>
+    <td class="rng">10.5 &ndash; 14.0</td>
+    <td>4.5</td><td>6.1</td><td>2.9</td><td>4</td>
+    <td class="plan">Standard x5</td><td class="plan">Pro x1</td><td>6</td><td>7</td><td>14</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">580</td>
+    <td class="rng">10.9 &ndash; 14.5</td>
+    <td>4.7</td><td>6.3</td><td>3.0</td><td>4</td>
+    <td class="plan">Standard x5</td><td class="plan">Pro x1</td><td>6</td><td>7</td><td>14</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">600</td>
+    <td class="rng">11.3 &ndash; 15.0</td>
+    <td>4.8</td><td>6.5</td><td>3.1</td><td>5</td>
+    <td class="plan">Standard x5</td><td class="plan">Pro x1</td><td>6</td><td>7</td><td>14</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">620</td>
+    <td class="rng">11.6 &ndash; 15.5</td>
+    <td>5.0</td><td>6.6</td><td>3.2</td><td>5</td>
+    <td class="plan">Standard x5</td><td class="plan">Pro x1</td><td>6</td><td>7</td><td>14</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr class="step">
-    <td class="seats">820</td><td>12.3</td>
-    <td>4.0</td><td>5.5</td><td>4.1</td><td>6</td>
-    <td class="plan">Standard x5</td><td class="plan">Pro Plus x1</td><td class="up">6</td><td>9</td><td>18</td>
+    <td class="seats">640</td>
+    <td class="rng">12.0 &ndash; 16.0</td>
+    <td>5.1</td><td>6.8</td><td>3.3</td><td>5</td>
+    <td class="plan">Standard x6</td><td class="plan">Pro x1</td><td class="up">7</td><td>8</td><td>16</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">660</td>
+    <td class="rng">12.4 &ndash; 16.5</td>
+    <td>5.3</td><td>7.0</td><td>3.4</td><td>5</td>
+    <td class="plan">Standard x6</td><td class="plan">Pro x1</td><td>7</td><td>8</td><td>16</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">680</td>
+    <td class="rng">12.8 &ndash; 17.0</td>
+    <td>5.4</td><td>7.1</td><td>3.5</td><td>5</td>
+    <td class="plan">Standard x6</td><td class="plan">Pro x1</td><td>7</td><td>8</td><td>16</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">700</td>
+    <td class="rng">13.1 &ndash; 17.5</td>
+    <td>5.6</td><td>7.3</td><td>3.6</td><td>5</td>
+    <td class="plan">Standard x6</td><td class="plan">Pro x1</td><td>7</td><td>8</td><td>16</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">720</td>
+    <td class="rng">13.5 &ndash; 18.0</td>
+    <td>5.7</td><td>7.5</td><td>3.7</td><td>5</td>
+    <td class="plan">Standard x6</td><td class="plan">Pro x1</td><td>7</td><td>8</td><td>16</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">740</td>
+    <td class="rng">13.9 &ndash; 18.5</td>
+    <td>5.9</td><td>7.7</td><td>3.8</td><td>5</td>
+    <td class="plan">Standard x6</td><td class="plan">Pro x1</td><td>7</td><td>8</td><td>16</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">760</td>
+    <td class="rng">14.3 &ndash; 19.0</td>
+    <td>6.0</td><td>7.8</td><td>3.8</td><td>5</td>
+    <td class="plan">Standard x7</td><td class="plan">Pro x1</td><td class="up">8</td><td>9</td><td>18</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">780</td>
+    <td class="rng">14.6 &ndash; 19.5</td>
+    <td>6.2</td><td>8.0</td><td>3.9</td><td>6</td>
+    <td class="plan">Standard x7</td><td class="plan">Pro x1</td><td>8</td><td>9</td><td>18</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">800</td>
+    <td class="rng">15.0 &ndash; 20.0</td>
+    <td>6.3</td><td>8.2</td><td>4.0</td><td>6</td>
+    <td class="plan">Standard x7</td><td class="plan">Pro Plus x1</td><td>8</td><td>11</td><td>22</td>
     <td class="plan">CX43 x1</td><td class="plan">CX33 x1</td><td>2</td><td>12</td><td>24</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
   <tr>
-    <td class="seats">840</td><td>12.4</td>
-    <td>4.1</td><td>5.5</td><td>4.2</td><td>6</td>
-    <td class="plan">Standard x5</td><td class="plan">Pro Plus x1</td><td>6</td><td>9</td><td>18</td>
+    <td class="seats">820</td>
+    <td class="rng">15.4 &ndash; 20.5</td>
+    <td>6.5</td><td>8.4</td><td>4.1</td><td>6</td>
+    <td class="plan">Standard x7</td><td class="plan">Pro Plus x1</td><td>8</td><td>11</td><td>22</td>
     <td class="plan">CX43 x1</td><td class="plan">CX33 x1</td><td>2</td><td>12</td><td>24</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">840</td>
+    <td class="rng">15.8 &ndash; 21.0</td>
+    <td>6.6</td><td>8.5</td><td>4.2</td><td>6</td>
+    <td class="plan">Standard x7</td><td class="plan">Pro Plus x1</td><td>8</td><td>11</td><td>22</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX33 x1</td><td>2</td><td>12</td><td>24</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+</tbody></table></div>
+<h2>Code Compass, plus 200 Code Inspector users</h2>
+<p class="sub">All seats run Compass. 200 of them also run Code Inspector 5–7 times per working day. Hardware sized on the high end. Highlighted rows are where the machine
+count changes; the row marked &dagger; is where the search index moves to its own machine.</p>
+
+<div class="scroll"><table>
+<thead>
+  <tr class="grp">
+    <th colspan="6" class="g-need">Computed requirement</th>
+    <th colspan="5" class="g-mg">Option A &middot; Managed platform</th>
+    <th colspan="5" class="g-vp">Option B &middot; Raw VPS</th>
+    <th colspan="4" class="g-sv">Option C &middot; Serverless</th>
+  </tr>
+  <tr>
+    <th class="g-need">Seats</th><th class="g-need">Peak concurrent<br><span class="lt">low &ndash; high</span></th>
+    <th class="g-need">vCPU</th><th class="g-need">App RAM<br>GB</th><th class="g-need">Index RAM<br>GB</th><th class="g-need">Index disk<br>GB</th>
+    <th class="g-mg">Web tier</th><th class="g-mg">Index host</th><th class="g-mg">Machines</th><th class="g-mg">Total vCPU</th><th class="g-mg">Total RAM GB</th>
+    <th class="g-vp">Web tier</th><th class="g-vp">Index host</th><th class="g-vp">Machines</th><th class="g-vp">Total vCPU</th><th class="g-vp">Total RAM GB</th>
+    <th class="g-sv">Peak inst.</th><th class="g-sv">Warm</th><th class="g-sv">Peak vCPU</th><th class="g-sv">Peak RAM GB</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="seats">20</td>
+    <td class="rng">0.9 &ndash; 1.3</td>
+    <td>0.7</td><td>1.7</td><td>0.4</td><td>1</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">40</td>
+    <td class="rng">1.9 &ndash; 2.6</td>
+    <td>1.1</td><td>2.1</td><td>0.5</td><td>1</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">60</td>
+    <td class="rng">2.8 &ndash; 3.9</td>
+    <td>1.5</td><td>2.6</td><td>0.6</td><td>1</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">80</td>
+    <td class="rng">3.8 &ndash; 5.2</td>
+    <td>1.9</td><td>3.0</td><td>0.7</td><td>1</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">100</td>
+    <td class="rng">4.7 &ndash; 6.5</td>
+    <td>2.3</td><td>3.5</td><td>0.8</td><td>2</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td class="up">3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">120</td>
+    <td class="rng">5.7 &ndash; 7.8</td>
+    <td>2.7</td><td>3.9</td><td>0.9</td><td>2</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">140</td>
+    <td class="rng">6.6 &ndash; 9.1</td>
+    <td>3.1</td><td>4.4</td><td>1.0</td><td>2</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td class="up">4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">160</td>
+    <td class="rng">7.6 &ndash; 10.4</td>
+    <td>3.5</td><td>4.8</td><td>1.1</td><td>2</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">180</td>
+    <td class="rng">8.5 &ndash; 11.7</td>
+    <td>3.9</td><td>5.3</td><td>1.2</td><td>2</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="split">
+    <td class="seats">200<sup>&dagger;</sup></td>
+    <td class="rng">9.5 &ndash; 13.0</td>
+    <td>4.3</td><td>5.8</td><td>1.3</td><td>2</td>
+    <td class="plan">Standard x5</td><td class="plan up">Pro x1</td><td class="up">6</td><td>7</td><td>14</td>
+    <td class="plan">CX43 x1</td><td class="plan up">CX23 x1</td><td class="up">2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">220</td>
+    <td class="rng">9.9 &ndash; 13.5</td>
+    <td>4.4</td><td>5.9</td><td>1.4</td><td>2</td>
+    <td class="plan">Standard x5</td><td class="plan">Pro x1</td><td>6</td><td>7</td><td>14</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">240</td>
+    <td class="rng">10.2 &ndash; 14.0</td>
+    <td>4.6</td><td>6.1</td><td>1.4</td><td>2</td>
+    <td class="plan">Standard x5</td><td class="plan">Pro x1</td><td>6</td><td>7</td><td>14</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">260</td>
+    <td class="rng">10.6 &ndash; 14.5</td>
+    <td>4.7</td><td>6.3</td><td>1.5</td><td>3</td>
+    <td class="plan">Standard x5</td><td class="plan">Pro x1</td><td>6</td><td>7</td><td>14</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">280</td>
+    <td class="rng">11.0 &ndash; 15.0</td>
+    <td>4.9</td><td>6.5</td><td>1.6</td><td>3</td>
+    <td class="plan">Standard x5</td><td class="plan">Pro x1</td><td>6</td><td>7</td><td>14</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">300</td>
+    <td class="rng">11.4 &ndash; 15.5</td>
+    <td>5.0</td><td>6.6</td><td>1.7</td><td>3</td>
+    <td class="plan">Standard x6</td><td class="plan">Pro x1</td><td class="up">7</td><td>8</td><td>16</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">320</td>
+    <td class="rng">11.7 &ndash; 16.0</td>
+    <td>5.2</td><td>6.8</td><td>1.8</td><td>3</td>
+    <td class="plan">Standard x6</td><td class="plan">Pro x1</td><td>7</td><td>8</td><td>16</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">340</td>
+    <td class="rng">12.1 &ndash; 16.5</td>
+    <td>5.3</td><td>7.0</td><td>1.9</td><td>3</td>
+    <td class="plan">Standard x6</td><td class="plan">Pro x1</td><td>7</td><td>8</td><td>16</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">360</td>
+    <td class="rng">12.5 &ndash; 17.0</td>
+    <td>5.5</td><td>7.2</td><td>2.0</td><td>3</td>
+    <td class="plan">Standard x6</td><td class="plan">Pro x1</td><td>7</td><td>8</td><td>16</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">380</td>
+    <td class="rng">12.9 &ndash; 17.5</td>
+    <td>5.6</td><td>7.3</td><td>2.1</td><td>3</td>
+    <td class="plan">Standard x6</td><td class="plan">Pro x1</td><td>7</td><td>8</td><td>16</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">400</td>
+    <td class="rng">13.2 &ndash; 18.0</td>
+    <td>5.8</td><td>7.5</td><td>2.2</td><td>3</td>
+    <td class="plan">Standard x6</td><td class="plan">Pro x1</td><td>7</td><td>8</td><td>16</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">420</td>
+    <td class="rng">13.6 &ndash; 18.5</td>
+    <td>5.9</td><td>7.7</td><td>2.3</td><td>3</td>
+    <td class="plan">Standard x6</td><td class="plan">Pro x1</td><td>7</td><td>8</td><td>16</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">440</td>
+    <td class="rng">14.0 &ndash; 19.0</td>
+    <td>6.1</td><td>7.9</td><td>2.4</td><td>4</td>
+    <td class="plan">Standard x7</td><td class="plan">Pro x1</td><td class="up">8</td><td>9</td><td>18</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">460</td>
+    <td class="rng">14.4 &ndash; 19.5</td>
+    <td>6.2</td><td>8.0</td><td>2.5</td><td>4</td>
+    <td class="plan">Standard x7</td><td class="plan">Pro x1</td><td>8</td><td>9</td><td>18</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">480</td>
+    <td class="rng">14.7 &ndash; 20.0</td>
+    <td>6.4</td><td>8.2</td><td>2.5</td><td>4</td>
+    <td class="plan">Standard x7</td><td class="plan">Pro x1</td><td>8</td><td>9</td><td>18</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">500</td>
+    <td class="rng">15.1 &ndash; 20.5</td>
+    <td>6.5</td><td>8.4</td><td>2.7</td><td>4</td>
+    <td class="plan">Standard x7</td><td class="plan">Pro x1</td><td>8</td><td>9</td><td>18</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">520</td>
+    <td class="rng">15.5 &ndash; 21.0</td>
+    <td>6.7</td><td>8.6</td><td>2.7</td><td>4</td>
+    <td class="plan">Standard x7</td><td class="plan">Pro x1</td><td>8</td><td>9</td><td>18</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">540</td>
+    <td class="rng">15.9 &ndash; 21.5</td>
+    <td>6.8</td><td>8.7</td><td>2.8</td><td>4</td>
+    <td class="plan">Standard x7</td><td class="plan">Pro x1</td><td>8</td><td>9</td><td>18</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">560</td>
+    <td class="rng">16.2 &ndash; 22.0</td>
+    <td>7.0</td><td>8.9</td><td>2.9</td><td>4</td>
+    <td class="plan">Standard x7</td><td class="plan">Pro x1</td><td>8</td><td>9</td><td>18</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">580</td>
+    <td class="rng">16.6 &ndash; 22.5</td>
+    <td>7.1</td><td>9.1</td><td>3.0</td><td>4</td>
+    <td class="plan">Standard x8</td><td class="plan">Pro x1</td><td class="up">9</td><td>10</td><td>20</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">600</td>
+    <td class="rng">17.0 &ndash; 23.0</td>
+    <td>7.3</td><td>9.3</td><td>3.1</td><td>5</td>
+    <td class="plan">Standard x8</td><td class="plan">Pro x1</td><td>9</td><td>10</td><td>20</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">620</td>
+    <td class="rng">17.4 &ndash; 23.5</td>
+    <td>7.4</td><td>9.4</td><td>3.2</td><td>5</td>
+    <td class="plan">Standard x8</td><td class="plan">Pro x1</td><td>9</td><td>10</td><td>20</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">640</td>
+    <td class="rng">17.7 &ndash; 24.0</td>
+    <td>7.6</td><td>9.6</td><td>3.3</td><td>5</td>
+    <td class="plan">Standard x8</td><td class="plan">Pro x1</td><td>9</td><td>10</td><td>20</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">660</td>
+    <td class="rng">18.1 &ndash; 24.5</td>
+    <td>7.7</td><td>9.8</td><td>3.4</td><td>5</td>
+    <td class="plan">Standard x8</td><td class="plan">Pro x1</td><td>9</td><td>10</td><td>20</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">680</td>
+    <td class="rng">18.5 &ndash; 25.0</td>
+    <td>7.9</td><td>10.0</td><td>3.5</td><td>5</td>
+    <td class="plan">Standard x8</td><td class="plan">Pro x1</td><td>9</td><td>10</td><td>20</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">700</td>
+    <td class="rng">18.9 &ndash; 25.5</td>
+    <td>8.0</td><td>10.1</td><td>3.6</td><td>5</td>
+    <td class="plan">Standard x9</td><td class="plan">Pro x1</td><td class="up">10</td><td>11</td><td>22</td>
+    <td class="plan">CX33 x3</td><td class="plan">CX23 x1</td><td class="up">4</td><td>14</td><td>28</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">720</td>
+    <td class="rng">19.2 &ndash; 26.0</td>
+    <td>8.2</td><td>10.3</td><td>3.7</td><td>5</td>
+    <td class="plan">Standard x9</td><td class="plan">Pro x1</td><td>10</td><td>11</td><td>22</td>
+    <td class="plan">CX33 x3</td><td class="plan">CX23 x1</td><td>4</td><td>14</td><td>28</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">740</td>
+    <td class="rng">19.6 &ndash; 26.5</td>
+    <td>8.3</td><td>10.5</td><td>3.8</td><td>5</td>
+    <td class="plan">Standard x9</td><td class="plan">Pro x1</td><td>10</td><td>11</td><td>22</td>
+    <td class="plan">CX33 x3</td><td class="plan">CX23 x1</td><td>4</td><td>14</td><td>28</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">760</td>
+    <td class="rng">20.0 &ndash; 27.0</td>
+    <td>8.5</td><td>10.7</td><td>3.8</td><td>5</td>
+    <td class="plan">Standard x9</td><td class="plan">Pro x1</td><td>10</td><td>11</td><td>22</td>
+    <td class="plan">CX33 x3</td><td class="plan">CX23 x1</td><td>4</td><td>14</td><td>28</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">780</td>
+    <td class="rng">20.4 &ndash; 27.5</td>
+    <td>8.6</td><td>10.8</td><td>3.9</td><td>6</td>
+    <td class="plan">Standard x9</td><td class="plan">Pro x1</td><td>10</td><td>11</td><td>22</td>
+    <td class="plan">CX33 x3</td><td class="plan">CX23 x1</td><td>4</td><td>14</td><td>28</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">800</td>
+    <td class="rng">20.7 &ndash; 28.0</td>
+    <td>8.8</td><td>11.0</td><td>4.0</td><td>6</td>
+    <td class="plan">Standard x9</td><td class="plan">Pro Plus x1</td><td>10</td><td>13</td><td>26</td>
+    <td class="plan">CX33 x3</td><td class="plan">CX33 x1</td><td>4</td><td>16</td><td>32</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">820</td>
+    <td class="rng">21.1 &ndash; 28.5</td>
+    <td>8.9</td><td>11.2</td><td>4.1</td><td>6</td>
+    <td class="plan">Standard x9</td><td class="plan">Pro Plus x1</td><td>10</td><td>13</td><td>26</td>
+    <td class="plan">CX33 x3</td><td class="plan">CX33 x1</td><td>4</td><td>16</td><td>32</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">840</td>
+    <td class="rng">21.5 &ndash; 29.0</td>
+    <td>9.1</td><td>11.4</td><td>4.2</td><td>6</td>
+    <td class="plan">Standard x10</td><td class="plan">Pro Plus x1</td><td class="up">11</td><td>14</td><td>28</td>
+    <td class="plan">CX33 x3</td><td class="plan">CX33 x1</td><td>4</td><td>16</td><td>32</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+</tbody></table></div>
+<h2>Code Compass, plus 250 Code Inspector users</h2>
+<p class="sub">All seats run Compass. 250 of them also run Code Inspector 5–7 times per working day. Hardware sized on the high end. Highlighted rows are where the machine
+count changes; the row marked &dagger; is where the search index moves to its own machine.</p>
+
+<div class="scroll"><table>
+<thead>
+  <tr class="grp">
+    <th colspan="6" class="g-need">Computed requirement</th>
+    <th colspan="5" class="g-mg">Option A &middot; Managed platform</th>
+    <th colspan="5" class="g-vp">Option B &middot; Raw VPS</th>
+    <th colspan="4" class="g-sv">Option C &middot; Serverless</th>
+  </tr>
+  <tr>
+    <th class="g-need">Seats</th><th class="g-need">Peak concurrent<br><span class="lt">low &ndash; high</span></th>
+    <th class="g-need">vCPU</th><th class="g-need">App RAM<br>GB</th><th class="g-need">Index RAM<br>GB</th><th class="g-need">Index disk<br>GB</th>
+    <th class="g-mg">Web tier</th><th class="g-mg">Index host</th><th class="g-mg">Machines</th><th class="g-mg">Total vCPU</th><th class="g-mg">Total RAM GB</th>
+    <th class="g-vp">Web tier</th><th class="g-vp">Index host</th><th class="g-vp">Machines</th><th class="g-vp">Total vCPU</th><th class="g-vp">Total RAM GB</th>
+    <th class="g-sv">Peak inst.</th><th class="g-sv">Warm</th><th class="g-sv">Peak vCPU</th><th class="g-sv">Peak RAM GB</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="seats">20</td>
+    <td class="rng">0.9 &ndash; 1.3</td>
+    <td>0.7</td><td>1.7</td><td>0.4</td><td>1</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">40</td>
+    <td class="rng">1.9 &ndash; 2.6</td>
+    <td>1.1</td><td>2.1</td><td>0.5</td><td>1</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">60</td>
+    <td class="rng">2.8 &ndash; 3.9</td>
+    <td>1.5</td><td>2.6</td><td>0.6</td><td>1</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">80</td>
+    <td class="rng">3.8 &ndash; 5.2</td>
+    <td>1.9</td><td>3.0</td><td>0.7</td><td>1</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">100</td>
+    <td class="rng">4.7 &ndash; 6.5</td>
+    <td>2.3</td><td>3.5</td><td>0.8</td><td>2</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td class="up">3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">120</td>
+    <td class="rng">5.7 &ndash; 7.8</td>
+    <td>2.7</td><td>3.9</td><td>0.9</td><td>2</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">140</td>
+    <td class="rng">6.6 &ndash; 9.1</td>
+    <td>3.1</td><td>4.4</td><td>1.0</td><td>2</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td class="up">4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">160</td>
+    <td class="rng">7.6 &ndash; 10.4</td>
+    <td>3.5</td><td>4.8</td><td>1.1</td><td>2</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">180</td>
+    <td class="rng">8.5 &ndash; 11.7</td>
+    <td>3.9</td><td>5.3</td><td>1.2</td><td>2</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="split">
+    <td class="seats">200<sup>&dagger;</sup></td>
+    <td class="rng">9.5 &ndash; 13.0</td>
+    <td>4.3</td><td>5.8</td><td>1.3</td><td>2</td>
+    <td class="plan">Standard x5</td><td class="plan up">Pro x1</td><td class="up">6</td><td>7</td><td>14</td>
+    <td class="plan">CX43 x1</td><td class="plan up">CX23 x1</td><td class="up">2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">220</td>
+    <td class="rng">10.4 &ndash; 14.3</td>
+    <td>4.6</td><td>6.2</td><td>1.4</td><td>2</td>
+    <td class="plan">Standard x5</td><td class="plan">Pro x1</td><td>6</td><td>7</td><td>14</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">240</td>
+    <td class="rng">11.4 &ndash; 15.6</td>
+    <td>5.0</td><td>6.7</td><td>1.4</td><td>2</td>
+    <td class="plan">Standard x6</td><td class="plan">Pro x1</td><td class="up">7</td><td>8</td><td>16</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">260</td>
+    <td class="rng">12.0 &ndash; 16.5</td>
+    <td>5.3</td><td>7.0</td><td>1.5</td><td>3</td>
+    <td class="plan">Standard x6</td><td class="plan">Pro x1</td><td>7</td><td>8</td><td>16</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">280</td>
+    <td class="rng">12.4 &ndash; 17.0</td>
+    <td>5.5</td><td>7.2</td><td>1.6</td><td>3</td>
+    <td class="plan">Standard x6</td><td class="plan">Pro x1</td><td>7</td><td>8</td><td>16</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">300</td>
+    <td class="rng">12.8 &ndash; 17.5</td>
+    <td>5.6</td><td>7.3</td><td>1.7</td><td>3</td>
+    <td class="plan">Standard x6</td><td class="plan">Pro x1</td><td>7</td><td>8</td><td>16</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">320</td>
+    <td class="rng">13.2 &ndash; 18.0</td>
+    <td>5.8</td><td>7.5</td><td>1.8</td><td>3</td>
+    <td class="plan">Standard x6</td><td class="plan">Pro x1</td><td>7</td><td>8</td><td>16</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">340</td>
+    <td class="rng">13.5 &ndash; 18.5</td>
+    <td>5.9</td><td>7.7</td><td>1.9</td><td>3</td>
+    <td class="plan">Standard x6</td><td class="plan">Pro x1</td><td>7</td><td>8</td><td>16</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">360</td>
+    <td class="rng">13.9 &ndash; 19.0</td>
+    <td>6.1</td><td>7.9</td><td>2.0</td><td>3</td>
+    <td class="plan">Standard x7</td><td class="plan">Pro x1</td><td class="up">8</td><td>9</td><td>18</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">380</td>
+    <td class="rng">14.3 &ndash; 19.5</td>
+    <td>6.2</td><td>8.0</td><td>2.1</td><td>3</td>
+    <td class="plan">Standard x7</td><td class="plan">Pro x1</td><td>8</td><td>9</td><td>18</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">400</td>
+    <td class="rng">14.7 &ndash; 20.0</td>
+    <td>6.4</td><td>8.2</td><td>2.2</td><td>3</td>
+    <td class="plan">Standard x7</td><td class="plan">Pro x1</td><td>8</td><td>9</td><td>18</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">420</td>
+    <td class="rng">15.0 &ndash; 20.5</td>
+    <td>6.5</td><td>8.4</td><td>2.3</td><td>3</td>
+    <td class="plan">Standard x7</td><td class="plan">Pro x1</td><td>8</td><td>9</td><td>18</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">440</td>
+    <td class="rng">15.4 &ndash; 21.0</td>
+    <td>6.7</td><td>8.6</td><td>2.4</td><td>4</td>
+    <td class="plan">Standard x7</td><td class="plan">Pro x1</td><td>8</td><td>9</td><td>18</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">460</td>
+    <td class="rng">15.8 &ndash; 21.5</td>
+    <td>6.8</td><td>8.7</td><td>2.5</td><td>4</td>
+    <td class="plan">Standard x7</td><td class="plan">Pro x1</td><td>8</td><td>9</td><td>18</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">480</td>
+    <td class="rng">16.2 &ndash; 22.0</td>
+    <td>7.0</td><td>8.9</td><td>2.5</td><td>4</td>
+    <td class="plan">Standard x7</td><td class="plan">Pro x1</td><td>8</td><td>9</td><td>18</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">500</td>
+    <td class="rng">16.5 &ndash; 22.5</td>
+    <td>7.1</td><td>9.1</td><td>2.7</td><td>4</td>
+    <td class="plan">Standard x8</td><td class="plan">Pro x1</td><td class="up">9</td><td>10</td><td>20</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">520</td>
+    <td class="rng">16.9 &ndash; 23.0</td>
+    <td>7.3</td><td>9.3</td><td>2.7</td><td>4</td>
+    <td class="plan">Standard x8</td><td class="plan">Pro x1</td><td>9</td><td>10</td><td>20</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">540</td>
+    <td class="rng">17.3 &ndash; 23.5</td>
+    <td>7.4</td><td>9.4</td><td>2.8</td><td>4</td>
+    <td class="plan">Standard x8</td><td class="plan">Pro x1</td><td>9</td><td>10</td><td>20</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">560</td>
+    <td class="rng">17.7 &ndash; 24.0</td>
+    <td>7.6</td><td>9.6</td><td>2.9</td><td>4</td>
+    <td class="plan">Standard x8</td><td class="plan">Pro x1</td><td>9</td><td>10</td><td>20</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">580</td>
+    <td class="rng">18.0 &ndash; 24.5</td>
+    <td>7.7</td><td>9.8</td><td>3.0</td><td>4</td>
+    <td class="plan">Standard x8</td><td class="plan">Pro x1</td><td>9</td><td>10</td><td>20</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">600</td>
+    <td class="rng">18.4 &ndash; 25.0</td>
+    <td>7.9</td><td>10.0</td><td>3.1</td><td>5</td>
+    <td class="plan">Standard x8</td><td class="plan">Pro x1</td><td>9</td><td>10</td><td>20</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX23 x1</td><td>2</td><td>10</td><td>20</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">620</td>
+    <td class="rng">18.8 &ndash; 25.5</td>
+    <td>8.0</td><td>10.1</td><td>3.2</td><td>5</td>
+    <td class="plan">Standard x9</td><td class="plan">Pro x1</td><td class="up">10</td><td>11</td><td>22</td>
+    <td class="plan">CX33 x3</td><td class="plan">CX23 x1</td><td class="up">4</td><td>14</td><td>28</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">640</td>
+    <td class="rng">19.2 &ndash; 26.0</td>
+    <td>8.2</td><td>10.3</td><td>3.3</td><td>5</td>
+    <td class="plan">Standard x9</td><td class="plan">Pro x1</td><td>10</td><td>11</td><td>22</td>
+    <td class="plan">CX33 x3</td><td class="plan">CX23 x1</td><td>4</td><td>14</td><td>28</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">660</td>
+    <td class="rng">19.5 &ndash; 26.5</td>
+    <td>8.3</td><td>10.5</td><td>3.4</td><td>5</td>
+    <td class="plan">Standard x9</td><td class="plan">Pro x1</td><td>10</td><td>11</td><td>22</td>
+    <td class="plan">CX33 x3</td><td class="plan">CX23 x1</td><td>4</td><td>14</td><td>28</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">680</td>
+    <td class="rng">19.9 &ndash; 27.0</td>
+    <td>8.5</td><td>10.7</td><td>3.5</td><td>5</td>
+    <td class="plan">Standard x9</td><td class="plan">Pro x1</td><td>10</td><td>11</td><td>22</td>
+    <td class="plan">CX33 x3</td><td class="plan">CX23 x1</td><td>4</td><td>14</td><td>28</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">700</td>
+    <td class="rng">20.3 &ndash; 27.5</td>
+    <td>8.6</td><td>10.8</td><td>3.6</td><td>5</td>
+    <td class="plan">Standard x9</td><td class="plan">Pro x1</td><td>10</td><td>11</td><td>22</td>
+    <td class="plan">CX33 x3</td><td class="plan">CX23 x1</td><td>4</td><td>14</td><td>28</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">720</td>
+    <td class="rng">20.7 &ndash; 28.0</td>
+    <td>8.8</td><td>11.0</td><td>3.7</td><td>5</td>
+    <td class="plan">Standard x9</td><td class="plan">Pro x1</td><td>10</td><td>11</td><td>22</td>
+    <td class="plan">CX33 x3</td><td class="plan">CX23 x1</td><td>4</td><td>14</td><td>28</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">740</td>
+    <td class="rng">21.0 &ndash; 28.5</td>
+    <td>8.9</td><td>11.2</td><td>3.8</td><td>5</td>
+    <td class="plan">Standard x9</td><td class="plan">Pro x1</td><td>10</td><td>11</td><td>22</td>
+    <td class="plan">CX33 x3</td><td class="plan">CX23 x1</td><td>4</td><td>14</td><td>28</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">760</td>
+    <td class="rng">21.4 &ndash; 29.0</td>
+    <td>9.1</td><td>11.4</td><td>3.8</td><td>5</td>
+    <td class="plan">Standard x10</td><td class="plan">Pro x1</td><td class="up">11</td><td>12</td><td>24</td>
+    <td class="plan">CX33 x3</td><td class="plan">CX23 x1</td><td>4</td><td>14</td><td>28</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">780</td>
+    <td class="rng">21.8 &ndash; 29.5</td>
+    <td>9.2</td><td>11.5</td><td>3.9</td><td>6</td>
+    <td class="plan">Standard x10</td><td class="plan">Pro x1</td><td>11</td><td>12</td><td>24</td>
+    <td class="plan">CX33 x3</td><td class="plan">CX23 x1</td><td>4</td><td>14</td><td>28</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">800</td>
+    <td class="rng">22.2 &ndash; 30.0</td>
+    <td>9.4</td><td>11.7</td><td>4.0</td><td>6</td>
+    <td class="plan">Standard x10</td><td class="plan">Pro Plus x1</td><td>11</td><td>14</td><td>28</td>
+    <td class="plan">CX33 x3</td><td class="plan">CX33 x1</td><td>4</td><td>16</td><td>32</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">820</td>
+    <td class="rng">22.5 &ndash; 30.5</td>
+    <td>9.5</td><td>11.9</td><td>4.1</td><td>6</td>
+    <td class="plan">Standard x10</td><td class="plan">Pro Plus x1</td><td>11</td><td>14</td><td>28</td>
+    <td class="plan">CX33 x3</td><td class="plan">CX33 x1</td><td>4</td><td>16</td><td>32</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">840</td>
+    <td class="rng">22.9 &ndash; 31.0</td>
+    <td>9.7</td><td>12.1</td><td>4.2</td><td>6</td>
+    <td class="plan">Standard x10</td><td class="plan">Pro Plus x1</td><td>11</td><td>14</td><td>28</td>
+    <td class="plan">CX33 x3</td><td class="plan">CX33 x1</td><td>4</td><td>16</td><td>32</td>
     <td>1</td><td>1</td><td>1</td><td>2</td>
   </tr>
 </tbody></table></div>
 
 <h2>How to read this</h2>
 <dl>
-<dt>Peak concurrent</dt><dd>How many jobs are running at the same instant during the busiest hour,
-by Little&rsquo;s Law: arrival rate &times; average job duration. Sized at 3&times; the flat daily average, because
-real usage clusters at the start of the day and after lunch rather than spreading evenly.</dd>
+<dt>Peak concurrent, low &ndash; high</dt><dd>How many jobs are running at the same instant during the
+busiest hour, by Little&rsquo;s Law: arrival rate &times; average job duration. The two figures are the bottom
+and top of the assumed usage range. Peak hour is sized at 3&times; the flat daily average, because real
+usage clusters at the start of the day and after lunch rather than spreading evenly.</dd>
 
-<dt>Computed requirement vs. what you buy</dt><dd>The requirement is what the maths produces &mdash; 1.9
+<dt>Why hardware follows the high end</dt><dd>A fleet sized on average usage is under-provisioned on
+every busy day. The requirement columns and all three option columns therefore use 20 Compass
+searches and 7 Inspector scans per day. If real usage settles at the bottom of the range, the
+concurrency column shows what you would have needed, and you can scale down deliberately.</dd>
+
+<dt>Computed requirement vs. what you buy</dt><dd>The requirement is what the maths produces &mdash; 4.6
 vCPU, say. The option columns show the smallest sensible allocation that covers it, which is almost
 always more. That gap is headroom you deliberately pay for, not waste.</dd>
 
@@ -1056,16 +1207,16 @@ seats. They are never summed, because past a threshold they stop living on the s
 
 <dt>&dagger; Rows where the totals step DOWN</dt><dd>Not an error. While the app and index share one
 box, that box must satisfy the larger demand in <em>every</em> dimension at once &mdash; enough RAM for both,
-priced at whatever CPU comes attached. Splitting them lets you buy two right-sized machines instead
-of one oversized one, so total cores and memory can genuinely fall at the split even as load rises.
-The machine count goes up; the totals may not.</dd>
+at whatever CPU comes attached. Splitting them lets you buy two right-sized machines instead of one
+oversized one, so total cores and memory can genuinely fall at the split even as load rises. The
+machine count goes up; the totals may not.</dd>
 
-<dt>Option A &middot; Managed platform</dt><dd>A PaaS such as Render. Fixed instance sizes, deploys, scaling
-and failover handled for you. Fewest moving parts, least control over the machine, most instances
-because each one is small.</dd>
+<dt>Option A &middot; Managed platform</dt><dd>A PaaS such as Render. Fixed instance sizes; deploys, scaling
+and failover handled for you. Fewest moving parts, least control over the machine, and the most
+instances, because each one is small.</dd>
 
 <dt>Option B &middot; Raw VPS</dt><dd>Plain virtual servers such as Hetzner. Far more CPU and RAM per
-machine, so the fleet stays tiny &mdash; but patching, monitoring, backups and failover become your
+machine, so the fleet stays small &mdash; but patching, monitoring, backups and failover become your
 team&rsquo;s responsibility. The hardware is cheaper; the operational burden is not.</dd>
 
 <dt>Option C &middot; Serverless</dt><dd>Request-scaled containers such as Cloud Run, each 1 vCPU / 2 GB,
@@ -1074,19 +1225,18 @@ columns</b> &mdash; there is no standing fleet to size, so a low instance count 
 Warm instances are those kept alive to avoid a 2&ndash;5 second cold start. The search index cannot run
 serverless and remains a managed service.</dd>
 
-<dt>The assumption behind every row</dt><dd>Five Code Compass searches per seat per working day, plus,
-where stated, five Code Inspector scans per day for the named subset of users. A subset is modelled as
-its equivalent fleet-wide rate: the model is linear in job volume, so 200 users at 5 scans a day
-produces exactly the same total work, and the same concurrency, as the equivalent average spread
-across all seats.</dd>
+<dt>Modelling a subset of users</dt><dd>Where only some seats run Code Inspector, that subset is
+expressed as its equivalent fleet-wide rate. The model is linear in job volume, so 200 users at 7
+scans a day produces exactly the same total work, and the same peak concurrency, as the equivalent
+average spread across all seats.</dd>
 </dl>
 
 <footer>Generated from the same model as the interactive planner, so the two cannot disagree.
-Regenerate with <code>node build-hardware.js</code> after any model change.
-42 rows per scenario &middot; 20 to 840 seats in steps of 20.</footer>
+Regenerate with <code>node build-hardware.js &amp;&amp; node build-page.js</code> after any model change.
+42 rows per scenario &middot; 20 to 840 seats in steps of 20 &middot; Compass 15–20/day, Inspector 5–7/day.</footer>
 </div>
 <script>
-var CSV_B64="QXNjZW5kT1MgLSBIYXJkd2FyZSBSZXF1aXJlbWVudHMgYnkgU2VhdCBDb3VudApIYXJkd2FyZSBzcGVjaWZpY2F0aW9uIG9ubHkuIFRocmVlIGRlcGxveW1lbnQgb3B0aW9uczogTWFuYWdlZCBwbGF0Zm9ybSAoUmVuZGVyKSwgUmF3IFZQUyAoSGV0em5lciksIFNlcnZlcmxlc3MgKEdvb2dsZSBDbG91ZCBSdW4pLgpBc3N1bWVzIDUgQ29kZSBDb21wYXNzIHNlYXJjaGVzIHBlciBzZWF0IHBlciB3b3JraW5nIGRheS4gUGVhayBob3VyIHNpemVkIGF0IDN4IHRoZSBkYWlseSBhdmVyYWdlLgpSZXF1aXJlZCA9IGNvbXB1dGVkIG5lZWQuIFRvdGFscyBpbmNsdWRlIHRoZSBzZWFyY2ggaW5kZXggaG9zdCwgd2hpY2ggYmVjb21lcyBpdHMgb3duIG1hY2hpbmUgcGFzdCBhIHRocmVzaG9sZC4KCkNvZGUgQ29tcGFzcyBvbmx5CkV2ZXJ5IHNlYXQgcnVucyA1IENvZGUgQ29tcGFzcyBzZWFyY2hlcyBwZXIgd29ya2luZyBkYXkuClNlYXRzLFBlYWsgY29uY3VycmVudCBqb2JzLHZDUFUgcmVxdWlyZWQsQXBwIFJBTSByZXF1aXJlZCAoR0IpLFNlYXJjaCBpbmRleCBSQU0gKEdCKSxTZWFyY2ggaW5kZXggZGlzayAoR0IpLE1BTkFHRUQ6IHdlYiBpbnN0YW5jZXMsTUFOQUdFRDogaW5kZXggaG9zdCxNQU5BR0VEOiB0b3RhbCBtYWNoaW5lcyxNQU5BR0VEOiB0b3RhbCB2Q1BVLE1BTkFHRUQ6IHRvdGFsIFJBTSAoR0IpLFZQUzogd2ViIHNlcnZlcnMsVlBTOiBpbmRleCBob3N0LFZQUzogdG90YWwgbWFjaGluZXMsVlBTOiB0b3RhbCB2Q1BVLFZQUzogdG90YWwgUkFNIChHQiksU0VSVkVSTEVTUzogcGVhayBpbnN0YW5jZXMsU0VSVkVSTEVTUzogd2FybSBpbnN0YW5jZXMsU0VSVkVSTEVTUzogcGVhayB2Q1BVLFNFUlZFUkxFU1M6IHBlYWsgUkFNIChHQiksU0VSVkVSTEVTUzogc2VhcmNoIGluZGV4CjIwLDAuMTMsMC4zOSwxLjI0LDAuNDQsMSwiU3RhbmRhcmQgeDEiLCJvbiB3ZWIgaW5zdGFuY2UiLDEsMSwyLCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo0MCwwLjI1LDAuNDIsMS4yOSwwLjUyLDEsIlN0YW5kYXJkIHgxIiwib24gd2ViIGluc3RhbmNlIiwxLDEsMiwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNjAsMC4zOCwwLjQ2LDEuMzMsMC42MywxLCJTdGFuZGFyZCB4MSIsIm9uIHdlYiBpbnN0YW5jZSIsMSwxLDIsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjgwLDAuNTAsMC41MCwxLjM4LDAuNzAsMSwiU3RhbmRhcmQgeDIiLCJvbiB3ZWIgaW5zdGFuY2UiLDIsMiw0LCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoxMDAsMC42MywwLjU0LDEuNDIsMC44MSwyLCJTdGFuZGFyZCB4MiIsIm9uIHdlYiBpbnN0YW5jZSIsMiwyLDQsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjEyMCwwLjc1LDAuNTcsMS40NiwwLjg5LDIsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMTQwLDAuODgsMC42MSwxLjUxLDEuMDAsMiwiU3RhbmRhcmQgeDIiLCJvbiB3ZWIgaW5zdGFuY2UiLDIsMiw0LCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoxNjAsMS4wMCwwLjY1LDEuNTUsMS4wNywyLCJTdGFuZGFyZCB4MiIsIm9uIHdlYiBpbnN0YW5jZSIsMiwyLDQsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjE4MCwxLjEzLDAuNjksMS41OSwxLjE4LDIsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMjAwLDEuMjUsMC43MiwxLjY0LDEuMjUsMiwiU3RhbmRhcmQgeDIiLCJvbiB3ZWIgaW5zdGFuY2UiLDIsMiw0LCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoyMjAsMS4zOCwwLjc2LDEuNjgsMS4zNywyLCJTdGFuZGFyZCB4MiIsIm9uIHdlYiBpbnN0YW5jZSIsMiwyLDQsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjI0MCwxLjUwLDAuODAsMS43MiwxLjQ0LDIsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMjYwLDEuNjMsMC44NCwxLjc3LDEuNTUsMywiU3RhbmRhcmQgeDIiLCJvbiB3ZWIgaW5zdGFuY2UiLDIsMiw0LCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoyODAsMS43NSwwLjg4LDEuODEsMS42MiwzLCJTdGFuZGFyZCB4MiIsIm9uIHdlYiBpbnN0YW5jZSIsMiwyLDQsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjMwMCwxLjg4LDAuOTEsMS44NiwxLjczLDMsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMzIwLDIuMDAsMC45NSwxLjkwLDEuODEsMywiU3RhbmRhcmQgeDIiLCJvbiB3ZWIgaW5zdGFuY2UiLDIsMiw0LCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgozNDAsMi4xMywwLjk5LDEuOTQsMS45MiwzLCJTdGFuZGFyZCB4MiIsIm9uIHdlYiBpbnN0YW5jZSIsMiwyLDQsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjM2MCwyLjI1LDEuMDIsMS45OSwxLjk5LDMsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMzgwLDIuMzgsMS4wNiwyLjAzLDIuMTAsMywiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo0MDAsMi41MCwxLjEwLDIuMDgsMi4xOCwzLCJTdGFuZGFyZCB4MyIsIm9uIHdlYiBpbnN0YW5jZSIsMywzLDYsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjQyMCwyLjYzLDEuMTQsMi4xMiwyLjI5LDMsIlN0YW5kYXJkIHgzIiwib24gd2ViIGluc3RhbmNlIiwzLDMsNiwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNDQwLDIuNzUsMS4xNywyLjE2LDIuMzYsNCwiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo0NjAsMi44OCwxLjIxLDIuMjEsMi40Nyw0LCJTdGFuZGFyZCB4MyIsIm9uIHdlYiBpbnN0YW5jZSIsMywzLDYsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjQ4MCwzLjAwLDEuMjUsMi4yNSwyLjU1LDQsIlN0YW5kYXJkIHgzIiwib24gd2ViIGluc3RhbmNlIiwzLDMsNiwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNTAwLDMuMTMsMS4yOSwyLjI5LDIuNjYsNCwiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo1MjAsMy4yNSwxLjMyLDIuMzQsMi43Myw0LCJTdGFuZGFyZCB4MyIsIm9uIHdlYiBpbnN0YW5jZSIsMywzLDYsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjU0MCwzLjM4LDEuMzYsMi4zOCwyLjg0LDQsIlN0YW5kYXJkIHgzIiwib24gd2ViIGluc3RhbmNlIiwzLDMsNiwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNTYwLDMuNTAsMS40MCwyLjQyLDIuOTIsNCwiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo1ODAsMy42MywxLjQ0LDIuNDcsMy4wMyw0LCJTdGFuZGFyZCB4MyIsIm9uIHdlYiBpbnN0YW5jZSIsMywzLDYsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjYwMCwzLjc1LDEuNDgsMi41MSwzLjEwLDUsIlN0YW5kYXJkIHgzIiwib24gd2ViIGluc3RhbmNlIiwzLDMsNiwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNjIwLDMuODgsMS41MSwyLjU2LDMuMjEsNSwiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo2NDAsNC4wMCwxLjU1LDIuNjAsMy4yOCw1LCJTdGFuZGFyZCB4MyIsIm9uIHdlYiBpbnN0YW5jZSIsMywzLDYsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjY2MCw0LjEzLDEuNTksMi42NCwzLjQwLDUsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNjgwLDQuMjUsMS42MywyLjY5LDMuNDcsNSwiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo3MDAsNC4zOCwxLjY2LDIuNzMsMy41OCw1LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjcyMCw0LjUwLDEuNzAsMi43NywzLjY1LDUsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNzQwLDQuNjMsMS43NCwyLjgyLDMuNzYsNSwiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo3NjAsNC43NSwxLjc3LDIuODYsMy44NCw1LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjc4MCw0Ljg4LDEuODEsMi45MSwzLjk1LDYsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKODAwLDUuMDAsMS44NSwyLjk1LDQuMDIsNiwiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo4MjAsNS4xMywxLjg5LDIuOTksNC4xMyw2LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjg0MCw1LjI1LDEuOTIsMy4wNCw0LjIxLDYsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKCkNvZGUgQ29tcGFzcywgcGx1cyAyMDAgQ29kZSBJbnNwZWN0b3IgdXNlcnMKQWxsIHNlYXRzIHJ1biBDb21wYXNzLiAyMDAgb2YgdGhlbSBhbHNvIHJ1biBDb2RlIEluc3BlY3RvciA1IHRpbWVzIHBlciB3b3JraW5nIGRheS4KU2VhdHMsUGVhayBjb25jdXJyZW50IGpvYnMsdkNQVSByZXF1aXJlZCxBcHAgUkFNIHJlcXVpcmVkIChHQiksU2VhcmNoIGluZGV4IFJBTSAoR0IpLFNlYXJjaCBpbmRleCBkaXNrIChHQiksTUFOQUdFRDogd2ViIGluc3RhbmNlcyxNQU5BR0VEOiBpbmRleCBob3N0LE1BTkFHRUQ6IHRvdGFsIG1hY2hpbmVzLE1BTkFHRUQ6IHRvdGFsIHZDUFUsTUFOQUdFRDogdG90YWwgUkFNIChHQiksVlBTOiB3ZWIgc2VydmVycyxWUFM6IGluZGV4IGhvc3QsVlBTOiB0b3RhbCBtYWNoaW5lcyxWUFM6IHRvdGFsIHZDUFUsVlBTOiB0b3RhbCBSQU0gKEdCKSxTRVJWRVJMRVNTOiBwZWFrIGluc3RhbmNlcyxTRVJWRVJMRVNTOiB3YXJtIGluc3RhbmNlcyxTRVJWRVJMRVNTOiBwZWFrIHZDUFUsU0VSVkVSTEVTUzogcGVhayBSQU0gKEdCKSxTRVJWRVJMRVNTOiBzZWFyY2ggaW5kZXgKMjAsMC43MCwwLjU2LDEuNDQsMC40NCwxLCJTdGFuZGFyZCB4MSIsIm9uIHdlYiBpbnN0YW5jZSIsMSwxLDIsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjQwLDEuNDAsMC43NywxLjY5LDAuNTIsMSwiU3RhbmRhcmQgeDIiLCJvbiB3ZWIgaW5zdGFuY2UiLDIsMiw0LCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo2MCwyLjA5LDAuOTgsMS45MywwLjYzLDEsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKODAsMi43OSwxLjE5LDIuMTgsMC43MCwxLCJTdGFuZGFyZCB4MiIsIm9uIHdlYiBpbnN0YW5jZSIsMiwyLDQsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjEwMCwzLjQ5LDEuNDAsMi40MiwwLjgxLDIsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMTIwLDQuMTksMS42MSwyLjY3LDAuODksMiwiU3RhbmRhcmQgeDIiLCJvbiB3ZWIgaW5zdGFuY2UiLDIsMiw0LCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoxNDAsNC44OSwxLjgyLDIuOTEsMS4wMCwyLCJTdGFuZGFyZCB4MiIsIm9uIHdlYiBpbnN0YW5jZSIsMiwyLDQsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjE2MCw1LjU4LDIuMDIsMy4xNSwxLjA3LDIsIlN0YW5kYXJkIHgzIiwib24gd2ViIGluc3RhbmNlIiwzLDMsNiwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMTgwLDYuMjgsMi4yMywzLjQwLDEuMTgsMiwiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoyMDAsNi45OCwyLjQ0LDMuNjQsMS4yNSwyLCJTdGFuZGFyZCB4MyIsIm9uIHdlYiBpbnN0YW5jZSIsMywzLDYsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjIyMCw3LjEwLDIuNDgsMy42OSwxLjM3LDIsIlN0YW5kYXJkIHgzIiwib24gd2ViIGluc3RhbmNlIiwzLDMsNiwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMjQwLDcuMjMsMi41MiwzLjczLDEuNDQsMiwiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoyNjAsNy4zNSwyLjU2LDMuNzcsMS41NSwzLCJTdGFuZGFyZCB4MyIsIm9uIHdlYiBpbnN0YW5jZSIsMywzLDYsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjI4MCw3LjQ4LDIuNTksMy44MiwxLjYyLDMsIlN0YW5kYXJkIHgzIiwib24gd2ViIGluc3RhbmNlIiwzLDMsNiwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMzAwLDcuNjAsMi42MywzLjg2LDEuNzMsMywiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgozMjAsNy43MywyLjY3LDMuOTEsMS44MSwzLCJTdGFuZGFyZCB4MyIsIm9uIHdlYiBpbnN0YW5jZSIsMywzLDYsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjM0MCw3Ljg1LDIuNzEsMy45NSwxLjkyLDMsIlN0YW5kYXJkIHgzIiwib24gd2ViIGluc3RhbmNlIiwzLDMsNiwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMzYwLDcuOTgsMi43NCwzLjk5LDEuOTksMywiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgozODAsOC4xMCwyLjc4LDQuMDQsMi4xMCwzLCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjQwMCw4LjIzLDIuODIsNC4wOCwyLjE4LDMsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNDIwLDguMzUsMi44Niw0LjEyLDIuMjksMywiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo0NDAsOC40OCwyLjg5LDQuMTcsMi4zNiw0LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjQ2MCw4LjYwLDIuOTMsNC4yMSwyLjQ3LDQsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNDgwLDguNzMsMi45Nyw0LjI2LDIuNTUsNCwiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo1MDAsOC44NSwzLjAxLDQuMzAsMi42Niw0LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjUyMCw4Ljk4LDMuMDQsNC4zNCwyLjczLDQsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNTQwLDkuMTAsMy4wOCw0LjM5LDIuODQsNCwiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo1NjAsOS4yMywzLjEyLDQuNDMsMi45Miw0LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjU4MCw5LjM1LDMuMTYsNC40NywzLjAzLDQsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNjAwLDkuNDgsMy4xOSw0LjUyLDMuMTAsNSwiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo2MjAsOS42MCwzLjIzLDQuNTYsMy4yMSw1LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjY0MCw5LjczLDMuMjcsNC42MSwzLjI4LDUsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNjYwLDkuODUsMy4zMSw0LjY1LDMuNDAsNSwiU3RhbmRhcmQgeDUiLCJvbiB3ZWIgaW5zdGFuY2UiLDUsNSwxMCwiQ1g0MyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsOCwxNiwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjY4MCw5Ljk4LDMuMzQsNC42OSwzLjQ3LDUsIlN0YW5kYXJkIHg1Iiwib24gd2ViIGluc3RhbmNlIiw1LDUsMTAsIkNYNDMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDgsMTYsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo3MDAsMTAuMTAsMy4zOCw0Ljc0LDMuNTgsNSwiU3RhbmRhcmQgeDUiLCJvbiB3ZWIgaW5zdGFuY2UiLDUsNSwxMCwiQ1g0MyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsOCwxNiwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjcyMCwxMC4yMywzLjQyLDQuNzgsMy42NSw1LCJTdGFuZGFyZCB4NSIsIm9uIHdlYiBpbnN0YW5jZSIsNSw1LDEwLCJDWDQzIHgxIiwib24gd2ViIHNlcnZlciIsMSw4LDE2LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNzQwLDEwLjM1LDMuNDYsNC44MiwzLjc2LDUsIlN0YW5kYXJkIHg1Iiwib24gd2ViIGluc3RhbmNlIiw1LDUsMTAsIkNYNDMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDgsMTYsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo3NjAsMTAuNDgsMy40OSw0Ljg3LDMuODQsNSwiU3RhbmRhcmQgeDUiLCJvbiB3ZWIgaW5zdGFuY2UiLDUsNSwxMCwiQ1g0MyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsOCwxNiwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjc4MCwxMC42MCwzLjUzLDQuOTEsMy45NSw2LCJTdGFuZGFyZCB4NSIsIm9uIHdlYiBpbnN0YW5jZSIsNSw1LDEwLCJDWDQzIHgxIiwib24gd2ViIHNlcnZlciIsMSw4LDE2LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKODAwLDEwLjczLDMuNTcsNC45Niw0LjAyLDYsIlN0YW5kYXJkIHg1Iiwib24gd2ViIGluc3RhbmNlIiw1LDUsMTAsIkNYNDMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDgsMTYsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo4MjAsMTAuODUsMy42MSw1LjAwLDQuMTMsNiwiU3RhbmRhcmQgeDUiLCJvbiB3ZWIgaW5zdGFuY2UiLDUsNSwxMCwiQ1g0MyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsOCwxNiwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjg0MCwxMC45OCwzLjY0LDUuMDQsNC4yMSw2LCJTdGFuZGFyZCB4NSIsIm9uIHdlYiBpbnN0YW5jZSIsNSw1LDEwLCJDWDQzIHgxIiwib24gd2ViIHNlcnZlciIsMSw4LDE2LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKCkNvZGUgQ29tcGFzcywgcGx1cyAyNTAgQ29kZSBJbnNwZWN0b3IgdXNlcnMKQWxsIHNlYXRzIHJ1biBDb21wYXNzLiAyNTAgb2YgdGhlbSBhbHNvIHJ1biBDb2RlIEluc3BlY3RvciA1IHRpbWVzIHBlciB3b3JraW5nIGRheS4KU2VhdHMsUGVhayBjb25jdXJyZW50IGpvYnMsdkNQVSByZXF1aXJlZCxBcHAgUkFNIHJlcXVpcmVkIChHQiksU2VhcmNoIGluZGV4IFJBTSAoR0IpLFNlYXJjaCBpbmRleCBkaXNrIChHQiksTUFOQUdFRDogd2ViIGluc3RhbmNlcyxNQU5BR0VEOiBpbmRleCBob3N0LE1BTkFHRUQ6IHRvdGFsIG1hY2hpbmVzLE1BTkFHRUQ6IHRvdGFsIHZDUFUsTUFOQUdFRDogdG90YWwgUkFNIChHQiksVlBTOiB3ZWIgc2VydmVycyxWUFM6IGluZGV4IGhvc3QsVlBTOiB0b3RhbCBtYWNoaW5lcyxWUFM6IHRvdGFsIHZDUFUsVlBTOiB0b3RhbCBSQU0gKEdCKSxTRVJWRVJMRVNTOiBwZWFrIGluc3RhbmNlcyxTRVJWRVJMRVNTOiB3YXJtIGluc3RhbmNlcyxTRVJWRVJMRVNTOiBwZWFrIHZDUFUsU0VSVkVSTEVTUzogcGVhayBSQU0gKEdCKSxTRVJWRVJMRVNTOiBzZWFyY2ggaW5kZXgKMjAsMC43MCwwLjU2LDEuNDQsMC40NCwxLCJTdGFuZGFyZCB4MSIsIm9uIHdlYiBpbnN0YW5jZSIsMSwxLDIsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjQwLDEuNDAsMC43NywxLjY5LDAuNTIsMSwiU3RhbmRhcmQgeDIiLCJvbiB3ZWIgaW5zdGFuY2UiLDIsMiw0LCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo2MCwyLjA5LDAuOTgsMS45MywwLjYzLDEsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKODAsMi43OSwxLjE5LDIuMTgsMC43MCwxLCJTdGFuZGFyZCB4MiIsIm9uIHdlYiBpbnN0YW5jZSIsMiwyLDQsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjEwMCwzLjQ5LDEuNDAsMi40MiwwLjgxLDIsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMTIwLDQuMTksMS42MSwyLjY3LDAuODksMiwiU3RhbmRhcmQgeDIiLCJvbiB3ZWIgaW5zdGFuY2UiLDIsMiw0LCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoxNDAsNC44OSwxLjgyLDIuOTEsMS4wMCwyLCJTdGFuZGFyZCB4MiIsIm9uIHdlYiBpbnN0YW5jZSIsMiwyLDQsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjE2MCw1LjU4LDIuMDIsMy4xNSwxLjA3LDIsIlN0YW5kYXJkIHgzIiwib24gd2ViIGluc3RhbmNlIiwzLDMsNiwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMTgwLDYuMjgsMi4yMywzLjQwLDEuMTgsMiwiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoyMDAsNi45OCwyLjQ0LDMuNjQsMS4yNSwyLCJTdGFuZGFyZCB4MyIsIm9uIHdlYiBpbnN0YW5jZSIsMywzLDYsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjIyMCw3LjY4LDIuNjUsMy44OSwxLjM3LDIsIlN0YW5kYXJkIHgzIiwib24gd2ViIGluc3RhbmNlIiwzLDMsNiwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMjQwLDguMzgsMi44Niw0LjEzLDEuNDQsMiwiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoyNjAsOC43OSwyLjk5LDQuMjgsMS41NSwzLCJTdGFuZGFyZCB4MyIsIm9uIHdlYiBpbnN0YW5jZSIsMywzLDYsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjI4MCw4LjkxLDMuMDIsNC4zMiwxLjYyLDMsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMzAwLDkuMDQsMy4wNiw0LjM2LDEuNzMsMywiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgozMjAsOS4xNiwzLjEwLDQuNDEsMS44MSwzLCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjM0MCw5LjI5LDMuMTQsNC40NSwxLjkyLDMsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMzYwLDkuNDEsMy4xNyw0LjQ5LDEuOTksMywiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgozODAsOS41NCwzLjIxLDQuNTQsMi4xMCwzLCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjQwMCw5LjY2LDMuMjUsNC41OCwyLjE4LDMsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNDIwLDkuNzksMy4yOSw0LjYzLDIuMjksMywiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo0NDAsOS45MSwzLjMyLDQuNjcsMi4zNiw0LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjQ2MCwxMC4wNCwzLjM2LDQuNzEsMi40Nyw0LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjQ4MCwxMC4xNiwzLjQwLDQuNzYsMi41NSw0LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjUwMCwxMC4yOSwzLjQ0LDQuODAsMi42Niw0LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjUyMCwxMC40MSwzLjQ3LDQuODQsMi43Myw0LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjU0MCwxMC41NCwzLjUxLDQuODksMi44NCw0LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjU2MCwxMC42NiwzLjU1LDQuOTMsMi45Miw0LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjU4MCwxMC43OSwzLjU5LDQuOTgsMy4wMyw0LCJTdGFuZGFyZCB4NSIsIm9uIHdlYiBpbnN0YW5jZSIsNSw1LDEwLCJDWDQzIHgxIiwib24gd2ViIHNlcnZlciIsMSw4LDE2LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNjAwLDEwLjkxLDMuNjIsNS4wMiwzLjEwLDUsIlN0YW5kYXJkIHg1Iiwib24gd2ViIGluc3RhbmNlIiw1LDUsMTAsIkNYNDMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDgsMTYsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo2MjAsMTEuMDQsMy42Niw1LjA2LDMuMjEsNSwiU3RhbmRhcmQgeDUiLCJvbiB3ZWIgaW5zdGFuY2UiLDUsNSwxMCwiQ1g0MyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsOCwxNiwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjY0MCwxMS4xNiwzLjcwLDUuMTEsMy4yOCw1LCJTdGFuZGFyZCB4NSIsIm9uIHdlYiBpbnN0YW5jZSIsNSw1LDEwLCJDWDQzIHgxIiwib24gd2ViIHNlcnZlciIsMSw4LDE2LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNjYwLDExLjI5LDMuNzQsNS4xNSwzLjQwLDUsIlN0YW5kYXJkIHg1Iiwib24gd2ViIGluc3RhbmNlIiw1LDUsMTAsIkNYNDMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDgsMTYsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo2ODAsMTEuNDEsMy43Nyw1LjE5LDMuNDcsNSwiU3RhbmRhcmQgeDUiLCJvbiB3ZWIgaW5zdGFuY2UiLDUsNSwxMCwiQ1g0MyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsOCwxNiwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjcwMCwxMS41NCwzLjgxLDUuMjQsMy41OCw1LCJTdGFuZGFyZCB4NSIsIm9uIHdlYiBpbnN0YW5jZSIsNSw1LDEwLCJDWDQzIHgxIiwib24gd2ViIHNlcnZlciIsMSw4LDE2LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNzIwLDExLjY2LDMuODUsNS4yOCwzLjY1LDUsIlN0YW5kYXJkIHg1Iiwib24gd2ViIGluc3RhbmNlIiw1LDUsMTAsIkNYNDMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDgsMTYsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo3NDAsMTEuNzksMy44OSw1LjMzLDMuNzYsNSwiU3RhbmRhcmQgeDUiLCJvbiB3ZWIgaW5zdGFuY2UiLDUsNSwxMCwiQ1g0MyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsOCwxNiwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjc2MCwxMS45MSwzLjkyLDUuMzcsMy44NCw1LCJTdGFuZGFyZCB4NSIsIm9uIHdlYiBpbnN0YW5jZSIsNSw1LDEwLCJDWDQzIHgxIiwib24gd2ViIHNlcnZlciIsMSw4LDE2LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNzgwLDEyLjA0LDMuOTYsNS40MSwzLjk1LDYsIlN0YW5kYXJkIHg0IiwiUHJvIHgxIiw1LDYsMTIsIkNYMzMgeDEiLCJDWDIzIHgxIiwyLDYsMTIsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo4MDAsMTIuMTYsNC4wMCw1LjQ2LDQuMDIsNiwiU3RhbmRhcmQgeDQiLCJQcm8gUGx1cyB4MSIsNSw4LDE2LCJDWDMzIHgxIiwiQ1gzMyB4MSIsMiw4LDE2LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKODIwLDEyLjI5LDQuMDQsNS41MCw0LjEzLDYsIlN0YW5kYXJkIHg1IiwiUHJvIFBsdXMgeDEiLDYsOSwxOCwiQ1g0MyB4MSIsIkNYMzMgeDEiLDIsMTIsMjQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo4NDAsMTIuNDEsNC4wNyw1LjU0LDQuMjEsNiwiU3RhbmRhcmQgeDUiLCJQcm8gUGx1cyB4MSIsNiw5LDE4LCJDWDQzIHgxIiwiQ1gzMyB4MSIsMiwxMiwyNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCg==";
+var CSV_B64="QXNjZW5kT1MgLSBIYXJkd2FyZSBSZXF1aXJlbWVudHMgYnkgU2VhdCBDb3VudApIYXJkd2FyZSBzcGVjaWZpY2F0aW9uIG9ubHkuIFRocmVlIGRlcGxveW1lbnQgb3B0aW9uczogTWFuYWdlZCBwbGF0Zm9ybSAoUmVuZGVyKSwgUmF3IFZQUyAoSGV0em5lciksIFNlcnZlcmxlc3MgKEdvb2dsZSBDbG91ZCBSdW4pLgpVc2FnZTogQ29kZSBDb21wYXNzIDE1LTIwIHNlYXJjaGVzIHBlciBzZWF0IHBlciB3b3JraW5nIGRheS4gQ29kZSBJbnNwZWN0b3IgNS03IHNjYW5zIHBlciB1c2VyIHBlciB3b3JraW5nIGRheS4KSGFyZHdhcmUgY29sdW1ucyBhcmUgc2l6ZWQgb24gdGhlIEhJR0ggZW5kIG9mIHRoYXQgcmFuZ2UuIFBlYWsgaG91ciBzaXplZCBhdCAzeCB0aGUgZGFpbHkgYXZlcmFnZS4KVG90YWxzIGluY2x1ZGUgdGhlIHNlYXJjaCBpbmRleCBob3N0LCB3aGljaCBiZWNvbWVzIGl0cyBvd24gbWFjaGluZSBwYXN0IGEgdGhyZXNob2xkLgoKQ29kZSBDb21wYXNzIG9ubHkKRXZlcnkgc2VhdCBydW5zIDE14oCTMjAgQ29kZSBDb21wYXNzIHNlYXJjaGVzIHBlciB3b3JraW5nIGRheS4KU2VhdHMsUGVhayBjb25jdXJyZW50IGpvYnMgKGxvdyB1c2FnZSksUGVhayBjb25jdXJyZW50IGpvYnMgKGhpZ2ggdXNhZ2UpLHZDUFUgcmVxdWlyZWQgKGhpZ2gpLEFwcCBSQU0gcmVxdWlyZWQgR0IgKGhpZ2gpLFNlYXJjaCBpbmRleCBSQU0gR0IsU2VhcmNoIGluZGV4IGRpc2sgR0IsTUFOQUdFRDogd2ViIGluc3RhbmNlcyxNQU5BR0VEOiBpbmRleCBob3N0LE1BTkFHRUQ6IHRvdGFsIG1hY2hpbmVzLE1BTkFHRUQ6IHRvdGFsIHZDUFUsTUFOQUdFRDogdG90YWwgUkFNIEdCLFZQUzogd2ViIHNlcnZlcnMsVlBTOiBpbmRleCBob3N0LFZQUzogdG90YWwgbWFjaGluZXMsVlBTOiB0b3RhbCB2Q1BVLFZQUzogdG90YWwgUkFNIEdCLFNFUlZFUkxFU1M6IHBlYWsgaW5zdGFuY2VzLFNFUlZFUkxFU1M6IHdhcm0gaW5zdGFuY2VzLFNFUlZFUkxFU1M6IHBlYWsgdkNQVSxTRVJWRVJMRVNTOiBwZWFrIFJBTSBHQixTRVJWRVJMRVNTOiBzZWFyY2ggaW5kZXgKMjAsMC4zOCwwLjUwLDAuNTAsMS4zOCwwLjQ0LDEsIlN0YW5kYXJkIHgxIiwib24gd2ViIGluc3RhbmNlIiwxLDEsMiwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNDAsMC43NSwxLjAwLDAuNjUsMS41NSwwLjUyLDEsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNjAsMS4xMywxLjUwLDAuODAsMS43MiwwLjYzLDEsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKODAsMS41MCwyLjAwLDAuOTUsMS45MCwwLjcwLDEsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMTAwLDEuODgsMi41MCwxLjEwLDIuMDgsMC44MSwyLCJTdGFuZGFyZCB4MiIsIm9uIHdlYiBpbnN0YW5jZSIsMiwyLDQsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjEyMCwyLjI1LDMuMDAsMS4yNSwyLjI1LDAuODksMiwiU3RhbmRhcmQgeDIiLCJvbiB3ZWIgaW5zdGFuY2UiLDIsMiw0LCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoxNDAsMi42MywzLjUwLDEuNDAsMi40MiwxLjAwLDIsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMTYwLDMuMDAsNC4wMCwxLjU1LDIuNjAsMS4wNywyLCJTdGFuZGFyZCB4MiIsIm9uIHdlYiBpbnN0YW5jZSIsMiwyLDQsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjE4MCwzLjM4LDQuNTAsMS43MCwyLjc3LDEuMTgsMiwiU3RhbmRhcmQgeDIiLCJvbiB3ZWIgaW5zdGFuY2UiLDIsMiw0LCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoyMDAsMy43NSw1LjAwLDEuODUsMi45NSwxLjI1LDIsIlN0YW5kYXJkIHgzIiwib24gd2ViIGluc3RhbmNlIiwzLDMsNiwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMjIwLDQuMTMsNS41MCwyLjAwLDMuMTMsMS4zNywyLCJTdGFuZGFyZCB4MyIsIm9uIHdlYiBpbnN0YW5jZSIsMywzLDYsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjI0MCw0LjUwLDYuMDAsMi4xNSwzLjMwLDEuNDQsMiwiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoyNjAsNC44OCw2LjUwLDIuMzAsMy40NywxLjU1LDMsIlN0YW5kYXJkIHgzIiwib24gd2ViIGluc3RhbmNlIiwzLDMsNiwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMjgwLDUuMjUsNy4wMCwyLjQ1LDMuNjUsMS42MiwzLCJTdGFuZGFyZCB4MyIsIm9uIHdlYiBpbnN0YW5jZSIsMywzLDYsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjMwMCw1LjYzLDcuNTAsMi42MCwzLjgzLDEuNzMsMywiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgozMjAsNi4wMCw4LjAwLDIuNzUsNC4wMCwxLjgxLDMsIlN0YW5kYXJkIHgzIiwib24gd2ViIGluc3RhbmNlIiwzLDMsNiwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMzQwLDYuMzgsOC41MCwyLjkwLDQuMTcsMS45MiwzLCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjM2MCw2Ljc1LDkuMDAsMy4wNSw0LjM1LDEuOTksMywiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgozODAsNy4xMyw5LjUwLDMuMjAsNC41MiwyLjEwLDMsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNDAwLDcuNTAsMTAuMDAsMy4zNSw0LjcwLDIuMTgsMywiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo0MjAsNy44OCwxMC41MCwzLjUwLDQuODgsMi4yOSwzLCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjQ0MCw4LjI1LDExLjAwLDMuNjUsNS4wNSwyLjM2LDQsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNDYwLDguNjMsMTEuNTAsMy44MCw1LjIyLDIuNDcsNCwiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo0ODAsOS4wMCwxMi4wMCwzLjk1LDUuNDAsMi41NSw0LCJTdGFuZGFyZCB4NCIsIlBybyB4MSIsNSw2LDEyLCJDWDMzIHgxIiwiQ1gyMyB4MSIsMiw2LDEyLDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNTAwLDkuMzgsMTIuNTAsNC4xMCw1LjU4LDIuNjYsNCwiU3RhbmRhcmQgeDUiLCJQcm8geDEiLDYsNywxNCwiQ1g0MyB4MSIsIkNYMjMgeDEiLDIsMTAsMjAsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo1MjAsOS43NSwxMy4wMCw0LjI1LDUuNzUsMi43Myw0LCJTdGFuZGFyZCB4NSIsIlBybyB4MSIsNiw3LDE0LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjU0MCwxMC4xMywxMy41MCw0LjQwLDUuOTIsMi44NCw0LCJTdGFuZGFyZCB4NSIsIlBybyB4MSIsNiw3LDE0LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjU2MCwxMC41MCwxNC4wMCw0LjU1LDYuMTAsMi45Miw0LCJTdGFuZGFyZCB4NSIsIlBybyB4MSIsNiw3LDE0LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjU4MCwxMC44OCwxNC41MCw0LjcwLDYuMjcsMy4wMyw0LCJTdGFuZGFyZCB4NSIsIlBybyB4MSIsNiw3LDE0LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjYwMCwxMS4yNSwxNS4wMCw0Ljg1LDYuNDUsMy4xMCw1LCJTdGFuZGFyZCB4NSIsIlBybyB4MSIsNiw3LDE0LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjYyMCwxMS42MywxNS41MCw1LjAwLDYuNjMsMy4yMSw1LCJTdGFuZGFyZCB4NSIsIlBybyB4MSIsNiw3LDE0LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjY0MCwxMi4wMCwxNi4wMCw1LjE1LDYuODAsMy4yOCw1LCJTdGFuZGFyZCB4NiIsIlBybyB4MSIsNyw4LDE2LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjY2MCwxMi4zOCwxNi41MCw1LjMwLDYuOTcsMy40MCw1LCJTdGFuZGFyZCB4NiIsIlBybyB4MSIsNyw4LDE2LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjY4MCwxMi43NSwxNy4wMCw1LjQ1LDcuMTUsMy40Nyw1LCJTdGFuZGFyZCB4NiIsIlBybyB4MSIsNyw4LDE2LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjcwMCwxMy4xMywxNy41MCw1LjYwLDcuMzMsMy41OCw1LCJTdGFuZGFyZCB4NiIsIlBybyB4MSIsNyw4LDE2LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjcyMCwxMy41MCwxOC4wMCw1Ljc1LDcuNTAsMy42NSw1LCJTdGFuZGFyZCB4NiIsIlBybyB4MSIsNyw4LDE2LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjc0MCwxMy44OCwxOC41MCw1LjkwLDcuNjcsMy43Niw1LCJTdGFuZGFyZCB4NiIsIlBybyB4MSIsNyw4LDE2LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjc2MCwxNC4yNSwxOS4wMCw2LjA1LDcuODUsMy44NCw1LCJTdGFuZGFyZCB4NyIsIlBybyB4MSIsOCw5LDE4LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjc4MCwxNC42MywxOS41MCw2LjIwLDguMDIsMy45NSw2LCJTdGFuZGFyZCB4NyIsIlBybyB4MSIsOCw5LDE4LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjgwMCwxNS4wMCwyMC4wMCw2LjM1LDguMjAsNC4wMiw2LCJTdGFuZGFyZCB4NyIsIlBybyBQbHVzIHgxIiw4LDExLDIyLCJDWDQzIHgxIiwiQ1gzMyB4MSIsMiwxMiwyNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjgyMCwxNS4zOCwyMC41MCw2LjUwLDguMzgsNC4xMyw2LCJTdGFuZGFyZCB4NyIsIlBybyBQbHVzIHgxIiw4LDExLDIyLCJDWDQzIHgxIiwiQ1gzMyB4MSIsMiwxMiwyNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjg0MCwxNS43NSwyMS4wMCw2LjY1LDguNTUsNC4yMSw2LCJTdGFuZGFyZCB4NyIsIlBybyBQbHVzIHgxIiw4LDExLDIyLCJDWDQzIHgxIiwiQ1gzMyB4MSIsMiwxMiwyNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCgpDb2RlIENvbXBhc3MsIHBsdXMgMjAwIENvZGUgSW5zcGVjdG9yIHVzZXJzCkFsbCBzZWF0cyBydW4gQ29tcGFzcy4gMjAwIG9mIHRoZW0gYWxzbyBydW4gQ29kZSBJbnNwZWN0b3IgNeKAkzcgdGltZXMgcGVyIHdvcmtpbmcgZGF5LgpTZWF0cyxQZWFrIGNvbmN1cnJlbnQgam9icyAobG93IHVzYWdlKSxQZWFrIGNvbmN1cnJlbnQgam9icyAoaGlnaCB1c2FnZSksdkNQVSByZXF1aXJlZCAoaGlnaCksQXBwIFJBTSByZXF1aXJlZCBHQiAoaGlnaCksU2VhcmNoIGluZGV4IFJBTSBHQixTZWFyY2ggaW5kZXggZGlzayBHQixNQU5BR0VEOiB3ZWIgaW5zdGFuY2VzLE1BTkFHRUQ6IGluZGV4IGhvc3QsTUFOQUdFRDogdG90YWwgbWFjaGluZXMsTUFOQUdFRDogdG90YWwgdkNQVSxNQU5BR0VEOiB0b3RhbCBSQU0gR0IsVlBTOiB3ZWIgc2VydmVycyxWUFM6IGluZGV4IGhvc3QsVlBTOiB0b3RhbCBtYWNoaW5lcyxWUFM6IHRvdGFsIHZDUFUsVlBTOiB0b3RhbCBSQU0gR0IsU0VSVkVSTEVTUzogcGVhayBpbnN0YW5jZXMsU0VSVkVSTEVTUzogd2FybSBpbnN0YW5jZXMsU0VSVkVSTEVTUzogcGVhayB2Q1BVLFNFUlZFUkxFU1M6IHBlYWsgUkFNIEdCLFNFUlZFUkxFU1M6IHNlYXJjaCBpbmRleAoyMCwwLjk1LDEuMzAsMC43NCwxLjY2LDAuNDQsMSwiU3RhbmRhcmQgeDIiLCJvbiB3ZWIgaW5zdGFuY2UiLDIsMiw0LCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo0MCwxLjkwLDIuNjAsMS4xMywyLjExLDAuNTIsMSwiU3RhbmRhcmQgeDIiLCJvbiB3ZWIgaW5zdGFuY2UiLDIsMiw0LCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo2MCwyLjg0LDMuOTEsMS41MiwyLjU3LDAuNjMsMSwiU3RhbmRhcmQgeDIiLCJvbiB3ZWIgaW5zdGFuY2UiLDIsMiw0LCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo4MCwzLjc5LDUuMjEsMS45MSwzLjAyLDAuNzAsMSwiU3RhbmRhcmQgeDIiLCJvbiB3ZWIgaW5zdGFuY2UiLDIsMiw0LCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoxMDAsNC43NCw2LjUxLDIuMzAsMy40OCwwLjgxLDIsIlN0YW5kYXJkIHgzIiwib24gd2ViIGluc3RhbmNlIiwzLDMsNiwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMTIwLDUuNjksNy44MSwyLjY5LDMuOTMsMC44OSwyLCJTdGFuZGFyZCB4MyIsIm9uIHdlYiBpbnN0YW5jZSIsMywzLDYsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjE0MCw2LjY0LDkuMTEsMy4wOCw0LjM5LDEuMDAsMiwiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoxNjAsNy41OCwxMC40MiwzLjQ4LDQuODUsMS4wNywyLCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjE4MCw4LjUzLDExLjcyLDMuODcsNS4zMCwxLjE4LDIsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMjAwLDkuNDgsMTMuMDIsNC4yNiw1Ljc2LDEuMjUsMiwiU3RhbmRhcmQgeDUiLCJQcm8geDEiLDYsNywxNCwiQ1g0MyB4MSIsIkNYMjMgeDEiLDIsMTAsMjAsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoyMjAsOS44NSwxMy41Miw0LjQxLDUuOTMsMS4zNywyLCJTdGFuZGFyZCB4NSIsIlBybyB4MSIsNiw3LDE0LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjI0MCwxMC4yMywxNC4wMiw0LjU2LDYuMTEsMS40NCwyLCJTdGFuZGFyZCB4NSIsIlBybyB4MSIsNiw3LDE0LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjI2MCwxMC42MCwxNC41Miw0LjcxLDYuMjgsMS41NSwzLCJTdGFuZGFyZCB4NSIsIlBybyB4MSIsNiw3LDE0LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjI4MCwxMC45OCwxNS4wMiw0Ljg2LDYuNDYsMS42MiwzLCJTdGFuZGFyZCB4NSIsIlBybyB4MSIsNiw3LDE0LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjMwMCwxMS4zNSwxNS41Miw1LjAxLDYuNjMsMS43MywzLCJTdGFuZGFyZCB4NiIsIlBybyB4MSIsNyw4LDE2LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjMyMCwxMS43MywxNi4wMiw1LjE2LDYuODEsMS44MSwzLCJTdGFuZGFyZCB4NiIsIlBybyB4MSIsNyw4LDE2LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjM0MCwxMi4xMCwxNi41Miw1LjMxLDYuOTgsMS45MiwzLCJTdGFuZGFyZCB4NiIsIlBybyB4MSIsNyw4LDE2LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjM2MCwxMi40OCwxNy4wMiw1LjQ2LDcuMTYsMS45OSwzLCJTdGFuZGFyZCB4NiIsIlBybyB4MSIsNyw4LDE2LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjM4MCwxMi44NSwxNy41Miw1LjYxLDcuMzMsMi4xMCwzLCJTdGFuZGFyZCB4NiIsIlBybyB4MSIsNyw4LDE2LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjQwMCwxMy4yMywxOC4wMiw1Ljc2LDcuNTEsMi4xOCwzLCJTdGFuZGFyZCB4NiIsIlBybyB4MSIsNyw4LDE2LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjQyMCwxMy42MCwxOC41Miw1LjkxLDcuNjgsMi4yOSwzLCJTdGFuZGFyZCB4NiIsIlBybyB4MSIsNyw4LDE2LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjQ0MCwxMy45OCwxOS4wMiw2LjA2LDcuODYsMi4zNiw0LCJTdGFuZGFyZCB4NyIsIlBybyB4MSIsOCw5LDE4LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjQ2MCwxNC4zNSwxOS41Miw2LjIxLDguMDMsMi40Nyw0LCJTdGFuZGFyZCB4NyIsIlBybyB4MSIsOCw5LDE4LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjQ4MCwxNC43MywyMC4wMiw2LjM2LDguMjEsMi41NSw0LCJTdGFuZGFyZCB4NyIsIlBybyB4MSIsOCw5LDE4LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjUwMCwxNS4xMCwyMC41Miw2LjUxLDguMzgsMi42Niw0LCJTdGFuZGFyZCB4NyIsIlBybyB4MSIsOCw5LDE4LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjUyMCwxNS40OCwyMS4wMiw2LjY2LDguNTYsMi43Myw0LCJTdGFuZGFyZCB4NyIsIlBybyB4MSIsOCw5LDE4LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjU0MCwxNS44NSwyMS41Miw2LjgxLDguNzMsMi44NCw0LCJTdGFuZGFyZCB4NyIsIlBybyB4MSIsOCw5LDE4LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjU2MCwxNi4yMywyMi4wMiw2Ljk2LDguOTEsMi45Miw0LCJTdGFuZGFyZCB4NyIsIlBybyB4MSIsOCw5LDE4LCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjU4MCwxNi42MCwyMi41Miw3LjExLDkuMDgsMy4wMyw0LCJTdGFuZGFyZCB4OCIsIlBybyB4MSIsOSwxMCwyMCwiQ1g0MyB4MSIsIkNYMjMgeDEiLDIsMTAsMjAsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo2MDAsMTYuOTgsMjMuMDIsNy4yNiw5LjI2LDMuMTAsNSwiU3RhbmRhcmQgeDgiLCJQcm8geDEiLDksMTAsMjAsIkNYNDMgeDEiLCJDWDIzIHgxIiwyLDEwLDIwLDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNjIwLDE3LjM1LDIzLjUyLDcuNDEsOS40MywzLjIxLDUsIlN0YW5kYXJkIHg4IiwiUHJvIHgxIiw5LDEwLDIwLCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjY0MCwxNy43MywyNC4wMiw3LjU2LDkuNjEsMy4yOCw1LCJTdGFuZGFyZCB4OCIsIlBybyB4MSIsOSwxMCwyMCwiQ1g0MyB4MSIsIkNYMjMgeDEiLDIsMTAsMjAsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo2NjAsMTguMTAsMjQuNTIsNy43MSw5Ljc4LDMuNDAsNSwiU3RhbmRhcmQgeDgiLCJQcm8geDEiLDksMTAsMjAsIkNYNDMgeDEiLCJDWDIzIHgxIiwyLDEwLDIwLDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNjgwLDE4LjQ4LDI1LjAyLDcuODYsOS45NiwzLjQ3LDUsIlN0YW5kYXJkIHg4IiwiUHJvIHgxIiw5LDEwLDIwLCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjcwMCwxOC44NSwyNS41Miw4LjAxLDEwLjEzLDMuNTgsNSwiU3RhbmRhcmQgeDkiLCJQcm8geDEiLDEwLDExLDIyLCJDWDMzIHgzIiwiQ1gyMyB4MSIsNCwxNCwyOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjcyMCwxOS4yMywyNi4wMiw4LjE2LDEwLjMxLDMuNjUsNSwiU3RhbmRhcmQgeDkiLCJQcm8geDEiLDEwLDExLDIyLCJDWDMzIHgzIiwiQ1gyMyB4MSIsNCwxNCwyOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjc0MCwxOS42MCwyNi41Miw4LjMxLDEwLjQ4LDMuNzYsNSwiU3RhbmRhcmQgeDkiLCJQcm8geDEiLDEwLDExLDIyLCJDWDMzIHgzIiwiQ1gyMyB4MSIsNCwxNCwyOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjc2MCwxOS45OCwyNy4wMiw4LjQ2LDEwLjY2LDMuODQsNSwiU3RhbmRhcmQgeDkiLCJQcm8geDEiLDEwLDExLDIyLCJDWDMzIHgzIiwiQ1gyMyB4MSIsNCwxNCwyOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjc4MCwyMC4zNSwyNy41Miw4LjYxLDEwLjgzLDMuOTUsNiwiU3RhbmRhcmQgeDkiLCJQcm8geDEiLDEwLDExLDIyLCJDWDMzIHgzIiwiQ1gyMyB4MSIsNCwxNCwyOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjgwMCwyMC43MywyOC4wMiw4Ljc2LDExLjAxLDQuMDIsNiwiU3RhbmRhcmQgeDkiLCJQcm8gUGx1cyB4MSIsMTAsMTMsMjYsIkNYMzMgeDMiLCJDWDMzIHgxIiw0LDE2LDMyLDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKODIwLDIxLjEwLDI4LjUyLDguOTEsMTEuMTgsNC4xMyw2LCJTdGFuZGFyZCB4OSIsIlBybyBQbHVzIHgxIiwxMCwxMywyNiwiQ1gzMyB4MyIsIkNYMzMgeDEiLDQsMTYsMzIsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo4NDAsMjEuNDgsMjkuMDIsOS4wNiwxMS4zNiw0LjIxLDYsIlN0YW5kYXJkIHgxMCIsIlBybyBQbHVzIHgxIiwxMSwxNCwyOCwiQ1gzMyB4MyIsIkNYMzMgeDEiLDQsMTYsMzIsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoKQ29kZSBDb21wYXNzLCBwbHVzIDI1MCBDb2RlIEluc3BlY3RvciB1c2VycwpBbGwgc2VhdHMgcnVuIENvbXBhc3MuIDI1MCBvZiB0aGVtIGFsc28gcnVuIENvZGUgSW5zcGVjdG9yIDXigJM3IHRpbWVzIHBlciB3b3JraW5nIGRheS4KU2VhdHMsUGVhayBjb25jdXJyZW50IGpvYnMgKGxvdyB1c2FnZSksUGVhayBjb25jdXJyZW50IGpvYnMgKGhpZ2ggdXNhZ2UpLHZDUFUgcmVxdWlyZWQgKGhpZ2gpLEFwcCBSQU0gcmVxdWlyZWQgR0IgKGhpZ2gpLFNlYXJjaCBpbmRleCBSQU0gR0IsU2VhcmNoIGluZGV4IGRpc2sgR0IsTUFOQUdFRDogd2ViIGluc3RhbmNlcyxNQU5BR0VEOiBpbmRleCBob3N0LE1BTkFHRUQ6IHRvdGFsIG1hY2hpbmVzLE1BTkFHRUQ6IHRvdGFsIHZDUFUsTUFOQUdFRDogdG90YWwgUkFNIEdCLFZQUzogd2ViIHNlcnZlcnMsVlBTOiBpbmRleCBob3N0LFZQUzogdG90YWwgbWFjaGluZXMsVlBTOiB0b3RhbCB2Q1BVLFZQUzogdG90YWwgUkFNIEdCLFNFUlZFUkxFU1M6IHBlYWsgaW5zdGFuY2VzLFNFUlZFUkxFU1M6IHdhcm0gaW5zdGFuY2VzLFNFUlZFUkxFU1M6IHBlYWsgdkNQVSxTRVJWRVJMRVNTOiBwZWFrIFJBTSBHQixTRVJWRVJMRVNTOiBzZWFyY2ggaW5kZXgKMjAsMC45NSwxLjMwLDAuNzQsMS42NiwwLjQ0LDEsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNDAsMS45MCwyLjYwLDEuMTMsMi4xMSwwLjUyLDEsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNjAsMi44NCwzLjkxLDEuNTIsMi41NywwLjYzLDEsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKODAsMy43OSw1LjIxLDEuOTEsMy4wMiwwLjcwLDEsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMTAwLDQuNzQsNi41MSwyLjMwLDMuNDgsMC44MSwyLCJTdGFuZGFyZCB4MyIsIm9uIHdlYiBpbnN0YW5jZSIsMywzLDYsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjEyMCw1LjY5LDcuODEsMi42OSwzLjkzLDAuODksMiwiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoxNDAsNi42NCw5LjExLDMuMDgsNC4zOSwxLjAwLDIsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMTYwLDcuNTgsMTAuNDIsMy40OCw0Ljg1LDEuMDcsMiwiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoxODAsOC41MywxMS43MiwzLjg3LDUuMzAsMS4xOCwyLCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjIwMCw5LjQ4LDEzLjAyLDQuMjYsNS43NiwxLjI1LDIsIlN0YW5kYXJkIHg1IiwiUHJvIHgxIiw2LDcsMTQsIkNYNDMgeDEiLCJDWDIzIHgxIiwyLDEwLDIwLDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMjIwLDEwLjQzLDE0LjMyLDQuNjUsNi4yMSwxLjM3LDIsIlN0YW5kYXJkIHg1IiwiUHJvIHgxIiw2LDcsMTQsIkNYNDMgeDEiLCJDWDIzIHgxIiwyLDEwLDIwLDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMjQwLDExLjM4LDE1LjYzLDUuMDQsNi42NywxLjQ0LDIsIlN0YW5kYXJkIHg2IiwiUHJvIHgxIiw3LDgsMTYsIkNYNDMgeDEiLCJDWDIzIHgxIiwyLDEwLDIwLDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMjYwLDEyLjA0LDE2LjUzLDUuMzEsNi45OCwxLjU1LDMsIlN0YW5kYXJkIHg2IiwiUHJvIHgxIiw3LDgsMTYsIkNYNDMgeDEiLCJDWDIzIHgxIiwyLDEwLDIwLDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMjgwLDEyLjQxLDE3LjAzLDUuNDYsNy4xNiwxLjYyLDMsIlN0YW5kYXJkIHg2IiwiUHJvIHgxIiw3LDgsMTYsIkNYNDMgeDEiLCJDWDIzIHgxIiwyLDEwLDIwLDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMzAwLDEyLjc5LDE3LjUzLDUuNjEsNy4zMywxLjczLDMsIlN0YW5kYXJkIHg2IiwiUHJvIHgxIiw3LDgsMTYsIkNYNDMgeDEiLCJDWDIzIHgxIiwyLDEwLDIwLDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMzIwLDEzLjE2LDE4LjAzLDUuNzYsNy41MSwxLjgxLDMsIlN0YW5kYXJkIHg2IiwiUHJvIHgxIiw3LDgsMTYsIkNYNDMgeDEiLCJDWDIzIHgxIiwyLDEwLDIwLDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMzQwLDEzLjU0LDE4LjUzLDUuOTEsNy42OCwxLjkyLDMsIlN0YW5kYXJkIHg2IiwiUHJvIHgxIiw3LDgsMTYsIkNYNDMgeDEiLCJDWDIzIHgxIiwyLDEwLDIwLDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMzYwLDEzLjkxLDE5LjAzLDYuMDYsNy44NiwxLjk5LDMsIlN0YW5kYXJkIHg3IiwiUHJvIHgxIiw4LDksMTgsIkNYNDMgeDEiLCJDWDIzIHgxIiwyLDEwLDIwLDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMzgwLDE0LjI5LDE5LjUzLDYuMjEsOC4wMywyLjEwLDMsIlN0YW5kYXJkIHg3IiwiUHJvIHgxIiw4LDksMTgsIkNYNDMgeDEiLCJDWDIzIHgxIiwyLDEwLDIwLDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNDAwLDE0LjY2LDIwLjAzLDYuMzYsOC4yMSwyLjE4LDMsIlN0YW5kYXJkIHg3IiwiUHJvIHgxIiw4LDksMTgsIkNYNDMgeDEiLCJDWDIzIHgxIiwyLDEwLDIwLDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNDIwLDE1LjA0LDIwLjUzLDYuNTEsOC4zOCwyLjI5LDMsIlN0YW5kYXJkIHg3IiwiUHJvIHgxIiw4LDksMTgsIkNYNDMgeDEiLCJDWDIzIHgxIiwyLDEwLDIwLDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNDQwLDE1LjQxLDIxLjAzLDYuNjYsOC41NiwyLjM2LDQsIlN0YW5kYXJkIHg3IiwiUHJvIHgxIiw4LDksMTgsIkNYNDMgeDEiLCJDWDIzIHgxIiwyLDEwLDIwLDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNDYwLDE1Ljc5LDIxLjUzLDYuODEsOC43MywyLjQ3LDQsIlN0YW5kYXJkIHg3IiwiUHJvIHgxIiw4LDksMTgsIkNYNDMgeDEiLCJDWDIzIHgxIiwyLDEwLDIwLDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNDgwLDE2LjE2LDIyLjAzLDYuOTYsOC45MSwyLjU1LDQsIlN0YW5kYXJkIHg3IiwiUHJvIHgxIiw4LDksMTgsIkNYNDMgeDEiLCJDWDIzIHgxIiwyLDEwLDIwLDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNTAwLDE2LjU0LDIyLjUzLDcuMTEsOS4wOCwyLjY2LDQsIlN0YW5kYXJkIHg4IiwiUHJvIHgxIiw5LDEwLDIwLCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjUyMCwxNi45MSwyMy4wMyw3LjI2LDkuMjYsMi43Myw0LCJTdGFuZGFyZCB4OCIsIlBybyB4MSIsOSwxMCwyMCwiQ1g0MyB4MSIsIkNYMjMgeDEiLDIsMTAsMjAsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo1NDAsMTcuMjksMjMuNTMsNy40MSw5LjQzLDIuODQsNCwiU3RhbmRhcmQgeDgiLCJQcm8geDEiLDksMTAsMjAsIkNYNDMgeDEiLCJDWDIzIHgxIiwyLDEwLDIwLDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNTYwLDE3LjY2LDI0LjAzLDcuNTYsOS42MSwyLjkyLDQsIlN0YW5kYXJkIHg4IiwiUHJvIHgxIiw5LDEwLDIwLCJDWDQzIHgxIiwiQ1gyMyB4MSIsMiwxMCwyMCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjU4MCwxOC4wNCwyNC41Myw3LjcxLDkuNzgsMy4wMyw0LCJTdGFuZGFyZCB4OCIsIlBybyB4MSIsOSwxMCwyMCwiQ1g0MyB4MSIsIkNYMjMgeDEiLDIsMTAsMjAsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo2MDAsMTguNDEsMjUuMDMsNy44Niw5Ljk2LDMuMTAsNSwiU3RhbmRhcmQgeDgiLCJQcm8geDEiLDksMTAsMjAsIkNYNDMgeDEiLCJDWDIzIHgxIiwyLDEwLDIwLDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNjIwLDE4Ljc5LDI1LjUzLDguMDEsMTAuMTMsMy4yMSw1LCJTdGFuZGFyZCB4OSIsIlBybyB4MSIsMTAsMTEsMjIsIkNYMzMgeDMiLCJDWDIzIHgxIiw0LDE0LDI4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNjQwLDE5LjE2LDI2LjAzLDguMTYsMTAuMzEsMy4yOCw1LCJTdGFuZGFyZCB4OSIsIlBybyB4MSIsMTAsMTEsMjIsIkNYMzMgeDMiLCJDWDIzIHgxIiw0LDE0LDI4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNjYwLDE5LjU0LDI2LjUzLDguMzEsMTAuNDgsMy40MCw1LCJTdGFuZGFyZCB4OSIsIlBybyB4MSIsMTAsMTEsMjIsIkNYMzMgeDMiLCJDWDIzIHgxIiw0LDE0LDI4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNjgwLDE5LjkxLDI3LjAzLDguNDYsMTAuNjYsMy40Nyw1LCJTdGFuZGFyZCB4OSIsIlBybyB4MSIsMTAsMTEsMjIsIkNYMzMgeDMiLCJDWDIzIHgxIiw0LDE0LDI4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNzAwLDIwLjI5LDI3LjUzLDguNjEsMTAuODMsMy41OCw1LCJTdGFuZGFyZCB4OSIsIlBybyB4MSIsMTAsMTEsMjIsIkNYMzMgeDMiLCJDWDIzIHgxIiw0LDE0LDI4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNzIwLDIwLjY2LDI4LjAzLDguNzYsMTEuMDEsMy42NSw1LCJTdGFuZGFyZCB4OSIsIlBybyB4MSIsMTAsMTEsMjIsIkNYMzMgeDMiLCJDWDIzIHgxIiw0LDE0LDI4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNzQwLDIxLjA0LDI4LjUzLDguOTEsMTEuMTgsMy43Niw1LCJTdGFuZGFyZCB4OSIsIlBybyB4MSIsMTAsMTEsMjIsIkNYMzMgeDMiLCJDWDIzIHgxIiw0LDE0LDI4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNzYwLDIxLjQxLDI5LjAzLDkuMDYsMTEuMzYsMy44NCw1LCJTdGFuZGFyZCB4MTAiLCJQcm8geDEiLDExLDEyLDI0LCJDWDMzIHgzIiwiQ1gyMyB4MSIsNCwxNCwyOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjc4MCwyMS43OSwyOS41Myw5LjIxLDExLjUzLDMuOTUsNiwiU3RhbmRhcmQgeDEwIiwiUHJvIHgxIiwxMSwxMiwyNCwiQ1gzMyB4MyIsIkNYMjMgeDEiLDQsMTQsMjgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo4MDAsMjIuMTYsMzAuMDMsOS4zNiwxMS43MSw0LjAyLDYsIlN0YW5kYXJkIHgxMCIsIlBybyBQbHVzIHgxIiwxMSwxNCwyOCwiQ1gzMyB4MyIsIkNYMzMgeDEiLDQsMTYsMzIsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo4MjAsMjIuNTQsMzAuNTMsOS41MSwxMS44OCw0LjEzLDYsIlN0YW5kYXJkIHgxMCIsIlBybyBQbHVzIHgxIiwxMSwxNCwyOCwiQ1gzMyB4MyIsIkNYMzMgeDEiLDQsMTYsMzIsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo4NDAsMjIuOTEsMzEuMDMsOS42NiwxMi4wNiw0LjIxLDYsIlN0YW5kYXJkIHgxMCIsIlBybyBQbHVzIHgxIiwxMSwxNCwyOCwiQ1gzMyB4MyIsIkNYMzMgeDEiLDQsMTYsMzIsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo=";
 (function(){
   var bin=atob(CSV_B64), b=new Uint8Array(bin.length);
   for(var i=0;i<bin.length;i++) b[i]=bin.charCodeAt(i);
@@ -1100,7 +1250,7 @@ var CSV_B64="QXNjZW5kT1MgLSBIYXJkd2FyZSBSZXF1aXJlbWVudHMgYnkgU2VhdCBDb3VudApIYXJ
   // 2. clipboard, with the pre-async-API fallback for locked-down frames.
   var cp=document.getElementById('cp');
   cp.addEventListener('click',function(){
-    var done=function(ok){cp.textContent=ok?'Copied ✓':'Copy failed — use Show raw CSV';
+    var done=function(ok){cp.textContent=ok?'Copied \u2713':'Copy failed \u2014 use Show raw CSV';
       setTimeout(function(){cp.textContent='Copy CSV to clipboard'},2600);};
     if(navigator.clipboard&&navigator.clipboard.writeText){
       navigator.clipboard.writeText(text).then(function(){done(true)},legacy);
