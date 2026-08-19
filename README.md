@@ -22,10 +22,14 @@ Deploy as a **Render Static Site** with the repo root as the publish directory.
 
 | Seats | Render | Serverless | VPS | AI (identical on all) |
 |---|---|---|---|---|
-| 10 | $164 | $187 | **$122** | $113 |
-| 100 | $1.25k | $1.2k | **$1.1k** | $1.1k |
-| 500 | $6.0k | $5.9k | **$5.7k** | $5.6k |
-| 10,000 | $121k | $116k | **$114k** | $113k |
+| 10 | $175 | $147 | **$133** | $124 |
+| 100 | $1.4k | $1.3k | **$1.3k** | $1.25k |
+| 500 | $7.0k | $6.4k | **$6.3k** | $6.2k |
+| 10,000 | $134k | $128k | **$125k** | $124k |
+
+*(These figures were revised upward on 2026-08-18: an audit found the Estimating input
+was labelled per-day but multiplied as per-week, undercounting that module ~4.9×. The
+model is now cross-checked by an independent recompute of jobs/month.)*
 
 Read that last column again — **that is the finding.** The AI bill is identical on every
 tab and dominates from ~25 seats onward. Architecture choice moves the infrastructure
@@ -39,10 +43,9 @@ model's softest number; it says so on the page).
 - **Render** — what runs today. Zero ops. The $25 floor is the price of never thinking
   about servers.
 - **Serverless** — nearly $0 infra below ~100 seats (Cloud Run free tier + Pinecone's
-  free Starter genuinely cover it), scale-to-zero for dev/staging environments, and the
-  smoothest cost curve. One warm instance ($71/mo) removes cold starts — note that an
-  always-warm serverless instance costs ~3× a Render Standard box, so "serverless is
-  cheaper" is only true if you accept cold starts or have real traffic.
+  free Starter genuinely cover it), scale-to-zero for dev/staging, and from ~10 seats up
+  the cheapest *managed* option. One warm instance (~$20/mo at Google's reduced idle
+  rate) removes the morning cold start.
 - **VPS** — the cheapest iron at every scale and the only tab where egress is free. The
   euros are exact; the price it does not show is that **you become the ops team**:
   patching, monitoring, backups, 3 a.m. restarts. The model prices machines, not people,
@@ -60,6 +63,11 @@ model's softest number; it says so on the page).
   $0.33/GB-mo storage; read units priced at the **top** of the published $16–18/M range;
   free Starter tier (2 GB, 1M RU) applied; $50/mo Standard minimum applied
 - Hetzner CX23 (€5.49) and CX43 (€15.99), post-June-2026 increases
+
+**Documented but unpublished:** Google confirms idle min-instances bill at a *reduced*
+rate under request-based billing but does not publish the figure; modelled at ~10% of
+active CPU (a warm 1 vCPU / 2 GiB instance ≈ $20/mo) and flagged on the page. Verify
+against a real bill before presenting.
 
 **Interpolated, and flagged as such:** Hetzner CX33/CX53 (scaled at the confirmed uplift).
 

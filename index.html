@@ -149,14 +149,14 @@
       <div class="hint">Each is one code book, ~45k vectors. Ironwood serves Alberta today — a fixed
       cost that does not grow with seats, only with provinces.</div>
     </div>
-    <div>
-      <label>Warm instances (serverless) <span class="val" id="vWarm">1</span></label>
+    <div data-arch-input="srv">
+      <label>Warm instances <span class="val" id="vWarm">1</span></label>
       <input type="range" id="warm" min="0" max="3" step="1" value="1">
       <div class="hint">Cloud Run min-instances. 0 = scale to zero and eat a cold start on the
       first morning search; 1 = always warm. Billed 24/7.</div>
     </div>
-    <div>
-      <label>EUR → USD (VPS tab)</label>
+    <div data-arch-input="vps">
+      <label>EUR → USD</label>
       <input type="number" id="fx" min="0.5" step="0.01" value="1.17">
       <div class="hint">Hetzner bills in EUR. Set today's rate — it moves, so it is an input.</div>
     </div>
@@ -267,7 +267,14 @@ const RENDER = [
 // ---- Verified vendor rates, August 2026. Sources in the README. ----
 // Cloud Run tier-1: per vCPU-second / GiB-second while a request is open,
 // plus per-request fee. Free tier applied in the math, not ignored.
-const CR = {vcpuS:0.000024, memS:0.0000025, reqM:0.40, freeVcpuS:180000, freeMemS:360000, freeReq:2e6};
+const CR = {vcpuS:0.000024, memS:0.0000025, reqM:0.40, freeVcpuS:180000, freeMemS:360000, freeReq:2e6,
+  // Idle min-instances bill at a REDUCED rate under request-based billing
+  // (Google's docs confirm the reduction; the exact figure is not on the
+  // public page). Modelled at the widely-cited ~10%-of-active CPU rate with
+  // memory unchanged - a warm 1 vCPU / 2 GiB instance ~= $20/mo. VERIFY
+  // AGAINST A REAL BILL before presenting; the earlier version of this
+  // model billed warm instances at full active rates, ~3.5x too high.
+  idleVcpuS:0.0000025, idleMemS:0.0000025};
 // Pinecone serverless Standard. Read units priced at the TOP of the published
 // $16-18 range - deliberately conservative. Starter free tier is real and
 // applied: 2 GB storage, 1M RU/mo.
@@ -301,7 +308,7 @@ function fitRender(cpu, ram, {minRam=0, maxCount=24, minCount=1}={}){
   const top = RENDER[RENDER.length-1];
   return best || {plan:top, count:Math.max(1,Math.ceil(Math.max(cpu/top.cpu, ram/top.ram))), cost:top.$};
 }
-const SEATS_PER_ORG = 8, ACTIVE_FRACTION = .45, WORK_HOURS = 8, WORK_DAYS = 21;
+const SEATS_PER_ORG = 8, WORK_HOURS = 8, WORK_DAYS = 21;
 const SAM_COST = 0.004;           // per mask call, external segmentation
 const VEC_BYTES = 768*4 + 2200;   // 768 dims float32 + payload text, per vector
 const VECTORS_PER_REGION = 45000; // one ingested code book, chunked
@@ -330,6 +337,7 @@ const ROADMAP = [
 ];
 
 const ASSUME = [
+  ['Cloud Run idle-rate for warm instances is the one unverified vendor number.','Google documents that idle min-instances bill at a reduced rate under request-based billing but does not publish the figure on the pricing page. Modelled at ~10% of active CPU (~$20/mo for a warm 1 vCPU / 2 GiB instance). Verify against a real bill.'],
   ['Cloud Run bills while a stream is open.','A 90-second tender holds its SSE connection for its whole life; with ~45 streams sharing one instance the billed hours stay small, but this is why long scans want a queue on every architecture.'],
   ['Pinecone rates are taken at the TOP of the published range.','$18/M read units, $4.50/M writes (published range $16-18 / $4-4.50 by cloud and region). The free Starter tier (2 GB, 1M RU/mo) is applied - small deployments genuinely pay $0, and the $50/mo Standard minimum applies once past it.'],
   ['Hetzner CX33 and CX53 prices are interpolated.','CX23 (\u20ac5.49) and CX43 (\u20ac15.99) are confirmed post-June-2026 figures; the other two rungs are scaled at the same uplift and marked. Increases applied to NEW orders - existing servers kept old pricing.'],
@@ -351,7 +359,11 @@ function calc(){
   const per = {
     compass: +$('comp').value * WORK_DAYS,
     inspect: +$('insp').value * WORK_DAYS,
-    estim:   +$('est').value  * 4.33,
+    // Per DAY, like the label says. This multiplied by 4.33 - a leftover
+    // from when the input was per-week - so Estimating volume was
+    // undercounted ~4.9x in every figure this page showed. Found by an
+    // independent recompute of jobs/month disagreeing with the model.
+    estim:   +$('est').value  * WORK_DAYS,
     tender:  +$('tend').value,
   };
   const R = { fIn:+$('fIn').value||0, fOut:+$('fOut').value||0,
@@ -453,14 +465,22 @@ function calcServerless(d){
   // One instance: 1 vCPU / 2 GiB, ~45 concurrent SSE streams - the same
   // per-process ceiling used everywhere else in this model.
   const peakInst = Math.max(1, Math.ceil(d.peakConc/45));
-  const busyH = WORK_DAYS*WORK_HOURS;               // ~168 working hours / month
-  const warmH = minInst*730;                        // min-instances bill 24/7
-  // Burst capacity exists only while traffic needs it; 0.5 models the ramp
-  // up and down around the peak rather than a square wave.
-  const burstH = Math.max(0, peakInst-minInst)*busyH*0.5;
-  const instH  = warmH + burstH;
-  const vcpuS  = instH*3600*1, memS = instH*3600*2;
-  const cmpCost = Math.max(0,vcpuS-CR.freeVcpuS)*CR.vcpuS + Math.max(0,memS-CR.freeMemS)*CR.memS;
+
+  // BILLED FROM THE LOAD, not from a square wave of peak instances.
+  //
+  // CPU: pay for compute actually burned - each scan uses ~0.3 vCPU of its
+  // wall-clock (the same burst factor the dedicated tabs size with).
+  // Memory: pay for instance residency - connection-time shared across ~45
+  // streams, 2 GiB per instance. Warm minimums bill 24/7 at Google's reduced
+  // idle rates. Free tier subtracted where it applies.
+  const activeVcpuS = d.totalJobSec*0.3;
+  const instResidS  = d.totalJobSec/45;
+  const warmS       = minInst*730*3600;
+  const cmpCost =
+      Math.max(0, activeVcpuS - CR.freeVcpuS)*CR.vcpuS
+    + Math.max(0, instResidS*2 - CR.freeMemS)*CR.memS
+    + warmS*(CR.idleVcpuS + 2*CR.idleMemS);
+  const warmCost = warmS*(CR.idleVcpuS + 2*CR.idleMemS);
   const reqMo   = d.jobsMo*8 + d.seats*300;
   const reqCost = Math.max(0,reqMo-CR.freeReq)/1e6*CR.reqM;
 
@@ -480,7 +500,7 @@ function calcServerless(d){
   const egress  = d.egressGb*0.12;                  // GCP premium-tier egress
   const infra   = cmpCost+reqCost+pcCost+egress;
   const total   = d.aiCost + d.fsCost + infra;
-  return {minInst,peakInst,instH,cmpCost,reqMo,reqCost,storeGB,nsGB,ruMo,inStarter,pcCost,egress,infra,total};
+  return {minInst,peakInst,warmCost,cmpCost,reqMo,reqCost,storeGB,nsGB,ruMo,inStarter,pcCost,egress,infra,total};
 }
 
 // ============ RAW VPS: Hetzner CX + self-managed Qdrant ============
@@ -577,6 +597,13 @@ function render(){
        <b>infrastructure</b> slice only, which is ${(Math.max(...options.map(o=>o.infra))/Math.max(1,cheapest.total)*100).toFixed(0)}% of the bill at its worst here.
        The real difference between these options is who carries the operations.</p>`;
 
+  // Arch-specific inputs only exist on their own tab - a Render screen
+  // showing a Cloud Run warm-instance slider is asking a question that has
+  // no meaning there.
+  document.querySelectorAll('[data-arch-input]').forEach(el=>{
+    el.style.display = el.dataset.archInput===arch ? '' : 'none';
+  });
+
   const active = arch==='srv' ? sv : arch==='vps' ? vp : d;
   const tiers  = arch==='srv' ? SRV_TIERS : arch==='vps' ? VPS_TIERS : TIERS;
   const tier   = tiers.find(t=>d.seats<=t.max);
@@ -625,7 +652,7 @@ function render(){
       ['Cloud Run', cpuS, cpuT, 'Bills per vCPU-second and GiB-second while a request is open. Scans hold SSE streams, so billed time follows CONNECTION time \u2014 shared across ~45 streams per instance \u2014 plus any always-warm minimum.',
         [['Peak instances', sv.peakInst],
          ['Warm minimum', sv.minInst + (sv.minInst===0?' (cold starts)':'')],
-         ['Billed instance-hours', fmt(sv.instH)+' h/mo'],
+         ['Warm cost (idle rate)', money(sv.warmCost)+'/mo'],
          ['Compute + requests', money(sv.cmpCost+sv.reqCost)+'/mo'],
          ['Requests', fmt(sv.reqMo)+'/mo']],
         sv.minInst===0 ? 'Scale-to-zero: the first search after an idle spell pays a 2\u20135 second cold start. One warm instance removes it for '+money(730*3600*(CR.vcpuS+2*CR.memS))+'/mo.' : ''],
