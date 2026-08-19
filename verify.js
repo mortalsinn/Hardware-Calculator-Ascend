@@ -1,18 +1,34 @@
 #!/usr/bin/env node
 // ========================================================
-// verify.js — clean-room verification of the calculator.
+// verify.js — three-layer verification of the calculator.
 //
-// Re-implements the model's documented spec FROM SCRATCH (shares no
-// code with the page) and compares every cost component at 10 and
-// 10,000 seats. If any formula in index.html is miscoded, the two
-// implementations disagree and this prints FAIL.
+// Built after a run of bugs that each slipped past the previous
+// check, because every check tested the FORMULAS and every bug was
+// somewhere else. The three layers now are:
 //
-// What this proves: the arithmetic matches the spec.
-// What it cannot prove: that the spec's assumptions match reality —
-// those are listed on the page itself, with the softest flagged.
+//   1. FORMULAS   a clean-room re-implementation of the spec,
+//                 sharing no code with the page, compared component
+//                 by component.
+//   2. DISPLAY    the real render() driven against a capturing DOM
+//                 across ~900 input combinations, asserting that
+//                 what a human SEES is sane: no NaN/Infinity, every
+//                 percentage in range, cost-bar widths summing to
+//                 100, share claims about the right denominator.
+//   3. BEHAVIOUR  properties that must hold everywhere: cost is
+//                 monotonic in seats, totals equal their parts, zero
+//                 usage means zero AI, peak sizes hardware but not
+//                 tokens, nothing negative or non-finite anywhere.
+//
+// What this CANNOT establish: whether the assumptions match reality.
+// Tokens per scan, egress per job and the unpublished Cloud Run idle
+// rate are estimates, flagged as such on the page. Verification
+// proves the model computes what it claims — not that the claims are
+// the world.
 //
 // Run:  node verify.js
 // ========================================================
+
+console.log("\n=== LAYER 1: FORMULAS (clean-room) ===");
 // CLEAN-ROOM VERIFIER. Re-implements the model's SPEC from scratch —
 // shares no code with the page — then compares every component.
 // Catches coding slips; deliberately cannot catch bad assumptions,
@@ -109,3 +125,165 @@ for(const n of [10,10000]){
   cmp('VPS TOTAL',       e.vTotal, vp.total);
 }
 console.log(fails===0?'\nALL COMPONENTS AGREE — two independent implementations.':'\n'+fails+' DISAGREEMENTS — investigate.');
+
+console.log("\n=== LAYER 2: DISPLAY (rendered output) ===");
+(function(){
+const fs=require('fs');
+const html=fs.readFileSync('index.html','utf8');
+let js=html.split('<script>')[1].split('</script>')[0];
+
+const vals={};
+const captured={};
+function mkEl(id){
+  return {
+    get value(){return vals[id]}, set value(v){vals[id]=String(v)},
+    set innerHTML(v){captured[id]=String(v)}, get innerHTML(){return captured[id]||''},
+    set textContent(v){captured[id+'#text']=String(v)},
+    addEventListener(){}, dataset:{}, classList:{toggle(){}}, style:{},
+  };
+}
+global.document={
+  getElementById:id=>mkEl(id),
+  querySelectorAll:()=>[],
+};
+
+const cases=[];
+const seatPts=[0,1,50,120,240,360,425,500,620,750,880,1000];       // log positions
+const usage=[['0','0','0','0'],['5','3','4','2'],['1','1','1','0'],
+             ['60','60','40','40'],['0','60','0','0'],['30','0','20','5']];
+const misc=[['30','1','1','1.17'],['10','13','0','0.9'],['80','5','3','1.5'],['15','1','0','1.0']];
+for(const sp of seatPts) for(const u of usage) for(const m of misc)
+  cases.push({sp,u,m});
+
+let fails=[], checked=0;
+const BAD=/NaN|Infinity|undefined|null%|\$NaN|<b><\/b>/;
+for(const arch of ['render','srv','vps']){
+  for(const c of cases){
+    Object.assign(vals,{seats:String(c.sp),comp:c.u[0],insp:c.u[1],est:c.u[2],tend:c.u[3],
+      peak:c.m[0],reg:c.m[1],warm:c.m[2],fx:c.m[3],
+      fIn:'0.75',fOut:'3.75',pIn:'2.00',pOut:'12.00',sam:'0.004'});
+    for(const k in captured) delete captured[k];
+    let M;
+    try{
+      M=eval(js.replace(/^render\(\);$/m,'')+'\n;({render,calc,calcServerless,calcVps,setArch:a=>{arch=a}})');
+    }catch(e){ fails.push(['EVAL',JSON.stringify(c),e.message]); continue; }
+    // drive the arch the same way the tab click does
+    try{
+      const src=js.replace(/^render\(\);$/m,'').replace("let arch = 'render';","let arch = '"+arch+"';");
+      const R=eval(src+'\n;({render})');
+      R.render();
+    }catch(e){ fails.push([arch,JSON.stringify(c),'THREW: '+e.message]); continue; }
+    checked++;
+    const tag=arch+' seats@'+c.sp+' u='+c.u.join('/')+' m='+c.m.join('/');
+    for(const [k,v] of Object.entries(captured)){
+      if(BAD.test(v)) fails.push([tag,k,'BAD TOKEN: '+(v.match(BAD)||[''])[0]+' in '+v.slice(0,90)]);
+    }
+    // percentages must be sane
+    for(const m of (captured['costlegend']||'').matchAll(/·\s*(-?\d+)%/g)){
+      const pct=+m[1];
+      if(pct<0||pct>100) fails.push([tag,'costlegend','pct out of range: '+pct+'%']);
+    }
+    // cost bar widths must sum to ~100
+    const widths=[...(captured['costbar']||'').matchAll(/width:(-?[\d.]+)%/g)].map(x=>+x[1]);
+    if(widths.length){
+      const sum=widths.reduce((a,b)=>a+b,0);
+      if(sum<99.0||sum>101.0) fails.push([tag,'costbar','widths sum '+sum.toFixed(2)+'%']);
+      if(widths.some(w=>w<0)) fails.push([tag,'costbar','negative width']);
+    }
+    // the compare strip share claim
+    for(const m of (captured['compare']||'').matchAll(/is (-?\d+)% of this/g)){
+      const p=+m[1];
+      if(p<0||p>100) fails.push([tag,'compare','share '+p+'%']);
+    }
+  }
+}
+console.log('rendered cases:', checked);
+if(!fails.length){console.log('NO PRESENTATION-LAYER DEFECTS FOUND');}
+else{
+  const seen=new Set(); let shown=0;
+  console.log('DEFECTS:', fails.length);
+  for(const f of fails){
+    const key=f[1]+'|'+String(f[2]).slice(0,45);
+    if(seen.has(key))continue; seen.add(key);
+    console.log('  ['+f[0]+'] '+f[1]+' -> '+f[2]);
+    if(++shown>14){console.log('  ...');break;}
+  }
+}
+
+})();
+
+console.log("\n=== LAYER 3: BEHAVIOUR (invariants) ===");
+(function(){
+const fs=require('fs');
+const html=fs.readFileSync('index.html','utf8');
+let js=html.split('<script>')[1].split('</script>')[0].replace(/^render\(\);$/m,'');
+const vals={};
+global.document={getElementById:id=>({get value(){return vals[id]},set value(v){vals[id]=String(v)},
+  set innerHTML(v){},set textContent(v){},addEventListener(){},dataset:{},classList:{toggle(){}},style:{}}),
+  querySelectorAll:()=>[]};
+const M=eval(js+'\n;({calc,calcServerless,calcVps,posFromSeats,seatsFromPos})');
+const set=(o)=>Object.assign(vals,{seats:'425',comp:'5',insp:'3',est:'4',tend:'2',peak:'30',reg:'1',
+  warm:'1',fx:'1.17',fIn:'0.75',fOut:'3.75',pIn:'2.00',pOut:'12.00',sam:'0.004'},o);
+const all=()=>{const d=M.calc();return {d,sv:M.calcServerless(d),vp:M.calcVps(d)};};
+let bad=[];
+const chk=(name,cond,detail)=>{ if(!cond) bad.push(name+(detail?' :: '+detail:'')); };
+
+// 1. MONOTONIC IN SEATS - cost must never fall as seats rise
+let prev=null;
+for(const sp of [0,60,120,240,360,425,500,620,750,880,1000]){
+  set({seats:String(sp)}); const {d,sv,vp}=all();
+  if(prev){
+    chk('render monotonic', d.total>=prev.r-0.01, `${prev.r.toFixed(2)} -> ${d.total.toFixed(2)}`);
+    chk('srv monotonic',    sv.total>=prev.s-0.01, `${prev.s.toFixed(2)} -> ${sv.total.toFixed(2)}`);
+    chk('vps monotonic',    vp.total>=prev.v-0.01, `${prev.v.toFixed(2)} -> ${vp.total.toFixed(2)}`);
+  }
+  prev={r:d.total,s:sv.total,v:vp.total};
+}
+// 2. ZERO USAGE => ZERO AI, and infra still positive (you still host it)
+set({comp:'0',insp:'0',est:'0',tend:'0'});
+{ const {d,sv,vp}=all();
+  chk('zero usage -> AI 0', Math.abs(d.aiCost)<1e-9, d.aiCost);
+  chk('zero usage -> infra > 0 (render)', d.infraCost>0);
+  chk('zero usage -> vps infra > 0', vp.infra>0);
+  chk('zero usage -> srv infra >= 0', sv.infra>=0); }
+// 3. MORE USAGE => MORE AI
+set({}); const a=all().d.aiCost; set({insp:'6'}); const b=all().d.aiCost;
+chk('more inspector -> more AI', b>a, `${a.toFixed(2)} -> ${b.toFixed(2)}`);
+// 4. PEAK affects hardware but NOT AI  (the claim printed on the page)
+set({peak:'10'}); const lo=all(); set({peak:'80'}); const hi=all();
+chk('peak does not change AI', Math.abs(lo.d.aiCost-hi.d.aiCost)<1e-9);
+chk('peak does not lower infra', hi.d.infraCost>=lo.d.infraCost-1e-9);
+// 5. REGIONS grow the index, never shrink it
+set({reg:'1'}); const r1=all().d.qGb; set({reg:'13'}); const r13=all().d.qGb;
+chk('more regions -> bigger index', r13>r1, `${r1.toFixed(2)} -> ${r13.toFixed(2)}`);
+// 6. TOTAL == COMPONENTS, everywhere
+for(const sp of [0,240,500,750,1000]){
+  set({seats:String(sp)}); const {d,sv,vp}=all();
+  chk('render total=parts', Math.abs(d.total-(d.aiCost+d.fsCost+d.infraCost))<0.01);
+  chk('srv total=parts',    Math.abs(sv.total-(d.aiCost+d.fsCost+sv.infra))<0.01);
+  chk('vps total=parts',    Math.abs(vp.total-(d.aiCost+d.fsCost+vp.infra))<0.01);
+  chk('srv infra=parts',    Math.abs(sv.infra-(sv.cmpCost+sv.reqCost+sv.pcCost+sv.egress))<0.01);
+}
+// 7. NOTHING NEGATIVE, NOTHING NON-FINITE
+for(const sp of [0,300,700,1000]) for(const u of [['0','0','0','0'],['60','60','40','40']]){
+  set({seats:String(sp),comp:u[0],insp:u[1],est:u[2],tend:u[3]});
+  const {d,sv,vp}=all();
+  for(const [k,v] of Object.entries({...d,...{srvInfra:sv.infra,vpsInfra:vp.infra}})){
+    if(typeof v==='number') chk('finite & non-negative: '+k, Number.isFinite(v)&&v>=-1e-9, `${k}=${v}`);
+  }
+}
+// 8. WARM INSTANCES cost money but never reduce total
+set({warm:'0'}); const w0=all().sv.total; set({warm:'3'}); const w3=all().sv.total;
+chk('warm instances add cost', w3>=w0-1e-9, `${w0.toFixed(2)} -> ${w3.toFixed(2)}`);
+// 9. SEAT SCALE round-trips
+for(const n of [1,10,250,5000,1000000]){
+  const back=M.seatsFromPos(M.posFromSeats(n));
+  chk('seat round-trip '+n, Math.abs(back-n)/n<0.15, `${n} -> ${back}`);
+}
+// 10. COLOCATION must eventually stop (index cannot ride along forever)
+set({seats:'1000',reg:'13'}); chk('huge scale splits qdrant', all().d.colocated===false);
+
+console.log(bad.length? 'VIOLATIONS ('+bad.length+'):\n  '+[...new Set(bad)].join('\n  ')
+                      : 'ALL BEHAVIOURAL INVARIANTS HOLD');
+
+})();

@@ -49,6 +49,9 @@
   .cmp .c{flex:1;min-width:190px;background:var(--card);border:1px solid var(--line);border-radius:9px;
     padding:10px 13px;font-size:12.5px;color:var(--muted)}
   .cmp .c b{display:block;font:800 19px/1.3 ui-monospace,monospace;color:var(--ink);font-variant-numeric:tabular-nums}
+  .cmp .c .ps{display:inline-block;margin:3px 0 5px;padding:1px 7px;border-radius:99px;
+    background:color-mix(in srgb,var(--accent) 15%,transparent);color:var(--accent);
+    font:700 11.5px ui-monospace,monospace;font-variant-numeric:tabular-nums}
   .cmp .c.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
   .tier{margin-top:18px;border:1px solid var(--line);border-left:5px solid var(--accent);
     border-radius:10px;padding:16px 18px;background:var(--card)}
@@ -595,10 +598,13 @@ function render(){
     {key:'srv',    label:'Serverless \u00b7 Cloud Run',      total:sv.total, infra:sv.infra},
     {key:'vps',    label:'Raw VPS \u00b7 Hetzner',           total:vp.total, infra:vp.infra},
   ];
+  const perSeatOf = o => o.total/Math.max(1,d.seats);
   const cheapest = options.reduce((a,b)=>b.total<a.total?b:a);
   $('compare').innerHTML = '<div class="cmp">' + options.map(o=>
     `<div class="c ${o.key===arch?'on':''}">${o.label}${o.key===cheapest.key?' \u00b7 <span style="color:var(--good);font-weight:700">cheapest</span>':''}
-     <b>${money(o.total)}/mo</b>infra ${money(o.infra)} \u00b7 AI ${money(d.aiCost)}</div>`).join('') + '</div>'
+     <b>${money(o.total)}/mo</b>
+     <span class="ps">${money(perSeatOf(o))} / seat</span>
+     infra ${money(o.infra)} \u00b7 AI ${money(d.aiCost)}</div>`).join('') + '</div>'
     + (()=>{
         // Caught from a screenshot: this used to divide the WORST option's
         // infra by the CHEAPEST option's total - "120% of the bill", which is

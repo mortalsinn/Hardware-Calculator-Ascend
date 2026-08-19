@@ -59,10 +59,26 @@ model's softest number; it says so on the page).
 node verify.js
 ```
 
-A clean-room re-implementation of the model — written separately, sharing no code with
-the page — recomputes every cost component at 10 and 10,000 seats and compares. All
-components currently agree to the cent across all three architectures. It reads the
-model out of `index.html` directly, so it always tests what is deployed.
+Three layers, because the first version only tested one and bugs kept appearing in the
+other two:
+
+1. **Formulas** — a clean-room re-implementation of the spec, sharing no code with the
+   page, compared component by component at 10 and 10,000 seats across all three
+   architectures.
+2. **Display** — the real `render()` driven against a capturing DOM across ~900 input
+   combinations, asserting that what a human *sees* is sane: no NaN/Infinity, every
+   percentage in range, cost-bar widths summing to 100, share claims measured against
+   the right denominator.
+3. **Behaviour** — properties that must hold everywhere: cost is monotonic in seats,
+   totals equal their parts, zero usage means zero AI, the peak multiplier sizes
+   hardware but never tokens, nothing negative or non-finite anywhere.
+
+It reads the model out of `index.html` directly, so it always tests what is deployed.
+
+**What verification cannot establish:** whether the assumptions match reality. Tokens
+per scan, egress per job and the unpublished Cloud Run idle rate are estimates, flagged
+on the page. This proves the model computes what it claims — not that the claims are
+the world.
 
 ## Accuracy, stated plainly
 
