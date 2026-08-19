@@ -599,9 +599,17 @@ function render(){
   $('compare').innerHTML = '<div class="cmp">' + options.map(o=>
     `<div class="c ${o.key===arch?'on':''}">${o.label}${o.key===cheapest.key?' \u00b7 <span style="color:var(--good);font-weight:700">cheapest</span>':''}
      <b>${money(o.total)}/mo</b>infra ${money(o.infra)} \u00b7 AI ${money(d.aiCost)}</div>`).join('') + '</div>'
-    + `<p class="hint" style="margin-top:8px">The AI line is identical on every tab \u2014 architecture moves the
-       <b>infrastructure</b> slice only, which is ${(Math.max(...options.map(o=>o.infra))/Math.max(1,cheapest.total)*100).toFixed(0)}% of the bill at its worst here.
-       The real difference between these options is who carries the operations.</p>`;
+    + (()=>{
+        // Caught from a screenshot: this used to divide the WORST option's
+        // infra by the CHEAPEST option's total - "120% of the bill", which is
+        // arithmetic nonsense. Each option's share is of its OWN bill.
+        const cur = options.find(o=>o.key===arch);
+        const share = (cur.infra/Math.max(0.01,cur.total)*100).toFixed(0);
+        return `<p class="hint" style="margin-top:8px">The AI line is identical on every tab \u2014 the
+        architecture choice moves only the <b>infrastructure</b> slice, which is ${share}% of this
+        option\u2019s bill at the current inputs. The real difference between these options is who
+        carries the operations.</p>`;
+      })();
 
   // Arch-specific inputs only exist on their own tab - a Render screen
   // showing a Cloud Run warm-instance slider is asking a question that has
