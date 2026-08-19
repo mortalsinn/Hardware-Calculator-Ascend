@@ -1,1606 +1,1087 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex, nofollow">
-<meta name="description" content="AscendOS hardware requirements by seat count.">
-<title>AscendOS · Hardware Requirements</title>
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AscendOS — Hardware Requirements</title>
 <style>
- :root{--paper:#fff;--ink:#111820;--muted:#5d6b7a;--line:#d7dee7;--accent:#e2661a;--band:#f4f7fa;--step:#fff4ec}
- @media(prefers-color-scheme:dark){:root{--paper:#0d1219;--ink:#e4eaf1;--muted:#8a99a9;--line:#243140;--accent:#f5822f;--band:#151d27;--step:#231a12}}
- :root[data-theme="dark"]{--paper:#0d1219;--ink:#e4eaf1;--muted:#8a99a9;--line:#243140;--accent:#f5822f;--band:#151d27;--step:#231a12}
- :root[data-theme="light"]{--paper:#fff;--ink:#111820;--muted:#5d6b7a;--line:#d7dee7;--accent:#e2661a;--band:#f4f7fa;--step:#fff4ec}
+ :root{--ink:#141821;--mut:#5c6577;--line:#dfe3ea;--bg:#fff;--panel:#f7f8fa;
+  --need:#eef1f6;--mg:#e8f0fb;--vp:#eaf5ec;--sv:#f6eef8;--up:#fff6e0;--split:#e6f0ff;--splitb:#7ba7e0;--accent:#1f4f8f}
  *{box-sizing:border-box}
- body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding:30px 18px 60px}
- .wrap{max-width:1180px;margin:0 auto}
- .eyebrow{font:700 11px/1 ui-monospace,monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
- h1{font-size:clamp(22px,3.4vw,30px);margin:10px 0 8px;letter-spacing:-.02em;font-weight:800;text-wrap:balance}
- h2{font-size:17px;margin:38px 0 4px;font-weight:800;letter-spacing:-.01em}
- .lede{color:var(--muted);max-width:70ch;margin:0}
- .sub{color:var(--muted);margin:0 0 10px;font-size:13px}
- .hl{background:var(--band);border:1px solid var(--line);border-left:4px solid var(--accent);
-     border-radius:8px;padding:11px 14px;margin:0 0 12px;font-size:13.5px}
- .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
- table{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
- th,td{padding:6px 11px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
- th{position:sticky;top:0;background:var(--band);font-size:10px;letter-spacing:.07em;text-transform:uppercase;
-    color:var(--muted);font-weight:700}
- td.n{text-align:right;font-family:ui-monospace,monospace}
- td.tot{font-weight:700}
- tr.step{background:var(--step)}
- tr.step td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
- tbody tr:last-child td{border-bottom:0}
- .btn{display:inline-block;margin:16px 8px 0 0;padding:9px 16px;border-radius:8px;border:1px solid var(--accent);
-      background:var(--accent);color:#fff;font:700 13px system-ui;cursor:pointer;text-decoration:none}
- .btn.alt{background:transparent;color:var(--accent)}
- footer{margin-top:34px;color:var(--muted);font-size:12.5px;max-width:78ch;line-height:1.6}
- @media print{.btn{display:none}body{padding:0}th{position:static}.hl{break-inside:avoid}}
-</style>
-</head>
-<body>
-<div class="wrap">
- <div class="eyebrow">AscendOS · Capacity Planning</div>
- <h1>Hardware requirements by seat count</h1>
- <p class="lede">Server sizing for Code Compass from 20 to 840 seats, in steps of 20, with two scenarios
- layering Code Inspector on top. Figures are produced by the same model as the interactive planner, so the
- two cannot disagree. Sizing shown is for the managed-platform option (Render); the highlighted rows are the
- points where another instance is required.</p>
- <a class="btn" href="hardware.csv" download>Download spreadsheet (CSV)</a>
- <a class="btn alt" href="index.html">Open the interactive planner</a>
- <h2>Code Compass only</h2>
-  <p class="sub">Every seat runs 5 Compass searches per working day. No Inspector, no Estimating.</p>
-  <div class="hl">At 840 seats: <b>5.3</b> scans running at once ·
-    <b>Standard x4</b> (4 vCPU / 8 GB provisioned) ·
-    search index <b>4.2 GB</b> · <b>$1,904/month</b>
-    (<b>$2</b> per seat)</div>
-  <div class="scroll"><table>
-    <thead><tr>
-      <th>Seats</th><th>Peak concurrent</th><th>vCPU req.</th><th>App RAM GB</th><th>Index RAM GB</th>
-      <th>Instances</th><th>Prov. vCPU</th><th>Prov. RAM</th><th>Infra $/mo</th><th>AI $/mo</th><th>Total $/mo</th>
-    </tr></thead><tbody><tr>
-      <td class="n">20</td>
-      <td class="n">0.1</td>
-      <td class="n">0.4</td>
-      <td class="n">1.2</td>
-      <td class="n">0.4</td>
-      <td>Standard x1</td>
-      <td class="n">1</td>
-      <td class="n">2</td>
-      <td class="n">$50</td>
-      <td class="n">$30</td>
-      <td class="n tot">$81</td>
-    </tr><tr>
-      <td class="n">40</td>
-      <td class="n">0.3</td>
-      <td class="n">0.4</td>
-      <td class="n">1.3</td>
-      <td class="n">0.5</td>
-      <td>Standard x1</td>
-      <td class="n">1</td>
-      <td class="n">2</td>
-      <td class="n">$54</td>
-      <td class="n">$60</td>
-      <td class="n tot">$116</td>
-    </tr><tr>
-      <td class="n">60</td>
-      <td class="n">0.4</td>
-      <td class="n">0.5</td>
-      <td class="n">1.3</td>
-      <td class="n">0.6</td>
-      <td>Standard x1</td>
-      <td class="n">1</td>
-      <td class="n">2</td>
-      <td class="n">$58</td>
-      <td class="n">$90</td>
-      <td class="n tot">$150</td>
-    </tr><tr class="step">
-      <td class="n">80</td>
-      <td class="n">0.5</td>
-      <td class="n">0.5</td>
-      <td class="n">1.4</td>
-      <td class="n">0.7</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$86</td>
-      <td class="n">$120</td>
-      <td class="n tot">$210</td>
-    </tr><tr>
-      <td class="n">100</td>
-      <td class="n">0.6</td>
-      <td class="n">0.5</td>
-      <td class="n">1.4</td>
-      <td class="n">0.8</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$90</td>
-      <td class="n">$150</td>
-      <td class="n tot">$245</td>
-    </tr><tr>
-      <td class="n">120</td>
-      <td class="n">0.8</td>
-      <td class="n">0.6</td>
-      <td class="n">1.5</td>
-      <td class="n">0.9</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$94</td>
-      <td class="n">$180</td>
-      <td class="n tot">$279</td>
-    </tr><tr>
-      <td class="n">140</td>
-      <td class="n">0.9</td>
-      <td class="n">0.6</td>
-      <td class="n">1.5</td>
-      <td class="n">1.0</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$98</td>
-      <td class="n">$209</td>
-      <td class="n tot">$314</td>
-    </tr><tr>
-      <td class="n">160</td>
-      <td class="n">1.0</td>
-      <td class="n">0.6</td>
-      <td class="n">1.5</td>
-      <td class="n">1.1</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$102</td>
-      <td class="n">$239</td>
-      <td class="n tot">$349</td>
-    </tr><tr>
-      <td class="n">180</td>
-      <td class="n">1.1</td>
-      <td class="n">0.7</td>
-      <td class="n">1.6</td>
-      <td class="n">1.2</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$105</td>
-      <td class="n">$269</td>
-      <td class="n tot">$383</td>
-    </tr><tr>
-      <td class="n">200</td>
-      <td class="n">1.3</td>
-      <td class="n">0.7</td>
-      <td class="n">1.6</td>
-      <td class="n">1.3</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$109</td>
-      <td class="n">$299</td>
-      <td class="n tot">$418</td>
-    </tr><tr>
-      <td class="n">220</td>
-      <td class="n">1.4</td>
-      <td class="n">0.8</td>
-      <td class="n">1.7</td>
-      <td class="n">1.4</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$113</td>
-      <td class="n">$329</td>
-      <td class="n tot">$453</td>
-    </tr><tr>
-      <td class="n">240</td>
-      <td class="n">1.5</td>
-      <td class="n">0.8</td>
-      <td class="n">1.7</td>
-      <td class="n">1.4</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$116</td>
-      <td class="n">$359</td>
-      <td class="n tot">$487</td>
-    </tr><tr>
-      <td class="n">260</td>
-      <td class="n">1.6</td>
-      <td class="n">0.8</td>
-      <td class="n">1.8</td>
-      <td class="n">1.5</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$120</td>
-      <td class="n">$389</td>
-      <td class="n tot">$522</td>
-    </tr><tr>
-      <td class="n">280</td>
-      <td class="n">1.8</td>
-      <td class="n">0.9</td>
-      <td class="n">1.8</td>
-      <td class="n">1.6</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$124</td>
-      <td class="n">$419</td>
-      <td class="n tot">$556</td>
-    </tr><tr>
-      <td class="n">300</td>
-      <td class="n">1.9</td>
-      <td class="n">0.9</td>
-      <td class="n">1.9</td>
-      <td class="n">1.7</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$128</td>
-      <td class="n">$449</td>
-      <td class="n tot">$591</td>
-    </tr><tr>
-      <td class="n">320</td>
-      <td class="n">2.0</td>
-      <td class="n">0.9</td>
-      <td class="n">1.9</td>
-      <td class="n">1.8</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$132</td>
-      <td class="n">$479</td>
-      <td class="n tot">$626</td>
-    </tr><tr>
-      <td class="n">340</td>
-      <td class="n">2.1</td>
-      <td class="n">1.0</td>
-      <td class="n">1.9</td>
-      <td class="n">1.9</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$135</td>
-      <td class="n">$509</td>
-      <td class="n tot">$660</td>
-    </tr><tr>
-      <td class="n">360</td>
-      <td class="n">2.3</td>
-      <td class="n">1.0</td>
-      <td class="n">2.0</td>
-      <td class="n">2.0</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$139</td>
-      <td class="n">$539</td>
-      <td class="n tot">$695</td>
-    </tr><tr class="step">
-      <td class="n">380</td>
-      <td class="n">2.4</td>
-      <td class="n">1.1</td>
-      <td class="n">2.0</td>
-      <td class="n">2.1</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$168</td>
-      <td class="n">$569</td>
-      <td class="n tot">$755</td>
-    </tr><tr>
-      <td class="n">400</td>
-      <td class="n">2.5</td>
-      <td class="n">1.1</td>
-      <td class="n">2.1</td>
-      <td class="n">2.2</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$171</td>
-      <td class="n">$599</td>
-      <td class="n tot">$789</td>
-    </tr><tr>
-      <td class="n">420</td>
-      <td class="n">2.6</td>
-      <td class="n">1.1</td>
-      <td class="n">2.1</td>
-      <td class="n">2.3</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$175</td>
-      <td class="n">$628</td>
-      <td class="n tot">$824</td>
-    </tr><tr>
-      <td class="n">440</td>
-      <td class="n">2.8</td>
-      <td class="n">1.2</td>
-      <td class="n">2.2</td>
-      <td class="n">2.4</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$179</td>
-      <td class="n">$658</td>
-      <td class="n tot">$858</td>
-    </tr><tr>
-      <td class="n">460</td>
-      <td class="n">2.9</td>
-      <td class="n">1.2</td>
-      <td class="n">2.2</td>
-      <td class="n">2.5</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$183</td>
-      <td class="n">$688</td>
-      <td class="n tot">$893</td>
-    </tr><tr>
-      <td class="n">480</td>
-      <td class="n">3.0</td>
-      <td class="n">1.3</td>
-      <td class="n">2.3</td>
-      <td class="n">2.5</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$187</td>
-      <td class="n">$718</td>
-      <td class="n tot">$928</td>
-    </tr><tr>
-      <td class="n">500</td>
-      <td class="n">3.1</td>
-      <td class="n">1.3</td>
-      <td class="n">2.3</td>
-      <td class="n">2.7</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$190</td>
-      <td class="n">$748</td>
-      <td class="n tot">$962</td>
-    </tr><tr>
-      <td class="n">520</td>
-      <td class="n">3.3</td>
-      <td class="n">1.3</td>
-      <td class="n">2.3</td>
-      <td class="n">2.7</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$194</td>
-      <td class="n">$778</td>
-      <td class="n tot">$997</td>
-    </tr><tr>
-      <td class="n">540</td>
-      <td class="n">3.4</td>
-      <td class="n">1.4</td>
-      <td class="n">2.4</td>
-      <td class="n">2.8</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$198</td>
-      <td class="n">$808</td>
-      <td class="n tot">$1,032</td>
-    </tr><tr>
-      <td class="n">560</td>
-      <td class="n">3.5</td>
-      <td class="n">1.4</td>
-      <td class="n">2.4</td>
-      <td class="n">2.9</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$201</td>
-      <td class="n">$838</td>
-      <td class="n tot">$1,066</td>
-    </tr><tr>
-      <td class="n">580</td>
-      <td class="n">3.6</td>
-      <td class="n">1.4</td>
-      <td class="n">2.5</td>
-      <td class="n">3.0</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$205</td>
-      <td class="n">$868</td>
-      <td class="n tot">$1,101</td>
-    </tr><tr>
-      <td class="n">600</td>
-      <td class="n">3.8</td>
-      <td class="n">1.5</td>
-      <td class="n">2.5</td>
-      <td class="n">3.1</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$209</td>
-      <td class="n">$898</td>
-      <td class="n tot">$1,136</td>
-    </tr><tr>
-      <td class="n">620</td>
-      <td class="n">3.9</td>
-      <td class="n">1.5</td>
-      <td class="n">2.6</td>
-      <td class="n">3.2</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$213</td>
-      <td class="n">$928</td>
-      <td class="n tot">$1,170</td>
-    </tr><tr>
-      <td class="n">640</td>
-      <td class="n">4.0</td>
-      <td class="n">1.5</td>
-      <td class="n">2.6</td>
-      <td class="n">3.3</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$217</td>
-      <td class="n">$958</td>
-      <td class="n tot">$1,205</td>
-    </tr><tr class="step">
-      <td class="n">660</td>
-      <td class="n">4.1</td>
-      <td class="n">1.6</td>
-      <td class="n">2.6</td>
-      <td class="n">3.4</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$245</td>
-      <td class="n">$988</td>
-      <td class="n tot">$1,264</td>
-    </tr><tr>
-      <td class="n">680</td>
-      <td class="n">4.3</td>
-      <td class="n">1.6</td>
-      <td class="n">2.7</td>
-      <td class="n">3.5</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$249</td>
-      <td class="n">$1,017</td>
-      <td class="n tot">$1,299</td>
-    </tr><tr>
-      <td class="n">700</td>
-      <td class="n">4.4</td>
-      <td class="n">1.7</td>
-      <td class="n">2.7</td>
-      <td class="n">3.6</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$253</td>
-      <td class="n">$1,047</td>
-      <td class="n tot">$1,334</td>
-    </tr><tr>
-      <td class="n">720</td>
-      <td class="n">4.5</td>
-      <td class="n">1.7</td>
-      <td class="n">2.8</td>
-      <td class="n">3.7</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$256</td>
-      <td class="n">$1,077</td>
-      <td class="n tot">$1,368</td>
-    </tr><tr>
-      <td class="n">740</td>
-      <td class="n">4.6</td>
-      <td class="n">1.7</td>
-      <td class="n">2.8</td>
-      <td class="n">3.8</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$260</td>
-      <td class="n">$1,107</td>
-      <td class="n tot">$1,403</td>
-    </tr><tr>
-      <td class="n">760</td>
-      <td class="n">4.8</td>
-      <td class="n">1.8</td>
-      <td class="n">2.9</td>
-      <td class="n">3.8</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$264</td>
-      <td class="n">$1,137</td>
-      <td class="n tot">$1,437</td>
-    </tr><tr>
-      <td class="n">780</td>
-      <td class="n">4.9</td>
-      <td class="n">1.8</td>
-      <td class="n">2.9</td>
-      <td class="n">3.9</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$268</td>
-      <td class="n">$1,167</td>
-      <td class="n tot">$1,472</td>
-    </tr><tr>
-      <td class="n">800</td>
-      <td class="n">5.0</td>
-      <td class="n">1.9</td>
-      <td class="n">3.0</td>
-      <td class="n">4.0</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$272</td>
-      <td class="n">$1,197</td>
-      <td class="n tot">$1,507</td>
-    </tr><tr>
-      <td class="n">820</td>
-      <td class="n">5.1</td>
-      <td class="n">1.9</td>
-      <td class="n">3.0</td>
-      <td class="n">4.1</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$603</td>
-      <td class="n">$1,227</td>
-      <td class="n tot">$1,869</td>
-    </tr><tr>
-      <td class="n">840</td>
-      <td class="n">5.3</td>
-      <td class="n">1.9</td>
-      <td class="n">3.0</td>
-      <td class="n">4.2</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$607</td>
-      <td class="n">$1,257</td>
-      <td class="n tot">$1,904</td>
-    </tr></tbody></table></div>
-<h2>Code Compass + 200 Inspector users</h2>
-  <p class="sub">All seats run Compass. 200 of them also run Code Inspector 5 times per working day.</p>
-  <div class="hl">At 840 seats: <b>11.0</b> scans running at once ·
-    <b>Standard x5</b> (5 vCPU / 10 GB provisioned) ·
-    search index <b>4.2 GB</b> · <b>$5,068/month</b>
-    (<b>$6</b> per seat)</div>
-  <div class="scroll"><table>
-    <thead><tr>
-      <th>Seats</th><th>Peak concurrent</th><th>vCPU req.</th><th>App RAM GB</th><th>Index RAM GB</th>
-      <th>Instances</th><th>Prov. vCPU</th><th>Prov. RAM</th><th>Infra $/mo</th><th>AI $/mo</th><th>Total $/mo</th>
-    </tr></thead><tbody><tr>
-      <td class="n">20</td>
-      <td class="n">0.7</td>
-      <td class="n">0.6</td>
-      <td class="n">1.4</td>
-      <td class="n">0.4</td>
-      <td>Standard x1</td>
-      <td class="n">1</td>
-      <td class="n">2</td>
-      <td class="n">$53</td>
-      <td class="n">$341</td>
-      <td class="n tot">$395</td>
-    </tr><tr class="step">
-      <td class="n">40</td>
-      <td class="n">1.4</td>
-      <td class="n">0.8</td>
-      <td class="n">1.7</td>
-      <td class="n">0.5</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$84</td>
-      <td class="n">$683</td>
-      <td class="n tot">$769</td>
-    </tr><tr>
-      <td class="n">60</td>
-      <td class="n">2.1</td>
-      <td class="n">1.0</td>
-      <td class="n">1.9</td>
-      <td class="n">0.6</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$90</td>
-      <td class="n">$1,024</td>
-      <td class="n tot">$1,117</td>
-    </tr><tr>
-      <td class="n">80</td>
-      <td class="n">2.8</td>
-      <td class="n">1.2</td>
-      <td class="n">2.2</td>
-      <td class="n">0.7</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$96</td>
-      <td class="n">$1,365</td>
-      <td class="n tot">$1,466</td>
-    </tr><tr>
-      <td class="n">100</td>
-      <td class="n">3.5</td>
-      <td class="n">1.4</td>
-      <td class="n">2.4</td>
-      <td class="n">0.8</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$103</td>
-      <td class="n">$1,706</td>
-      <td class="n tot">$1,814</td>
-    </tr><tr>
-      <td class="n">120</td>
-      <td class="n">4.2</td>
-      <td class="n">1.6</td>
-      <td class="n">2.7</td>
-      <td class="n">0.9</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$109</td>
-      <td class="n">$2,048</td>
-      <td class="n tot">$2,163</td>
-    </tr><tr>
-      <td class="n">140</td>
-      <td class="n">4.9</td>
-      <td class="n">1.8</td>
-      <td class="n">2.9</td>
-      <td class="n">1.0</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$115</td>
-      <td class="n">$2,389</td>
-      <td class="n tot">$2,512</td>
-    </tr><tr class="step">
-      <td class="n">160</td>
-      <td class="n">5.6</td>
-      <td class="n">2.0</td>
-      <td class="n">3.2</td>
-      <td class="n">1.1</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$147</td>
-      <td class="n">$2,730</td>
-      <td class="n tot">$2,885</td>
-    </tr><tr>
-      <td class="n">180</td>
-      <td class="n">6.3</td>
-      <td class="n">2.2</td>
-      <td class="n">3.4</td>
-      <td class="n">1.2</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$153</td>
-      <td class="n">$3,071</td>
-      <td class="n tot">$3,234</td>
-    </tr><tr>
-      <td class="n">200</td>
-      <td class="n">7.0</td>
-      <td class="n">2.4</td>
-      <td class="n">3.6</td>
-      <td class="n">1.3</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$159</td>
-      <td class="n">$3,413</td>
-      <td class="n tot">$3,582</td>
-    </tr><tr>
-      <td class="n">220</td>
-      <td class="n">7.1</td>
-      <td class="n">2.5</td>
-      <td class="n">3.7</td>
-      <td class="n">1.4</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$163</td>
-      <td class="n">$3,442</td>
-      <td class="n tot">$3,617</td>
-    </tr><tr>
-      <td class="n">240</td>
-      <td class="n">7.2</td>
-      <td class="n">2.5</td>
-      <td class="n">3.7</td>
-      <td class="n">1.4</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$167</td>
-      <td class="n">$3,472</td>
-      <td class="n tot">$3,651</td>
-    </tr><tr>
-      <td class="n">260</td>
-      <td class="n">7.4</td>
-      <td class="n">2.6</td>
-      <td class="n">3.8</td>
-      <td class="n">1.5</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$171</td>
-      <td class="n">$3,502</td>
-      <td class="n tot">$3,686</td>
-    </tr><tr>
-      <td class="n">280</td>
-      <td class="n">7.5</td>
-      <td class="n">2.6</td>
-      <td class="n">3.8</td>
-      <td class="n">1.6</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$174</td>
-      <td class="n">$3,532</td>
-      <td class="n tot">$3,721</td>
-    </tr><tr>
-      <td class="n">300</td>
-      <td class="n">7.6</td>
-      <td class="n">2.6</td>
-      <td class="n">3.9</td>
-      <td class="n">1.7</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$178</td>
-      <td class="n">$3,562</td>
-      <td class="n tot">$3,755</td>
-    </tr><tr>
-      <td class="n">320</td>
-      <td class="n">7.7</td>
-      <td class="n">2.7</td>
-      <td class="n">3.9</td>
-      <td class="n">1.8</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$182</td>
-      <td class="n">$3,592</td>
-      <td class="n tot">$3,790</td>
-    </tr><tr>
-      <td class="n">340</td>
-      <td class="n">7.9</td>
-      <td class="n">2.7</td>
-      <td class="n">3.9</td>
-      <td class="n">1.9</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$185</td>
-      <td class="n">$3,622</td>
-      <td class="n tot">$3,825</td>
-    </tr><tr>
-      <td class="n">360</td>
-      <td class="n">8.0</td>
-      <td class="n">2.7</td>
-      <td class="n">4.0</td>
-      <td class="n">2.0</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$189</td>
-      <td class="n">$3,652</td>
-      <td class="n tot">$3,859</td>
-    </tr><tr class="step">
-      <td class="n">380</td>
-      <td class="n">8.1</td>
-      <td class="n">2.8</td>
-      <td class="n">4.0</td>
-      <td class="n">2.1</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$218</td>
-      <td class="n">$3,682</td>
-      <td class="n tot">$3,919</td>
-    </tr><tr>
-      <td class="n">400</td>
-      <td class="n">8.2</td>
-      <td class="n">2.8</td>
-      <td class="n">4.1</td>
-      <td class="n">2.2</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$222</td>
-      <td class="n">$3,712</td>
-      <td class="n tot">$3,953</td>
-    </tr><tr>
-      <td class="n">420</td>
-      <td class="n">8.4</td>
-      <td class="n">2.9</td>
-      <td class="n">4.1</td>
-      <td class="n">2.3</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$225</td>
-      <td class="n">$3,742</td>
-      <td class="n tot">$3,988</td>
-    </tr><tr>
-      <td class="n">440</td>
-      <td class="n">8.5</td>
-      <td class="n">2.9</td>
-      <td class="n">4.2</td>
-      <td class="n">2.4</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$229</td>
-      <td class="n">$3,772</td>
-      <td class="n tot">$4,023</td>
-    </tr><tr>
-      <td class="n">460</td>
-      <td class="n">8.6</td>
-      <td class="n">2.9</td>
-      <td class="n">4.2</td>
-      <td class="n">2.5</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$233</td>
-      <td class="n">$3,802</td>
-      <td class="n tot">$4,057</td>
-    </tr><tr>
-      <td class="n">480</td>
-      <td class="n">8.7</td>
-      <td class="n">3.0</td>
-      <td class="n">4.3</td>
-      <td class="n">2.5</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$237</td>
-      <td class="n">$3,831</td>
-      <td class="n tot">$4,092</td>
-    </tr><tr>
-      <td class="n">500</td>
-      <td class="n">8.9</td>
-      <td class="n">3.0</td>
-      <td class="n">4.3</td>
-      <td class="n">2.7</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$240</td>
-      <td class="n">$3,861</td>
-      <td class="n tot">$4,127</td>
-    </tr><tr>
-      <td class="n">520</td>
-      <td class="n">9.0</td>
-      <td class="n">3.0</td>
-      <td class="n">4.3</td>
-      <td class="n">2.7</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$244</td>
-      <td class="n">$3,891</td>
-      <td class="n tot">$4,161</td>
-    </tr><tr>
-      <td class="n">540</td>
-      <td class="n">9.1</td>
-      <td class="n">3.1</td>
-      <td class="n">4.4</td>
-      <td class="n">2.8</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$248</td>
-      <td class="n">$3,921</td>
-      <td class="n tot">$4,196</td>
-    </tr><tr>
-      <td class="n">560</td>
-      <td class="n">9.2</td>
-      <td class="n">3.1</td>
-      <td class="n">4.4</td>
-      <td class="n">2.9</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$252</td>
-      <td class="n">$3,951</td>
-      <td class="n tot">$4,230</td>
-    </tr><tr>
-      <td class="n">580</td>
-      <td class="n">9.4</td>
-      <td class="n">3.2</td>
-      <td class="n">4.5</td>
-      <td class="n">3.0</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$255</td>
-      <td class="n">$3,981</td>
-      <td class="n tot">$4,265</td>
-    </tr><tr>
-      <td class="n">600</td>
-      <td class="n">9.5</td>
-      <td class="n">3.2</td>
-      <td class="n">4.5</td>
-      <td class="n">3.1</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$259</td>
-      <td class="n">$4,011</td>
-      <td class="n tot">$4,300</td>
-    </tr><tr>
-      <td class="n">620</td>
-      <td class="n">9.6</td>
-      <td class="n">3.2</td>
-      <td class="n">4.6</td>
-      <td class="n">3.2</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$263</td>
-      <td class="n">$4,041</td>
-      <td class="n tot">$4,334</td>
-    </tr><tr>
-      <td class="n">640</td>
-      <td class="n">9.7</td>
-      <td class="n">3.3</td>
-      <td class="n">4.6</td>
-      <td class="n">3.3</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$267</td>
-      <td class="n">$4,071</td>
-      <td class="n tot">$4,369</td>
-    </tr><tr class="step">
-      <td class="n">660</td>
-      <td class="n">9.9</td>
-      <td class="n">3.3</td>
-      <td class="n">4.6</td>
-      <td class="n">3.4</td>
-      <td>Standard x5</td>
-      <td class="n">5</td>
-      <td class="n">10</td>
-      <td class="n">$295</td>
-      <td class="n">$4,101</td>
-      <td class="n tot">$4,429</td>
-    </tr><tr>
-      <td class="n">680</td>
-      <td class="n">10.0</td>
-      <td class="n">3.3</td>
-      <td class="n">4.7</td>
-      <td class="n">3.5</td>
-      <td>Standard x5</td>
-      <td class="n">5</td>
-      <td class="n">10</td>
-      <td class="n">$627</td>
-      <td class="n">$4,131</td>
-      <td class="n tot">$4,791</td>
-    </tr><tr>
-      <td class="n">700</td>
-      <td class="n">10.1</td>
-      <td class="n">3.4</td>
-      <td class="n">4.7</td>
-      <td class="n">3.6</td>
-      <td>Standard x5</td>
-      <td class="n">5</td>
-      <td class="n">10</td>
-      <td class="n">$631</td>
-      <td class="n">$4,161</td>
-      <td class="n tot">$4,826</td>
-    </tr><tr>
-      <td class="n">720</td>
-      <td class="n">10.2</td>
-      <td class="n">3.4</td>
-      <td class="n">4.8</td>
-      <td class="n">3.7</td>
-      <td>Standard x5</td>
-      <td class="n">5</td>
-      <td class="n">10</td>
-      <td class="n">$634</td>
-      <td class="n">$4,191</td>
-      <td class="n tot">$4,860</td>
-    </tr><tr>
-      <td class="n">740</td>
-      <td class="n">10.4</td>
-      <td class="n">3.5</td>
-      <td class="n">4.8</td>
-      <td class="n">3.8</td>
-      <td>Standard x5</td>
-      <td class="n">5</td>
-      <td class="n">10</td>
-      <td class="n">$638</td>
-      <td class="n">$4,220</td>
-      <td class="n tot">$4,895</td>
-    </tr><tr>
-      <td class="n">760</td>
-      <td class="n">10.5</td>
-      <td class="n">3.5</td>
-      <td class="n">4.9</td>
-      <td class="n">3.8</td>
-      <td>Standard x5</td>
-      <td class="n">5</td>
-      <td class="n">10</td>
-      <td class="n">$642</td>
-      <td class="n">$4,250</td>
-      <td class="n tot">$4,929</td>
-    </tr><tr>
-      <td class="n">780</td>
-      <td class="n">10.6</td>
-      <td class="n">3.5</td>
-      <td class="n">4.9</td>
-      <td class="n">3.9</td>
-      <td>Standard x5</td>
-      <td class="n">5</td>
-      <td class="n">10</td>
-      <td class="n">$646</td>
-      <td class="n">$4,280</td>
-      <td class="n tot">$4,964</td>
-    </tr><tr>
-      <td class="n">800</td>
-      <td class="n">10.7</td>
-      <td class="n">3.6</td>
-      <td class="n">5.0</td>
-      <td class="n">4.0</td>
-      <td>Standard x5</td>
-      <td class="n">5</td>
-      <td class="n">10</td>
-      <td class="n">$650</td>
-      <td class="n">$4,310</td>
-      <td class="n tot">$4,999</td>
-    </tr><tr>
-      <td class="n">820</td>
-      <td class="n">10.9</td>
-      <td class="n">3.6</td>
-      <td class="n">5.0</td>
-      <td class="n">4.1</td>
-      <td>Standard x5</td>
-      <td class="n">5</td>
-      <td class="n">10</td>
-      <td class="n">$653</td>
-      <td class="n">$4,340</td>
-      <td class="n tot">$5,033</td>
-    </tr><tr>
-      <td class="n">840</td>
-      <td class="n">11.0</td>
-      <td class="n">3.6</td>
-      <td class="n">5.0</td>
-      <td class="n">4.2</td>
-      <td>Standard x5</td>
-      <td class="n">5</td>
-      <td class="n">10</td>
-      <td class="n">$657</td>
-      <td class="n">$4,370</td>
-      <td class="n tot">$5,068</td>
-    </tr></tbody></table></div>
-<h2>Code Compass + 250 Inspector users</h2>
-  <p class="sub">All seats run Compass. 250 of them also run Code Inspector 5 times per working day.</p>
-  <div class="hl">At 840 seats: <b>12.4</b> scans running at once ·
-    <b>Standard x5</b> (5 vCPU / 10 GB provisioned) ·
-    search index <b>4.2 GB</b> · <b>$6,028/month</b>
-    (<b>$7</b> per seat)</div>
-  <div class="scroll"><table>
-    <thead><tr>
-      <th>Seats</th><th>Peak concurrent</th><th>vCPU req.</th><th>App RAM GB</th><th>Index RAM GB</th>
-      <th>Instances</th><th>Prov. vCPU</th><th>Prov. RAM</th><th>Infra $/mo</th><th>AI $/mo</th><th>Total $/mo</th>
-    </tr></thead><tbody><tr>
-      <td class="n">20</td>
-      <td class="n">0.7</td>
-      <td class="n">0.6</td>
-      <td class="n">1.4</td>
-      <td class="n">0.4</td>
-      <td>Standard x1</td>
-      <td class="n">1</td>
-      <td class="n">2</td>
-      <td class="n">$53</td>
-      <td class="n">$341</td>
-      <td class="n tot">$395</td>
-    </tr><tr class="step">
-      <td class="n">40</td>
-      <td class="n">1.4</td>
-      <td class="n">0.8</td>
-      <td class="n">1.7</td>
-      <td class="n">0.5</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$84</td>
-      <td class="n">$683</td>
-      <td class="n tot">$769</td>
-    </tr><tr>
-      <td class="n">60</td>
-      <td class="n">2.1</td>
-      <td class="n">1.0</td>
-      <td class="n">1.9</td>
-      <td class="n">0.6</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$90</td>
-      <td class="n">$1,024</td>
-      <td class="n tot">$1,117</td>
-    </tr><tr>
-      <td class="n">80</td>
-      <td class="n">2.8</td>
-      <td class="n">1.2</td>
-      <td class="n">2.2</td>
-      <td class="n">0.7</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$96</td>
-      <td class="n">$1,365</td>
-      <td class="n tot">$1,466</td>
-    </tr><tr>
-      <td class="n">100</td>
-      <td class="n">3.5</td>
-      <td class="n">1.4</td>
-      <td class="n">2.4</td>
-      <td class="n">0.8</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$103</td>
-      <td class="n">$1,706</td>
-      <td class="n tot">$1,814</td>
-    </tr><tr>
-      <td class="n">120</td>
-      <td class="n">4.2</td>
-      <td class="n">1.6</td>
-      <td class="n">2.7</td>
-      <td class="n">0.9</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$109</td>
-      <td class="n">$2,048</td>
-      <td class="n tot">$2,163</td>
-    </tr><tr>
-      <td class="n">140</td>
-      <td class="n">4.9</td>
-      <td class="n">1.8</td>
-      <td class="n">2.9</td>
-      <td class="n">1.0</td>
-      <td>Standard x2</td>
-      <td class="n">2</td>
-      <td class="n">4</td>
-      <td class="n">$115</td>
-      <td class="n">$2,389</td>
-      <td class="n tot">$2,512</td>
-    </tr><tr class="step">
-      <td class="n">160</td>
-      <td class="n">5.6</td>
-      <td class="n">2.0</td>
-      <td class="n">3.2</td>
-      <td class="n">1.1</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$147</td>
-      <td class="n">$2,730</td>
-      <td class="n tot">$2,885</td>
-    </tr><tr>
-      <td class="n">180</td>
-      <td class="n">6.3</td>
-      <td class="n">2.2</td>
-      <td class="n">3.4</td>
-      <td class="n">1.2</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$153</td>
-      <td class="n">$3,071</td>
-      <td class="n tot">$3,234</td>
-    </tr><tr>
-      <td class="n">200</td>
-      <td class="n">7.0</td>
-      <td class="n">2.4</td>
-      <td class="n">3.6</td>
-      <td class="n">1.3</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$159</td>
-      <td class="n">$3,413</td>
-      <td class="n tot">$3,582</td>
-    </tr><tr>
-      <td class="n">220</td>
-      <td class="n">7.7</td>
-      <td class="n">2.7</td>
-      <td class="n">3.9</td>
-      <td class="n">1.4</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$165</td>
-      <td class="n">$3,754</td>
-      <td class="n tot">$3,931</td>
-    </tr><tr>
-      <td class="n">240</td>
-      <td class="n">8.4</td>
-      <td class="n">2.9</td>
-      <td class="n">4.1</td>
-      <td class="n">1.4</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$172</td>
-      <td class="n">$4,095</td>
-      <td class="n tot">$4,279</td>
-    </tr><tr>
-      <td class="n">260</td>
-      <td class="n">8.8</td>
-      <td class="n">3.0</td>
-      <td class="n">4.3</td>
-      <td class="n">1.5</td>
-      <td>Standard x3</td>
-      <td class="n">3</td>
-      <td class="n">6</td>
-      <td class="n">$177</td>
-      <td class="n">$4,281</td>
-      <td class="n tot">$4,471</td>
-    </tr><tr class="step">
-      <td class="n">280</td>
-      <td class="n">8.9</td>
-      <td class="n">3.0</td>
-      <td class="n">4.3</td>
-      <td class="n">1.6</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$206</td>
-      <td class="n">$4,311</td>
-      <td class="n tot">$4,530</td>
-    </tr><tr>
-      <td class="n">300</td>
-      <td class="n">9.0</td>
-      <td class="n">3.1</td>
-      <td class="n">4.4</td>
-      <td class="n">1.7</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$209</td>
-      <td class="n">$4,340</td>
-      <td class="n tot">$4,565</td>
-    </tr><tr>
-      <td class="n">320</td>
-      <td class="n">9.2</td>
-      <td class="n">3.1</td>
-      <td class="n">4.4</td>
-      <td class="n">1.8</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$213</td>
-      <td class="n">$4,370</td>
-      <td class="n tot">$4,600</td>
-    </tr><tr>
-      <td class="n">340</td>
-      <td class="n">9.3</td>
-      <td class="n">3.1</td>
-      <td class="n">4.5</td>
-      <td class="n">1.9</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$217</td>
-      <td class="n">$4,400</td>
-      <td class="n tot">$4,634</td>
-    </tr><tr>
-      <td class="n">360</td>
-      <td class="n">9.4</td>
-      <td class="n">3.2</td>
-      <td class="n">4.5</td>
-      <td class="n">2.0</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$220</td>
-      <td class="n">$4,430</td>
-      <td class="n tot">$4,669</td>
-    </tr><tr>
-      <td class="n">380</td>
-      <td class="n">9.5</td>
-      <td class="n">3.2</td>
-      <td class="n">4.5</td>
-      <td class="n">2.1</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$224</td>
-      <td class="n">$4,460</td>
-      <td class="n tot">$4,704</td>
-    </tr><tr>
-      <td class="n">400</td>
-      <td class="n">9.7</td>
-      <td class="n">3.2</td>
-      <td class="n">4.6</td>
-      <td class="n">2.2</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$228</td>
-      <td class="n">$4,490</td>
-      <td class="n tot">$4,738</td>
-    </tr><tr>
-      <td class="n">420</td>
-      <td class="n">9.8</td>
-      <td class="n">3.3</td>
-      <td class="n">4.6</td>
-      <td class="n">2.3</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$232</td>
-      <td class="n">$4,520</td>
-      <td class="n tot">$4,773</td>
-    </tr><tr>
-      <td class="n">440</td>
-      <td class="n">9.9</td>
-      <td class="n">3.3</td>
-      <td class="n">4.7</td>
-      <td class="n">2.4</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$236</td>
-      <td class="n">$4,550</td>
-      <td class="n tot">$4,807</td>
-    </tr><tr>
-      <td class="n">460</td>
-      <td class="n">10.0</td>
-      <td class="n">3.4</td>
-      <td class="n">4.7</td>
-      <td class="n">2.5</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$239</td>
-      <td class="n">$4,580</td>
-      <td class="n tot">$4,842</td>
-    </tr><tr>
-      <td class="n">480</td>
-      <td class="n">10.2</td>
-      <td class="n">3.4</td>
-      <td class="n">4.8</td>
-      <td class="n">2.5</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$243</td>
-      <td class="n">$4,610</td>
-      <td class="n tot">$4,877</td>
-    </tr><tr>
-      <td class="n">500</td>
-      <td class="n">10.3</td>
-      <td class="n">3.4</td>
-      <td class="n">4.8</td>
-      <td class="n">2.7</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$247</td>
-      <td class="n">$4,640</td>
-      <td class="n tot">$4,911</td>
-    </tr><tr>
-      <td class="n">520</td>
-      <td class="n">10.4</td>
-      <td class="n">3.5</td>
-      <td class="n">4.8</td>
-      <td class="n">2.7</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$250</td>
-      <td class="n">$4,670</td>
-      <td class="n tot">$4,946</td>
-    </tr><tr>
-      <td class="n">540</td>
-      <td class="n">10.5</td>
-      <td class="n">3.5</td>
-      <td class="n">4.9</td>
-      <td class="n">2.8</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$254</td>
-      <td class="n">$4,700</td>
-      <td class="n tot">$4,981</td>
-    </tr><tr>
-      <td class="n">560</td>
-      <td class="n">10.7</td>
-      <td class="n">3.5</td>
-      <td class="n">4.9</td>
-      <td class="n">2.9</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$258</td>
-      <td class="n">$4,729</td>
-      <td class="n tot">$5,015</td>
-    </tr><tr class="step">
-      <td class="n">580</td>
-      <td class="n">10.8</td>
-      <td class="n">3.6</td>
-      <td class="n">5.0</td>
-      <td class="n">3.0</td>
-      <td>Standard x5</td>
-      <td class="n">5</td>
-      <td class="n">10</td>
-      <td class="n">$287</td>
-      <td class="n">$4,759</td>
-      <td class="n tot">$5,075</td>
-    </tr><tr>
-      <td class="n">600</td>
-      <td class="n">10.9</td>
-      <td class="n">3.6</td>
-      <td class="n">5.0</td>
-      <td class="n">3.1</td>
-      <td>Standard x5</td>
-      <td class="n">5</td>
-      <td class="n">10</td>
-      <td class="n">$291</td>
-      <td class="n">$4,789</td>
-      <td class="n tot">$5,109</td>
-    </tr><tr>
-      <td class="n">620</td>
-      <td class="n">11.0</td>
-      <td class="n">3.7</td>
-      <td class="n">5.1</td>
-      <td class="n">3.2</td>
-      <td>Standard x5</td>
-      <td class="n">5</td>
-      <td class="n">10</td>
-      <td class="n">$294</td>
-      <td class="n">$4,819</td>
-      <td class="n tot">$5,144</td>
-    </tr><tr>
-      <td class="n">640</td>
-      <td class="n">11.2</td>
-      <td class="n">3.7</td>
-      <td class="n">5.1</td>
-      <td class="n">3.3</td>
-      <td>Standard x5</td>
-      <td class="n">5</td>
-      <td class="n">10</td>
-      <td class="n">$626</td>
-      <td class="n">$4,849</td>
-      <td class="n tot">$5,506</td>
-    </tr><tr>
-      <td class="n">660</td>
-      <td class="n">11.3</td>
-      <td class="n">3.7</td>
-      <td class="n">5.2</td>
-      <td class="n">3.4</td>
-      <td>Standard x5</td>
-      <td class="n">5</td>
-      <td class="n">10</td>
-      <td class="n">$630</td>
-      <td class="n">$4,879</td>
-      <td class="n tot">$5,541</td>
-    </tr><tr>
-      <td class="n">680</td>
-      <td class="n">11.4</td>
-      <td class="n">3.8</td>
-      <td class="n">5.2</td>
-      <td class="n">3.5</td>
-      <td>Standard x5</td>
-      <td class="n">5</td>
-      <td class="n">10</td>
-      <td class="n">$633</td>
-      <td class="n">$4,909</td>
-      <td class="n tot">$5,576</td>
-    </tr><tr>
-      <td class="n">700</td>
-      <td class="n">11.5</td>
-      <td class="n">3.8</td>
-      <td class="n">5.2</td>
-      <td class="n">3.6</td>
-      <td>Standard x5</td>
-      <td class="n">5</td>
-      <td class="n">10</td>
-      <td class="n">$637</td>
-      <td class="n">$4,939</td>
-      <td class="n tot">$5,610</td>
-    </tr><tr>
-      <td class="n">720</td>
-      <td class="n">11.7</td>
-      <td class="n">3.8</td>
-      <td class="n">5.3</td>
-      <td class="n">3.7</td>
-      <td>Standard x5</td>
-      <td class="n">5</td>
-      <td class="n">10</td>
-      <td class="n">$641</td>
-      <td class="n">$4,969</td>
-      <td class="n tot">$5,645</td>
-    </tr><tr>
-      <td class="n">740</td>
-      <td class="n">11.8</td>
-      <td class="n">3.9</td>
-      <td class="n">5.3</td>
-      <td class="n">3.8</td>
-      <td>Standard x5</td>
-      <td class="n">5</td>
-      <td class="n">10</td>
-      <td class="n">$644</td>
-      <td class="n">$4,999</td>
-      <td class="n tot">$5,680</td>
-    </tr><tr>
-      <td class="n">760</td>
-      <td class="n">11.9</td>
-      <td class="n">3.9</td>
-      <td class="n">5.4</td>
-      <td class="n">3.8</td>
-      <td>Standard x5</td>
-      <td class="n">5</td>
-      <td class="n">10</td>
-      <td class="n">$648</td>
-      <td class="n">$5,029</td>
-      <td class="n tot">$5,714</td>
-    </tr><tr class="step">
-      <td class="n">780</td>
-      <td class="n">12.0</td>
-      <td class="n">4.0</td>
-      <td class="n">5.4</td>
-      <td class="n">3.9</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$712</td>
-      <td class="n">$5,059</td>
-      <td class="n tot">$5,809</td>
-    </tr><tr>
-      <td class="n">800</td>
-      <td class="n">12.2</td>
-      <td class="n">4.0</td>
-      <td class="n">5.5</td>
-      <td class="n">4.0</td>
-      <td>Standard x4</td>
-      <td class="n">4</td>
-      <td class="n">8</td>
-      <td class="n">$806</td>
-      <td class="n">$5,089</td>
-      <td class="n tot">$5,933</td>
-    </tr><tr class="step">
-      <td class="n">820</td>
-      <td class="n">12.3</td>
-      <td class="n">4.0</td>
-      <td class="n">5.5</td>
-      <td class="n">4.1</td>
-      <td>Standard x5</td>
-      <td class="n">5</td>
-      <td class="n">10</td>
-      <td class="n">$835</td>
-      <td class="n">$5,118</td>
-      <td class="n tot">$5,993</td>
-    </tr><tr>
-      <td class="n">840</td>
-      <td class="n">12.4</td>
-      <td class="n">4.1</td>
-      <td class="n">5.5</td>
-      <td class="n">4.2</td>
-      <td>Standard x5</td>
-      <td class="n">5</td>
-      <td class="n">10</td>
-      <td class="n">$838</td>
-      <td class="n">$5,148</td>
-      <td class="n tot">$6,028</td>
-    </tr></tbody></table></div>
- <footer><b>Method.</b> Every seat is assumed to run 5 Code Compass searches per working day; the Inspector
- scenarios add 5 scans per day for the stated number of users. Concurrency is derived from job arrival rate
- and how long each scan holds its connection, sized against a peak hour three times the daily average.
- &ldquo;vCPU required&rdquo; and &ldquo;App RAM&rdquo; are the computed need; &ldquo;Instances&rdquo; is the
- smallest sensible allocation that covers it, which is why provisioned capacity exceeds the requirement.
- The search index is held in memory and sits on the application instances until it no longer fits, at which
- point it moves to its own. Costs are in US dollars at published August 2026 rates. Regenerate with
- <code>node build-hardware.js</code>.</footer>
+ body{margin:0;font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg)}
+ .wrap{max-width:1500px;margin:0 auto;padding:34px 22px 80px}
+ h1{font-size:27px;margin:0 0 6px;letter-spacing:-.02em}
+ h2{font-size:19px;margin:44px 0 3px;letter-spacing:-.01em}
+ .sub{color:var(--mut);margin:0 0 14px;font-size:14px}
+ .lede{color:var(--mut);max-width:74ch;margin:0 0 22px}
+ .bar{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 26px}
+ .btn{display:inline-block;padding:9px 16px;border-radius:7px;background:var(--accent);color:#fff;
+   text-decoration:none;font-weight:600;font-size:14px;border:0;cursor:pointer;font-family:inherit}
+ .btn.alt{background:var(--panel);color:var(--ink);border:1px solid var(--line)}
+ .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:9px}
+ table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
+ th,td{padding:5px 9px;text-align:right;border-bottom:1px solid var(--line)}
+ thead th{position:sticky;top:0;font-weight:600;font-size:11.5px;text-transform:uppercase;
+   letter-spacing:.04em;color:var(--mut);background:var(--panel)}
+ tr.grp th{text-align:center;font-size:12px;color:var(--ink);border-bottom:1px solid var(--line)}
+ .g-need{background:var(--need)!important}.g-mg{background:var(--mg)!important}
+ .g-vp{background:var(--vp)!important}.g-sv{background:var(--sv)!important}
+ td.seats{text-align:left;font-weight:700}
+ td.plan{text-align:left;font-size:12px;color:var(--mut)}
+ tr.step td{background:var(--up)}
+ tr.split td{background:var(--split);box-shadow:inset 0 1px 0 var(--splitb),inset 0 -1px 0 var(--splitb)}
+ td.up{font-weight:700;color:#8a5a00}
+ tbody tr:hover td{background:#f1f4f9}
+ .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin:20px 0 30px}
+ .card{border:1px solid var(--line);border-radius:9px;padding:14px 16px;background:var(--panel)}
+ .card h3{margin:0 0 4px;font-size:14px}
+ .card .n{font-size:22px;font-weight:700;letter-spacing:-.02em}
+ .card p{margin:5px 0 0;font-size:12.5px;color:var(--mut);line-height:1.45}
+ .note{border-left:3px solid var(--accent);background:var(--panel);padding:12px 16px;border-radius:0 7px 7px 0;
+   margin:18px 0;font-size:13.5px;color:var(--mut);max-width:82ch}
+ .note b{color:var(--ink)}
+ dl{margin:0;font-size:13.5px;color:var(--mut);max-width:82ch}
+ dt{font-weight:600;color:var(--ink);margin-top:11px}
+ dd{margin:2px 0 0}
+ footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);color:var(--mut);font-size:12.5px}
+ @media print{.bar{display:none}body{font-size:11px}table{font-size:9.5px}
+   .scroll{overflow:visible;border:0}h2{page-break-after:avoid}tr{page-break-inside:avoid}}
+ @media (prefers-color-scheme:dark){
+  :root{--ink:#e8ecf3;--mut:#96a0b3;--line:#2a3140;--bg:#12151c;--panel:#1a1f29;
+   --need:#1c2230;--mg:#182338;--vp:#16271c;--sv:#241a2b;--up:#332a12;--split:#182a44;--splitb:#3f6698;--accent:#5b9bf0}
+  tbody tr:hover td{background:#1e2431}td.up{color:#e0b060}}
+</style></head><body><div class="wrap">
+
+<h1>AscendOS — Hardware Requirements</h1>
+<p class="lede">What the platform needs to run, from 20 to 840 seats, under three deployment
+options. This is a hardware specification: server counts, CPU cores and memory. It carries no
+pricing — costs depend on vendor and contract, and live in the interactive planner.</p>
+
+<div class="bar">
+  <button class="btn" id="dl">Download spreadsheet (CSV)</button>
+  <a class="btn alt" href="index.html">Interactive planner</a>
 </div>
-</body>
-</html>
+
+<h2>What the numbers say</h2>
+<div class="cards">
+ <div class="card"><h3>840 seats, Compass only</h3><div class="n">4 vCPU &middot; 8 GB</div>
+  <p>Peak load is 5.3 searches in flight at once. That is 4 managed instances,
+  or 1 VPS server at 4 vCPU / 8 GB.</p></div>
+ <div class="card"><h3>Adding 200 Inspector users</h3><div class="n">5 machines</div>
+  <p>Concurrency roughly doubles, to 11.0. Image analysis is slow per job but low in
+  volume, so it buys concurrency, not fleet size.</p></div>
+ <div class="card"><h3>200 &rarr; 250 Inspector users</h3><div class="n">Index splits off</div>
+  <p>Peak concurrency crosses 12.4, past which the search index no longer shares the web
+  box. This is the one genuine architectural threshold in the whole table.</p></div>
+</div>
+
+<div class="note"><b>Hardware is not the constraint at this scale.</b> Compass work is short and
+bursty &mdash; a search holds a core for a second or two, then releases it. Even at 840 seats the whole
+fleet is a handful of small machines, and on raw VPS it is 2. What grows with seat count
+is AI usage and the size of the search index, not the server room.</div>
+
+<div class="note"><b>The threshold worth planning around is the index, not the seats.</b> Below roughly
+12 concurrent jobs the application and its search index share a machine, which is how AscendOS and
+McLean&rsquo;s run today. Above it they separate. Everything else on this page is a smooth curve; that
+is the one step change, and it is the row marked &dagger;.</div>
+
+<h2>Code Compass only</h2>
+<p class="sub">Every seat runs 5 Code Compass searches per working day. Highlighted rows are where the machine count changes.</p>
+
+<div class="scroll"><table>
+<thead>
+  <tr class="grp">
+    <th colspan="6" class="g-need">Computed requirement</th>
+    <th colspan="5" class="g-mg">Option A &middot; Managed platform</th>
+    <th colspan="5" class="g-vp">Option B &middot; Raw VPS</th>
+    <th colspan="4" class="g-sv">Option C &middot; Serverless</th>
+  </tr>
+  <tr>
+    <th class="g-need">Seats</th><th class="g-need">Peak<br>concurrent</th>
+    <th class="g-need">vCPU</th><th class="g-need">App RAM<br>GB</th><th class="g-need">Index RAM<br>GB</th><th class="g-need">Index disk<br>GB</th>
+    <th class="g-mg">Web tier</th><th class="g-mg">Index host</th><th class="g-mg">Machines</th><th class="g-mg">Total vCPU</th><th class="g-mg">Total RAM GB</th>
+    <th class="g-vp">Web tier</th><th class="g-vp">Index host</th><th class="g-vp">Machines</th><th class="g-vp">Total vCPU</th><th class="g-vp">Total RAM GB</th>
+    <th class="g-sv">Peak inst.</th><th class="g-sv">Warm</th><th class="g-sv">Peak vCPU</th><th class="g-sv">Peak RAM GB</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="seats">20</td><td>0.1</td>
+    <td>0.4</td><td>1.2</td><td>0.4</td><td>1</td>
+    <td class="plan">Standard x1</td><td class="plan">on web instance</td><td>1</td><td>1</td><td>2</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">40</td><td>0.3</td>
+    <td>0.4</td><td>1.3</td><td>0.5</td><td>1</td>
+    <td class="plan">Standard x1</td><td class="plan">on web instance</td><td>1</td><td>1</td><td>2</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">60</td><td>0.4</td>
+    <td>0.5</td><td>1.3</td><td>0.6</td><td>1</td>
+    <td class="plan">Standard x1</td><td class="plan">on web instance</td><td>1</td><td>1</td><td>2</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">80</td><td>0.5</td>
+    <td>0.5</td><td>1.4</td><td>0.7</td><td>1</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td class="up">2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">100</td><td>0.6</td>
+    <td>0.5</td><td>1.4</td><td>0.8</td><td>2</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">120</td><td>0.8</td>
+    <td>0.6</td><td>1.5</td><td>0.9</td><td>2</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">140</td><td>0.9</td>
+    <td>0.6</td><td>1.5</td><td>1.0</td><td>2</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">160</td><td>1.0</td>
+    <td>0.6</td><td>1.5</td><td>1.1</td><td>2</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">180</td><td>1.1</td>
+    <td>0.7</td><td>1.6</td><td>1.2</td><td>2</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">200</td><td>1.3</td>
+    <td>0.7</td><td>1.6</td><td>1.3</td><td>2</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">220</td><td>1.4</td>
+    <td>0.8</td><td>1.7</td><td>1.4</td><td>2</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">240</td><td>1.5</td>
+    <td>0.8</td><td>1.7</td><td>1.4</td><td>2</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">260</td><td>1.6</td>
+    <td>0.8</td><td>1.8</td><td>1.5</td><td>3</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">280</td><td>1.8</td>
+    <td>0.9</td><td>1.8</td><td>1.6</td><td>3</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">300</td><td>1.9</td>
+    <td>0.9</td><td>1.9</td><td>1.7</td><td>3</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">320</td><td>2.0</td>
+    <td>0.9</td><td>1.9</td><td>1.8</td><td>3</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">340</td><td>2.1</td>
+    <td>1.0</td><td>1.9</td><td>1.9</td><td>3</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">360</td><td>2.3</td>
+    <td>1.0</td><td>2.0</td><td>2.0</td><td>3</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">380</td><td>2.4</td>
+    <td>1.1</td><td>2.0</td><td>2.1</td><td>3</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td class="up">3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">400</td><td>2.5</td>
+    <td>1.1</td><td>2.1</td><td>2.2</td><td>3</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">420</td><td>2.6</td>
+    <td>1.1</td><td>2.1</td><td>2.3</td><td>3</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">440</td><td>2.8</td>
+    <td>1.2</td><td>2.2</td><td>2.4</td><td>4</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">460</td><td>2.9</td>
+    <td>1.2</td><td>2.2</td><td>2.5</td><td>4</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">480</td><td>3.0</td>
+    <td>1.3</td><td>2.3</td><td>2.5</td><td>4</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">500</td><td>3.1</td>
+    <td>1.3</td><td>2.3</td><td>2.7</td><td>4</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">520</td><td>3.3</td>
+    <td>1.3</td><td>2.3</td><td>2.7</td><td>4</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">540</td><td>3.4</td>
+    <td>1.4</td><td>2.4</td><td>2.8</td><td>4</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">560</td><td>3.5</td>
+    <td>1.4</td><td>2.4</td><td>2.9</td><td>4</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">580</td><td>3.6</td>
+    <td>1.4</td><td>2.5</td><td>3.0</td><td>4</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">600</td><td>3.8</td>
+    <td>1.5</td><td>2.5</td><td>3.1</td><td>5</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">620</td><td>3.9</td>
+    <td>1.5</td><td>2.6</td><td>3.2</td><td>5</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">640</td><td>4.0</td>
+    <td>1.5</td><td>2.6</td><td>3.3</td><td>5</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">660</td><td>4.1</td>
+    <td>1.6</td><td>2.6</td><td>3.4</td><td>5</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td class="up">4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">680</td><td>4.3</td>
+    <td>1.6</td><td>2.7</td><td>3.5</td><td>5</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">700</td><td>4.4</td>
+    <td>1.7</td><td>2.7</td><td>3.6</td><td>5</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">720</td><td>4.5</td>
+    <td>1.7</td><td>2.8</td><td>3.7</td><td>5</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">740</td><td>4.6</td>
+    <td>1.7</td><td>2.8</td><td>3.8</td><td>5</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">760</td><td>4.8</td>
+    <td>1.8</td><td>2.9</td><td>3.8</td><td>5</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">780</td><td>4.9</td>
+    <td>1.8</td><td>2.9</td><td>3.9</td><td>6</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">800</td><td>5.0</td>
+    <td>1.9</td><td>3.0</td><td>4.0</td><td>6</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">820</td><td>5.1</td>
+    <td>1.9</td><td>3.0</td><td>4.1</td><td>6</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">840</td><td>5.3</td>
+    <td>1.9</td><td>3.0</td><td>4.2</td><td>6</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+</tbody></table></div>
+<h2>Code Compass, plus 200 Code Inspector users</h2>
+<p class="sub">All seats run Compass. 200 of them also run Code Inspector 5 times per working day. Highlighted rows are where the machine count changes.</p>
+
+<div class="scroll"><table>
+<thead>
+  <tr class="grp">
+    <th colspan="6" class="g-need">Computed requirement</th>
+    <th colspan="5" class="g-mg">Option A &middot; Managed platform</th>
+    <th colspan="5" class="g-vp">Option B &middot; Raw VPS</th>
+    <th colspan="4" class="g-sv">Option C &middot; Serverless</th>
+  </tr>
+  <tr>
+    <th class="g-need">Seats</th><th class="g-need">Peak<br>concurrent</th>
+    <th class="g-need">vCPU</th><th class="g-need">App RAM<br>GB</th><th class="g-need">Index RAM<br>GB</th><th class="g-need">Index disk<br>GB</th>
+    <th class="g-mg">Web tier</th><th class="g-mg">Index host</th><th class="g-mg">Machines</th><th class="g-mg">Total vCPU</th><th class="g-mg">Total RAM GB</th>
+    <th class="g-vp">Web tier</th><th class="g-vp">Index host</th><th class="g-vp">Machines</th><th class="g-vp">Total vCPU</th><th class="g-vp">Total RAM GB</th>
+    <th class="g-sv">Peak inst.</th><th class="g-sv">Warm</th><th class="g-sv">Peak vCPU</th><th class="g-sv">Peak RAM GB</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="seats">20</td><td>0.7</td>
+    <td>0.6</td><td>1.4</td><td>0.4</td><td>1</td>
+    <td class="plan">Standard x1</td><td class="plan">on web instance</td><td>1</td><td>1</td><td>2</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">40</td><td>1.4</td>
+    <td>0.8</td><td>1.7</td><td>0.5</td><td>1</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td class="up">2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">60</td><td>2.1</td>
+    <td>1.0</td><td>1.9</td><td>0.6</td><td>1</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">80</td><td>2.8</td>
+    <td>1.2</td><td>2.2</td><td>0.7</td><td>1</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">100</td><td>3.5</td>
+    <td>1.4</td><td>2.4</td><td>0.8</td><td>2</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">120</td><td>4.2</td>
+    <td>1.6</td><td>2.7</td><td>0.9</td><td>2</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">140</td><td>4.9</td>
+    <td>1.8</td><td>2.9</td><td>1.0</td><td>2</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">160</td><td>5.6</td>
+    <td>2.0</td><td>3.2</td><td>1.1</td><td>2</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td class="up">3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">180</td><td>6.3</td>
+    <td>2.2</td><td>3.4</td><td>1.2</td><td>2</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">200</td><td>7.0</td>
+    <td>2.4</td><td>3.6</td><td>1.3</td><td>2</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">220</td><td>7.1</td>
+    <td>2.5</td><td>3.7</td><td>1.4</td><td>2</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">240</td><td>7.2</td>
+    <td>2.5</td><td>3.7</td><td>1.4</td><td>2</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">260</td><td>7.4</td>
+    <td>2.6</td><td>3.8</td><td>1.5</td><td>3</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">280</td><td>7.5</td>
+    <td>2.6</td><td>3.8</td><td>1.6</td><td>3</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">300</td><td>7.6</td>
+    <td>2.6</td><td>3.9</td><td>1.7</td><td>3</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">320</td><td>7.7</td>
+    <td>2.7</td><td>3.9</td><td>1.8</td><td>3</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">340</td><td>7.9</td>
+    <td>2.7</td><td>3.9</td><td>1.9</td><td>3</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">360</td><td>8.0</td>
+    <td>2.7</td><td>4.0</td><td>2.0</td><td>3</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">380</td><td>8.1</td>
+    <td>2.8</td><td>4.0</td><td>2.1</td><td>3</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td class="up">4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">400</td><td>8.2</td>
+    <td>2.8</td><td>4.1</td><td>2.2</td><td>3</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">420</td><td>8.4</td>
+    <td>2.9</td><td>4.1</td><td>2.3</td><td>3</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">440</td><td>8.5</td>
+    <td>2.9</td><td>4.2</td><td>2.4</td><td>4</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">460</td><td>8.6</td>
+    <td>2.9</td><td>4.2</td><td>2.5</td><td>4</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">480</td><td>8.7</td>
+    <td>3.0</td><td>4.3</td><td>2.5</td><td>4</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">500</td><td>8.9</td>
+    <td>3.0</td><td>4.3</td><td>2.7</td><td>4</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">520</td><td>9.0</td>
+    <td>3.0</td><td>4.3</td><td>2.7</td><td>4</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">540</td><td>9.1</td>
+    <td>3.1</td><td>4.4</td><td>2.8</td><td>4</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">560</td><td>9.2</td>
+    <td>3.1</td><td>4.4</td><td>2.9</td><td>4</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">580</td><td>9.4</td>
+    <td>3.2</td><td>4.5</td><td>3.0</td><td>4</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">600</td><td>9.5</td>
+    <td>3.2</td><td>4.5</td><td>3.1</td><td>5</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">620</td><td>9.6</td>
+    <td>3.2</td><td>4.6</td><td>3.2</td><td>5</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">640</td><td>9.7</td>
+    <td>3.3</td><td>4.6</td><td>3.3</td><td>5</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">660</td><td>9.9</td>
+    <td>3.3</td><td>4.6</td><td>3.4</td><td>5</td>
+    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td class="up">5</td><td>5</td><td>10</td>
+    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">680</td><td>10.0</td>
+    <td>3.3</td><td>4.7</td><td>3.5</td><td>5</td>
+    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
+    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">700</td><td>10.1</td>
+    <td>3.4</td><td>4.7</td><td>3.6</td><td>5</td>
+    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
+    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">720</td><td>10.2</td>
+    <td>3.4</td><td>4.8</td><td>3.7</td><td>5</td>
+    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
+    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">740</td><td>10.4</td>
+    <td>3.5</td><td>4.8</td><td>3.8</td><td>5</td>
+    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
+    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">760</td><td>10.5</td>
+    <td>3.5</td><td>4.9</td><td>3.8</td><td>5</td>
+    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
+    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">780</td><td>10.6</td>
+    <td>3.5</td><td>4.9</td><td>3.9</td><td>6</td>
+    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
+    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">800</td><td>10.7</td>
+    <td>3.6</td><td>5.0</td><td>4.0</td><td>6</td>
+    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
+    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">820</td><td>10.9</td>
+    <td>3.6</td><td>5.0</td><td>4.1</td><td>6</td>
+    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
+    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">840</td><td>11.0</td>
+    <td>3.6</td><td>5.0</td><td>4.2</td><td>6</td>
+    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
+    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+</tbody></table></div>
+<h2>Code Compass, plus 250 Code Inspector users</h2>
+<p class="sub">All seats run Compass. 250 of them also run Code Inspector 5 times per working day. Highlighted rows are where the machine count changes.</p>
+
+<div class="scroll"><table>
+<thead>
+  <tr class="grp">
+    <th colspan="6" class="g-need">Computed requirement</th>
+    <th colspan="5" class="g-mg">Option A &middot; Managed platform</th>
+    <th colspan="5" class="g-vp">Option B &middot; Raw VPS</th>
+    <th colspan="4" class="g-sv">Option C &middot; Serverless</th>
+  </tr>
+  <tr>
+    <th class="g-need">Seats</th><th class="g-need">Peak<br>concurrent</th>
+    <th class="g-need">vCPU</th><th class="g-need">App RAM<br>GB</th><th class="g-need">Index RAM<br>GB</th><th class="g-need">Index disk<br>GB</th>
+    <th class="g-mg">Web tier</th><th class="g-mg">Index host</th><th class="g-mg">Machines</th><th class="g-mg">Total vCPU</th><th class="g-mg">Total RAM GB</th>
+    <th class="g-vp">Web tier</th><th class="g-vp">Index host</th><th class="g-vp">Machines</th><th class="g-vp">Total vCPU</th><th class="g-vp">Total RAM GB</th>
+    <th class="g-sv">Peak inst.</th><th class="g-sv">Warm</th><th class="g-sv">Peak vCPU</th><th class="g-sv">Peak RAM GB</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="seats">20</td><td>0.7</td>
+    <td>0.6</td><td>1.4</td><td>0.4</td><td>1</td>
+    <td class="plan">Standard x1</td><td class="plan">on web instance</td><td>1</td><td>1</td><td>2</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">40</td><td>1.4</td>
+    <td>0.8</td><td>1.7</td><td>0.5</td><td>1</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td class="up">2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">60</td><td>2.1</td>
+    <td>1.0</td><td>1.9</td><td>0.6</td><td>1</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">80</td><td>2.8</td>
+    <td>1.2</td><td>2.2</td><td>0.7</td><td>1</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">100</td><td>3.5</td>
+    <td>1.4</td><td>2.4</td><td>0.8</td><td>2</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">120</td><td>4.2</td>
+    <td>1.6</td><td>2.7</td><td>0.9</td><td>2</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">140</td><td>4.9</td>
+    <td>1.8</td><td>2.9</td><td>1.0</td><td>2</td>
+    <td class="plan">Standard x2</td><td class="plan">on web instance</td><td>2</td><td>2</td><td>4</td>
+    <td class="plan">CX23 x1</td><td class="plan">on web server</td><td>1</td><td>2</td><td>4</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">160</td><td>5.6</td>
+    <td>2.0</td><td>3.2</td><td>1.1</td><td>2</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td class="up">3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">180</td><td>6.3</td>
+    <td>2.2</td><td>3.4</td><td>1.2</td><td>2</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">200</td><td>7.0</td>
+    <td>2.4</td><td>3.6</td><td>1.3</td><td>2</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">220</td><td>7.7</td>
+    <td>2.7</td><td>3.9</td><td>1.4</td><td>2</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">240</td><td>8.4</td>
+    <td>2.9</td><td>4.1</td><td>1.4</td><td>2</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">260</td><td>8.8</td>
+    <td>3.0</td><td>4.3</td><td>1.5</td><td>3</td>
+    <td class="plan">Standard x3</td><td class="plan">on web instance</td><td>3</td><td>3</td><td>6</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">280</td><td>8.9</td>
+    <td>3.0</td><td>4.3</td><td>1.6</td><td>3</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td class="up">4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">300</td><td>9.0</td>
+    <td>3.1</td><td>4.4</td><td>1.7</td><td>3</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">320</td><td>9.2</td>
+    <td>3.1</td><td>4.4</td><td>1.8</td><td>3</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">340</td><td>9.3</td>
+    <td>3.1</td><td>4.5</td><td>1.9</td><td>3</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">360</td><td>9.4</td>
+    <td>3.2</td><td>4.5</td><td>2.0</td><td>3</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">380</td><td>9.5</td>
+    <td>3.2</td><td>4.5</td><td>2.1</td><td>3</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">400</td><td>9.7</td>
+    <td>3.2</td><td>4.6</td><td>2.2</td><td>3</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">420</td><td>9.8</td>
+    <td>3.3</td><td>4.6</td><td>2.3</td><td>3</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">440</td><td>9.9</td>
+    <td>3.3</td><td>4.7</td><td>2.4</td><td>4</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">460</td><td>10.0</td>
+    <td>3.4</td><td>4.7</td><td>2.5</td><td>4</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">480</td><td>10.2</td>
+    <td>3.4</td><td>4.8</td><td>2.5</td><td>4</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">500</td><td>10.3</td>
+    <td>3.4</td><td>4.8</td><td>2.7</td><td>4</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">520</td><td>10.4</td>
+    <td>3.5</td><td>4.8</td><td>2.7</td><td>4</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">540</td><td>10.5</td>
+    <td>3.5</td><td>4.9</td><td>2.8</td><td>4</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">560</td><td>10.7</td>
+    <td>3.5</td><td>4.9</td><td>2.9</td><td>4</td>
+    <td class="plan">Standard x4</td><td class="plan">on web instance</td><td>4</td><td>4</td><td>8</td>
+    <td class="plan">CX33 x1</td><td class="plan">on web server</td><td>1</td><td>4</td><td>8</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">580</td><td>10.8</td>
+    <td>3.6</td><td>5.0</td><td>3.0</td><td>4</td>
+    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td class="up">5</td><td>5</td><td>10</td>
+    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">600</td><td>10.9</td>
+    <td>3.6</td><td>5.0</td><td>3.1</td><td>5</td>
+    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
+    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">620</td><td>11.0</td>
+    <td>3.7</td><td>5.1</td><td>3.2</td><td>5</td>
+    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
+    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">640</td><td>11.2</td>
+    <td>3.7</td><td>5.1</td><td>3.3</td><td>5</td>
+    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
+    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">660</td><td>11.3</td>
+    <td>3.7</td><td>5.2</td><td>3.4</td><td>5</td>
+    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
+    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">680</td><td>11.4</td>
+    <td>3.8</td><td>5.2</td><td>3.5</td><td>5</td>
+    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
+    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">700</td><td>11.5</td>
+    <td>3.8</td><td>5.2</td><td>3.6</td><td>5</td>
+    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
+    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">720</td><td>11.7</td>
+    <td>3.8</td><td>5.3</td><td>3.7</td><td>5</td>
+    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
+    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">740</td><td>11.8</td>
+    <td>3.9</td><td>5.3</td><td>3.8</td><td>5</td>
+    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
+    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">760</td><td>11.9</td>
+    <td>3.9</td><td>5.4</td><td>3.8</td><td>5</td>
+    <td class="plan">Standard x5</td><td class="plan">on web instance</td><td>5</td><td>5</td><td>10</td>
+    <td class="plan">CX43 x1</td><td class="plan">on web server</td><td>1</td><td>8</td><td>16</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="split">
+    <td class="seats">780<sup>&dagger;</sup></td><td>12.0</td>
+    <td>4.0</td><td>5.4</td><td>3.9</td><td>6</td>
+    <td class="plan">Standard x4</td><td class="plan up">Pro x1</td><td>5</td><td>6</td><td>12</td>
+    <td class="plan">CX33 x1</td><td class="plan up">CX23 x1</td><td class="up">2</td><td>6</td><td>12</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">800</td><td>12.2</td>
+    <td>4.0</td><td>5.5</td><td>4.0</td><td>6</td>
+    <td class="plan">Standard x4</td><td class="plan">Pro Plus x1</td><td>5</td><td>8</td><td>16</td>
+    <td class="plan">CX33 x1</td><td class="plan">CX33 x1</td><td>2</td><td>8</td><td>16</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr class="step">
+    <td class="seats">820</td><td>12.3</td>
+    <td>4.0</td><td>5.5</td><td>4.1</td><td>6</td>
+    <td class="plan">Standard x5</td><td class="plan">Pro Plus x1</td><td class="up">6</td><td>9</td><td>18</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX33 x1</td><td>2</td><td>12</td><td>24</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+  <tr>
+    <td class="seats">840</td><td>12.4</td>
+    <td>4.1</td><td>5.5</td><td>4.2</td><td>6</td>
+    <td class="plan">Standard x5</td><td class="plan">Pro Plus x1</td><td>6</td><td>9</td><td>18</td>
+    <td class="plan">CX43 x1</td><td class="plan">CX33 x1</td><td>2</td><td>12</td><td>24</td>
+    <td>1</td><td>1</td><td>1</td><td>2</td>
+  </tr>
+</tbody></table></div>
+
+<h2>How to read this</h2>
+<dl>
+<dt>Peak concurrent</dt><dd>How many jobs are running at the same instant during the busiest hour,
+by Little&rsquo;s Law: arrival rate &times; average job duration. Sized at 3&times; the flat daily average, because
+real usage clusters at the start of the day and after lunch rather than spreading evenly.</dd>
+
+<dt>Computed requirement vs. what you buy</dt><dd>The requirement is what the maths produces &mdash; 1.9
+vCPU, say. The option columns show the smallest sensible allocation that covers it, which is almost
+always more. That gap is headroom you deliberately pay for, not waste.</dd>
+
+<dt>App RAM and index RAM are listed separately</dt><dd>Application memory scales with concurrent
+jobs. The search index is a fixed working set that grows with the size of the code corpus, not with
+seats. They are never summed, because past a threshold they stop living on the same machine.</dd>
+
+<dt>&dagger; Rows where the totals step DOWN</dt><dd>Not an error. While the app and index share one
+box, that box must satisfy the larger demand in <em>every</em> dimension at once &mdash; enough RAM for both,
+priced at whatever CPU comes attached. Splitting them lets you buy two right-sized machines instead
+of one oversized one, so total cores and memory can genuinely fall at the split even as load rises.
+The machine count goes up; the totals may not.</dd>
+
+<dt>Option A &middot; Managed platform</dt><dd>A PaaS such as Render. Fixed instance sizes, deploys, scaling
+and failover handled for you. Fewest moving parts, least control over the machine, most instances
+because each one is small.</dd>
+
+<dt>Option B &middot; Raw VPS</dt><dd>Plain virtual servers such as Hetzner. Far more CPU and RAM per
+machine, so the fleet stays tiny &mdash; but patching, monitoring, backups and failover become your
+team&rsquo;s responsibility. The hardware is cheaper; the operational burden is not.</dd>
+
+<dt>Option C &middot; Serverless</dt><dd>Request-scaled containers such as Cloud Run, each 1 vCPU / 2 GB,
+existing only while requests are in flight. <b>Its numbers are not comparable to the other two
+columns</b> &mdash; there is no standing fleet to size, so a low instance count does not mean less capacity.
+Warm instances are those kept alive to avoid a 2&ndash;5 second cold start. The search index cannot run
+serverless and remains a managed service.</dd>
+
+<dt>The assumption behind every row</dt><dd>Five Code Compass searches per seat per working day, plus,
+where stated, five Code Inspector scans per day for the named subset of users. A subset is modelled as
+its equivalent fleet-wide rate: the model is linear in job volume, so 200 users at 5 scans a day
+produces exactly the same total work, and the same concurrency, as the equivalent average spread
+across all seats.</dd>
+</dl>
+
+<footer>Generated from the same model as the interactive planner, so the two cannot disagree.
+Regenerate with <code>node build-hardware.js</code> after any model change.
+42 rows per scenario &middot; 20 to 840 seats in steps of 20.</footer>
+</div>
+<script>
+ var CSV_B64="QXNjZW5kT1MgLSBIYXJkd2FyZSBSZXF1aXJlbWVudHMgYnkgU2VhdCBDb3VudApIYXJkd2FyZSBzcGVjaWZpY2F0aW9uIG9ubHkuIFRocmVlIGRlcGxveW1lbnQgb3B0aW9uczogTWFuYWdlZCBwbGF0Zm9ybSAoUmVuZGVyKSwgUmF3IFZQUyAoSGV0em5lciksIFNlcnZlcmxlc3MgKEdvb2dsZSBDbG91ZCBSdW4pLgpBc3N1bWVzIDUgQ29kZSBDb21wYXNzIHNlYXJjaGVzIHBlciBzZWF0IHBlciB3b3JraW5nIGRheS4gUGVhayBob3VyIHNpemVkIGF0IDN4IHRoZSBkYWlseSBhdmVyYWdlLgpSZXF1aXJlZCA9IGNvbXB1dGVkIG5lZWQuIFRvdGFscyBpbmNsdWRlIHRoZSBzZWFyY2ggaW5kZXggaG9zdCwgd2hpY2ggYmVjb21lcyBpdHMgb3duIG1hY2hpbmUgcGFzdCBhIHRocmVzaG9sZC4KCkNvZGUgQ29tcGFzcyBvbmx5CkV2ZXJ5IHNlYXQgcnVucyA1IENvZGUgQ29tcGFzcyBzZWFyY2hlcyBwZXIgd29ya2luZyBkYXkuClNlYXRzLFBlYWsgY29uY3VycmVudCBqb2JzLHZDUFUgcmVxdWlyZWQsQXBwIFJBTSByZXF1aXJlZCAoR0IpLFNlYXJjaCBpbmRleCBSQU0gKEdCKSxTZWFyY2ggaW5kZXggZGlzayAoR0IpLE1BTkFHRUQ6IHdlYiBpbnN0YW5jZXMsTUFOQUdFRDogaW5kZXggaG9zdCxNQU5BR0VEOiB0b3RhbCBtYWNoaW5lcyxNQU5BR0VEOiB0b3RhbCB2Q1BVLE1BTkFHRUQ6IHRvdGFsIFJBTSAoR0IpLFZQUzogd2ViIHNlcnZlcnMsVlBTOiBpbmRleCBob3N0LFZQUzogdG90YWwgbWFjaGluZXMsVlBTOiB0b3RhbCB2Q1BVLFZQUzogdG90YWwgUkFNIChHQiksU0VSVkVSTEVTUzogcGVhayBpbnN0YW5jZXMsU0VSVkVSTEVTUzogd2FybSBpbnN0YW5jZXMsU0VSVkVSTEVTUzogcGVhayB2Q1BVLFNFUlZFUkxFU1M6IHBlYWsgUkFNIChHQiksU0VSVkVSTEVTUzogc2VhcmNoIGluZGV4CjIwLDAuMTMsMC4zOSwxLjI0LDAuNDQsMSwiU3RhbmRhcmQgeDEiLCJvbiB3ZWIgaW5zdGFuY2UiLDEsMSwyLCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo0MCwwLjI1LDAuNDIsMS4yOSwwLjUyLDEsIlN0YW5kYXJkIHgxIiwib24gd2ViIGluc3RhbmNlIiwxLDEsMiwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNjAsMC4zOCwwLjQ2LDEuMzMsMC42MywxLCJTdGFuZGFyZCB4MSIsIm9uIHdlYiBpbnN0YW5jZSIsMSwxLDIsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjgwLDAuNTAsMC41MCwxLjM4LDAuNzAsMSwiU3RhbmRhcmQgeDIiLCJvbiB3ZWIgaW5zdGFuY2UiLDIsMiw0LCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoxMDAsMC42MywwLjU0LDEuNDIsMC44MSwyLCJTdGFuZGFyZCB4MiIsIm9uIHdlYiBpbnN0YW5jZSIsMiwyLDQsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjEyMCwwLjc1LDAuNTcsMS40NiwwLjg5LDIsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMTQwLDAuODgsMC42MSwxLjUxLDEuMDAsMiwiU3RhbmRhcmQgeDIiLCJvbiB3ZWIgaW5zdGFuY2UiLDIsMiw0LCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoxNjAsMS4wMCwwLjY1LDEuNTUsMS4wNywyLCJTdGFuZGFyZCB4MiIsIm9uIHdlYiBpbnN0YW5jZSIsMiwyLDQsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjE4MCwxLjEzLDAuNjksMS41OSwxLjE4LDIsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMjAwLDEuMjUsMC43MiwxLjY0LDEuMjUsMiwiU3RhbmRhcmQgeDIiLCJvbiB3ZWIgaW5zdGFuY2UiLDIsMiw0LCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoyMjAsMS4zOCwwLjc2LDEuNjgsMS4zNywyLCJTdGFuZGFyZCB4MiIsIm9uIHdlYiBpbnN0YW5jZSIsMiwyLDQsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjI0MCwxLjUwLDAuODAsMS43MiwxLjQ0LDIsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMjYwLDEuNjMsMC44NCwxLjc3LDEuNTUsMywiU3RhbmRhcmQgeDIiLCJvbiB3ZWIgaW5zdGFuY2UiLDIsMiw0LCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoyODAsMS43NSwwLjg4LDEuODEsMS42MiwzLCJTdGFuZGFyZCB4MiIsIm9uIHdlYiBpbnN0YW5jZSIsMiwyLDQsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjMwMCwxLjg4LDAuOTEsMS44NiwxLjczLDMsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMzIwLDIuMDAsMC45NSwxLjkwLDEuODEsMywiU3RhbmRhcmQgeDIiLCJvbiB3ZWIgaW5zdGFuY2UiLDIsMiw0LCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgozNDAsMi4xMywwLjk5LDEuOTQsMS45MiwzLCJTdGFuZGFyZCB4MiIsIm9uIHdlYiBpbnN0YW5jZSIsMiwyLDQsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjM2MCwyLjI1LDEuMDIsMS45OSwxLjk5LDMsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMzgwLDIuMzgsMS4wNiwyLjAzLDIuMTAsMywiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo0MDAsMi41MCwxLjEwLDIuMDgsMi4xOCwzLCJTdGFuZGFyZCB4MyIsIm9uIHdlYiBpbnN0YW5jZSIsMywzLDYsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjQyMCwyLjYzLDEuMTQsMi4xMiwyLjI5LDMsIlN0YW5kYXJkIHgzIiwib24gd2ViIGluc3RhbmNlIiwzLDMsNiwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNDQwLDIuNzUsMS4xNywyLjE2LDIuMzYsNCwiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo0NjAsMi44OCwxLjIxLDIuMjEsMi40Nyw0LCJTdGFuZGFyZCB4MyIsIm9uIHdlYiBpbnN0YW5jZSIsMywzLDYsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjQ4MCwzLjAwLDEuMjUsMi4yNSwyLjU1LDQsIlN0YW5kYXJkIHgzIiwib24gd2ViIGluc3RhbmNlIiwzLDMsNiwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNTAwLDMuMTMsMS4yOSwyLjI5LDIuNjYsNCwiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo1MjAsMy4yNSwxLjMyLDIuMzQsMi43Myw0LCJTdGFuZGFyZCB4MyIsIm9uIHdlYiBpbnN0YW5jZSIsMywzLDYsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjU0MCwzLjM4LDEuMzYsMi4zOCwyLjg0LDQsIlN0YW5kYXJkIHgzIiwib24gd2ViIGluc3RhbmNlIiwzLDMsNiwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNTYwLDMuNTAsMS40MCwyLjQyLDIuOTIsNCwiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo1ODAsMy42MywxLjQ0LDIuNDcsMy4wMyw0LCJTdGFuZGFyZCB4MyIsIm9uIHdlYiBpbnN0YW5jZSIsMywzLDYsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjYwMCwzLjc1LDEuNDgsMi41MSwzLjEwLDUsIlN0YW5kYXJkIHgzIiwib24gd2ViIGluc3RhbmNlIiwzLDMsNiwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNjIwLDMuODgsMS41MSwyLjU2LDMuMjEsNSwiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo2NDAsNC4wMCwxLjU1LDIuNjAsMy4yOCw1LCJTdGFuZGFyZCB4MyIsIm9uIHdlYiBpbnN0YW5jZSIsMywzLDYsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjY2MCw0LjEzLDEuNTksMi42NCwzLjQwLDUsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNjgwLDQuMjUsMS42MywyLjY5LDMuNDcsNSwiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo3MDAsNC4zOCwxLjY2LDIuNzMsMy41OCw1LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjcyMCw0LjUwLDEuNzAsMi43NywzLjY1LDUsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNzQwLDQuNjMsMS43NCwyLjgyLDMuNzYsNSwiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo3NjAsNC43NSwxLjc3LDIuODYsMy44NCw1LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjc4MCw0Ljg4LDEuODEsMi45MSwzLjk1LDYsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKODAwLDUuMDAsMS44NSwyLjk1LDQuMDIsNiwiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo4MjAsNS4xMywxLjg5LDIuOTksNC4xMyw2LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjg0MCw1LjI1LDEuOTIsMy4wNCw0LjIxLDYsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKCkNvZGUgQ29tcGFzcywgcGx1cyAyMDAgQ29kZSBJbnNwZWN0b3IgdXNlcnMKQWxsIHNlYXRzIHJ1biBDb21wYXNzLiAyMDAgb2YgdGhlbSBhbHNvIHJ1biBDb2RlIEluc3BlY3RvciA1IHRpbWVzIHBlciB3b3JraW5nIGRheS4KU2VhdHMsUGVhayBjb25jdXJyZW50IGpvYnMsdkNQVSByZXF1aXJlZCxBcHAgUkFNIHJlcXVpcmVkIChHQiksU2VhcmNoIGluZGV4IFJBTSAoR0IpLFNlYXJjaCBpbmRleCBkaXNrIChHQiksTUFOQUdFRDogd2ViIGluc3RhbmNlcyxNQU5BR0VEOiBpbmRleCBob3N0LE1BTkFHRUQ6IHRvdGFsIG1hY2hpbmVzLE1BTkFHRUQ6IHRvdGFsIHZDUFUsTUFOQUdFRDogdG90YWwgUkFNIChHQiksVlBTOiB3ZWIgc2VydmVycyxWUFM6IGluZGV4IGhvc3QsVlBTOiB0b3RhbCBtYWNoaW5lcyxWUFM6IHRvdGFsIHZDUFUsVlBTOiB0b3RhbCBSQU0gKEdCKSxTRVJWRVJMRVNTOiBwZWFrIGluc3RhbmNlcyxTRVJWRVJMRVNTOiB3YXJtIGluc3RhbmNlcyxTRVJWRVJMRVNTOiBwZWFrIHZDUFUsU0VSVkVSTEVTUzogcGVhayBSQU0gKEdCKSxTRVJWRVJMRVNTOiBzZWFyY2ggaW5kZXgKMjAsMC43MCwwLjU2LDEuNDQsMC40NCwxLCJTdGFuZGFyZCB4MSIsIm9uIHdlYiBpbnN0YW5jZSIsMSwxLDIsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjQwLDEuNDAsMC43NywxLjY5LDAuNTIsMSwiU3RhbmRhcmQgeDIiLCJvbiB3ZWIgaW5zdGFuY2UiLDIsMiw0LCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo2MCwyLjA5LDAuOTgsMS45MywwLjYzLDEsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKODAsMi43OSwxLjE5LDIuMTgsMC43MCwxLCJTdGFuZGFyZCB4MiIsIm9uIHdlYiBpbnN0YW5jZSIsMiwyLDQsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjEwMCwzLjQ5LDEuNDAsMi40MiwwLjgxLDIsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMTIwLDQuMTksMS42MSwyLjY3LDAuODksMiwiU3RhbmRhcmQgeDIiLCJvbiB3ZWIgaW5zdGFuY2UiLDIsMiw0LCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoxNDAsNC44OSwxLjgyLDIuOTEsMS4wMCwyLCJTdGFuZGFyZCB4MiIsIm9uIHdlYiBpbnN0YW5jZSIsMiwyLDQsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjE2MCw1LjU4LDIuMDIsMy4xNSwxLjA3LDIsIlN0YW5kYXJkIHgzIiwib24gd2ViIGluc3RhbmNlIiwzLDMsNiwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMTgwLDYuMjgsMi4yMywzLjQwLDEuMTgsMiwiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoyMDAsNi45OCwyLjQ0LDMuNjQsMS4yNSwyLCJTdGFuZGFyZCB4MyIsIm9uIHdlYiBpbnN0YW5jZSIsMywzLDYsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjIyMCw3LjEwLDIuNDgsMy42OSwxLjM3LDIsIlN0YW5kYXJkIHgzIiwib24gd2ViIGluc3RhbmNlIiwzLDMsNiwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMjQwLDcuMjMsMi41MiwzLjczLDEuNDQsMiwiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoyNjAsNy4zNSwyLjU2LDMuNzcsMS41NSwzLCJTdGFuZGFyZCB4MyIsIm9uIHdlYiBpbnN0YW5jZSIsMywzLDYsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjI4MCw3LjQ4LDIuNTksMy44MiwxLjYyLDMsIlN0YW5kYXJkIHgzIiwib24gd2ViIGluc3RhbmNlIiwzLDMsNiwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMzAwLDcuNjAsMi42MywzLjg2LDEuNzMsMywiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgozMjAsNy43MywyLjY3LDMuOTEsMS44MSwzLCJTdGFuZGFyZCB4MyIsIm9uIHdlYiBpbnN0YW5jZSIsMywzLDYsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjM0MCw3Ljg1LDIuNzEsMy45NSwxLjkyLDMsIlN0YW5kYXJkIHgzIiwib24gd2ViIGluc3RhbmNlIiwzLDMsNiwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMzYwLDcuOTgsMi43NCwzLjk5LDEuOTksMywiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgozODAsOC4xMCwyLjc4LDQuMDQsMi4xMCwzLCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjQwMCw4LjIzLDIuODIsNC4wOCwyLjE4LDMsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNDIwLDguMzUsMi44Niw0LjEyLDIuMjksMywiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo0NDAsOC40OCwyLjg5LDQuMTcsMi4zNiw0LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjQ2MCw4LjYwLDIuOTMsNC4yMSwyLjQ3LDQsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNDgwLDguNzMsMi45Nyw0LjI2LDIuNTUsNCwiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo1MDAsOC44NSwzLjAxLDQuMzAsMi42Niw0LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjUyMCw4Ljk4LDMuMDQsNC4zNCwyLjczLDQsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNTQwLDkuMTAsMy4wOCw0LjM5LDIuODQsNCwiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo1NjAsOS4yMywzLjEyLDQuNDMsMi45Miw0LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjU4MCw5LjM1LDMuMTYsNC40NywzLjAzLDQsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNjAwLDkuNDgsMy4xOSw0LjUyLDMuMTAsNSwiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo2MjAsOS42MCwzLjIzLDQuNTYsMy4yMSw1LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjY0MCw5LjczLDMuMjcsNC42MSwzLjI4LDUsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNjYwLDkuODUsMy4zMSw0LjY1LDMuNDAsNSwiU3RhbmRhcmQgeDUiLCJvbiB3ZWIgaW5zdGFuY2UiLDUsNSwxMCwiQ1g0MyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsOCwxNiwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjY4MCw5Ljk4LDMuMzQsNC42OSwzLjQ3LDUsIlN0YW5kYXJkIHg1Iiwib24gd2ViIGluc3RhbmNlIiw1LDUsMTAsIkNYNDMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDgsMTYsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo3MDAsMTAuMTAsMy4zOCw0Ljc0LDMuNTgsNSwiU3RhbmRhcmQgeDUiLCJvbiB3ZWIgaW5zdGFuY2UiLDUsNSwxMCwiQ1g0MyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsOCwxNiwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjcyMCwxMC4yMywzLjQyLDQuNzgsMy42NSw1LCJTdGFuZGFyZCB4NSIsIm9uIHdlYiBpbnN0YW5jZSIsNSw1LDEwLCJDWDQzIHgxIiwib24gd2ViIHNlcnZlciIsMSw4LDE2LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNzQwLDEwLjM1LDMuNDYsNC44MiwzLjc2LDUsIlN0YW5kYXJkIHg1Iiwib24gd2ViIGluc3RhbmNlIiw1LDUsMTAsIkNYNDMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDgsMTYsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo3NjAsMTAuNDgsMy40OSw0Ljg3LDMuODQsNSwiU3RhbmRhcmQgeDUiLCJvbiB3ZWIgaW5zdGFuY2UiLDUsNSwxMCwiQ1g0MyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsOCwxNiwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjc4MCwxMC42MCwzLjUzLDQuOTEsMy45NSw2LCJTdGFuZGFyZCB4NSIsIm9uIHdlYiBpbnN0YW5jZSIsNSw1LDEwLCJDWDQzIHgxIiwib24gd2ViIHNlcnZlciIsMSw4LDE2LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKODAwLDEwLjczLDMuNTcsNC45Niw0LjAyLDYsIlN0YW5kYXJkIHg1Iiwib24gd2ViIGluc3RhbmNlIiw1LDUsMTAsIkNYNDMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDgsMTYsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo4MjAsMTAuODUsMy42MSw1LjAwLDQuMTMsNiwiU3RhbmRhcmQgeDUiLCJvbiB3ZWIgaW5zdGFuY2UiLDUsNSwxMCwiQ1g0MyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsOCwxNiwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjg0MCwxMC45OCwzLjY0LDUuMDQsNC4yMSw2LCJTdGFuZGFyZCB4NSIsIm9uIHdlYiBpbnN0YW5jZSIsNSw1LDEwLCJDWDQzIHgxIiwib24gd2ViIHNlcnZlciIsMSw4LDE2LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKCkNvZGUgQ29tcGFzcywgcGx1cyAyNTAgQ29kZSBJbnNwZWN0b3IgdXNlcnMKQWxsIHNlYXRzIHJ1biBDb21wYXNzLiAyNTAgb2YgdGhlbSBhbHNvIHJ1biBDb2RlIEluc3BlY3RvciA1IHRpbWVzIHBlciB3b3JraW5nIGRheS4KU2VhdHMsUGVhayBjb25jdXJyZW50IGpvYnMsdkNQVSByZXF1aXJlZCxBcHAgUkFNIHJlcXVpcmVkIChHQiksU2VhcmNoIGluZGV4IFJBTSAoR0IpLFNlYXJjaCBpbmRleCBkaXNrIChHQiksTUFOQUdFRDogd2ViIGluc3RhbmNlcyxNQU5BR0VEOiBpbmRleCBob3N0LE1BTkFHRUQ6IHRvdGFsIG1hY2hpbmVzLE1BTkFHRUQ6IHRvdGFsIHZDUFUsTUFOQUdFRDogdG90YWwgUkFNIChHQiksVlBTOiB3ZWIgc2VydmVycyxWUFM6IGluZGV4IGhvc3QsVlBTOiB0b3RhbCBtYWNoaW5lcyxWUFM6IHRvdGFsIHZDUFUsVlBTOiB0b3RhbCBSQU0gKEdCKSxTRVJWRVJMRVNTOiBwZWFrIGluc3RhbmNlcyxTRVJWRVJMRVNTOiB3YXJtIGluc3RhbmNlcyxTRVJWRVJMRVNTOiBwZWFrIHZDUFUsU0VSVkVSTEVTUzogcGVhayBSQU0gKEdCKSxTRVJWRVJMRVNTOiBzZWFyY2ggaW5kZXgKMjAsMC43MCwwLjU2LDEuNDQsMC40NCwxLCJTdGFuZGFyZCB4MSIsIm9uIHdlYiBpbnN0YW5jZSIsMSwxLDIsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjQwLDEuNDAsMC43NywxLjY5LDAuNTIsMSwiU3RhbmRhcmQgeDIiLCJvbiB3ZWIgaW5zdGFuY2UiLDIsMiw0LCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo2MCwyLjA5LDAuOTgsMS45MywwLjYzLDEsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKODAsMi43OSwxLjE5LDIuMTgsMC43MCwxLCJTdGFuZGFyZCB4MiIsIm9uIHdlYiBpbnN0YW5jZSIsMiwyLDQsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjEwMCwzLjQ5LDEuNDAsMi40MiwwLjgxLDIsIlN0YW5kYXJkIHgyIiwib24gd2ViIGluc3RhbmNlIiwyLDIsNCwiQ1gyMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsMiw0LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMTIwLDQuMTksMS42MSwyLjY3LDAuODksMiwiU3RhbmRhcmQgeDIiLCJvbiB3ZWIgaW5zdGFuY2UiLDIsMiw0LCJDWDIzIHgxIiwib24gd2ViIHNlcnZlciIsMSwyLDQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoxNDAsNC44OSwxLjgyLDIuOTEsMS4wMCwyLCJTdGFuZGFyZCB4MiIsIm9uIHdlYiBpbnN0YW5jZSIsMiwyLDQsIkNYMjMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDIsNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjE2MCw1LjU4LDIuMDIsMy4xNSwxLjA3LDIsIlN0YW5kYXJkIHgzIiwib24gd2ViIGluc3RhbmNlIiwzLDMsNiwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMTgwLDYuMjgsMi4yMywzLjQwLDEuMTgsMiwiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoyMDAsNi45OCwyLjQ0LDMuNjQsMS4yNSwyLCJTdGFuZGFyZCB4MyIsIm9uIHdlYiBpbnN0YW5jZSIsMywzLDYsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjIyMCw3LjY4LDIuNjUsMy44OSwxLjM3LDIsIlN0YW5kYXJkIHgzIiwib24gd2ViIGluc3RhbmNlIiwzLDMsNiwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMjQwLDguMzgsMi44Niw0LjEzLDEuNDQsMiwiU3RhbmRhcmQgeDMiLCJvbiB3ZWIgaW5zdGFuY2UiLDMsMyw2LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgoyNjAsOC43OSwyLjk5LDQuMjgsMS41NSwzLCJTdGFuZGFyZCB4MyIsIm9uIHdlYiBpbnN0YW5jZSIsMywzLDYsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjI4MCw4LjkxLDMuMDIsNC4zMiwxLjYyLDMsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMzAwLDkuMDQsMy4wNiw0LjM2LDEuNzMsMywiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgozMjAsOS4xNiwzLjEwLDQuNDEsMS44MSwzLCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjM0MCw5LjI5LDMuMTQsNC40NSwxLjkyLDMsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKMzYwLDkuNDEsMy4xNyw0LjQ5LDEuOTksMywiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgozODAsOS41NCwzLjIxLDQuNTQsMi4xMCwzLCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjQwMCw5LjY2LDMuMjUsNC41OCwyLjE4LDMsIlN0YW5kYXJkIHg0Iiwib24gd2ViIGluc3RhbmNlIiw0LDQsOCwiQ1gzMyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsNCw4LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNDIwLDkuNzksMy4yOSw0LjYzLDIuMjksMywiU3RhbmRhcmQgeDQiLCJvbiB3ZWIgaW5zdGFuY2UiLDQsNCw4LCJDWDMzIHgxIiwib24gd2ViIHNlcnZlciIsMSw0LDgsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo0NDAsOS45MSwzLjMyLDQuNjcsMi4zNiw0LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjQ2MCwxMC4wNCwzLjM2LDQuNzEsMi40Nyw0LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjQ4MCwxMC4xNiwzLjQwLDQuNzYsMi41NSw0LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjUwMCwxMC4yOSwzLjQ0LDQuODAsMi42Niw0LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjUyMCwxMC40MSwzLjQ3LDQuODQsMi43Myw0LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjU0MCwxMC41NCwzLjUxLDQuODksMi44NCw0LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjU2MCwxMC42NiwzLjU1LDQuOTMsMi45Miw0LCJTdGFuZGFyZCB4NCIsIm9uIHdlYiBpbnN0YW5jZSIsNCw0LDgsIkNYMzMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDQsOCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjU4MCwxMC43OSwzLjU5LDQuOTgsMy4wMyw0LCJTdGFuZGFyZCB4NSIsIm9uIHdlYiBpbnN0YW5jZSIsNSw1LDEwLCJDWDQzIHgxIiwib24gd2ViIHNlcnZlciIsMSw4LDE2LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNjAwLDEwLjkxLDMuNjIsNS4wMiwzLjEwLDUsIlN0YW5kYXJkIHg1Iiwib24gd2ViIGluc3RhbmNlIiw1LDUsMTAsIkNYNDMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDgsMTYsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo2MjAsMTEuMDQsMy42Niw1LjA2LDMuMjEsNSwiU3RhbmRhcmQgeDUiLCJvbiB3ZWIgaW5zdGFuY2UiLDUsNSwxMCwiQ1g0MyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsOCwxNiwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjY0MCwxMS4xNiwzLjcwLDUuMTEsMy4yOCw1LCJTdGFuZGFyZCB4NSIsIm9uIHdlYiBpbnN0YW5jZSIsNSw1LDEwLCJDWDQzIHgxIiwib24gd2ViIHNlcnZlciIsMSw4LDE2LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNjYwLDExLjI5LDMuNzQsNS4xNSwzLjQwLDUsIlN0YW5kYXJkIHg1Iiwib24gd2ViIGluc3RhbmNlIiw1LDUsMTAsIkNYNDMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDgsMTYsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo2ODAsMTEuNDEsMy43Nyw1LjE5LDMuNDcsNSwiU3RhbmRhcmQgeDUiLCJvbiB3ZWIgaW5zdGFuY2UiLDUsNSwxMCwiQ1g0MyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsOCwxNiwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjcwMCwxMS41NCwzLjgxLDUuMjQsMy41OCw1LCJTdGFuZGFyZCB4NSIsIm9uIHdlYiBpbnN0YW5jZSIsNSw1LDEwLCJDWDQzIHgxIiwib24gd2ViIHNlcnZlciIsMSw4LDE2LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNzIwLDExLjY2LDMuODUsNS4yOCwzLjY1LDUsIlN0YW5kYXJkIHg1Iiwib24gd2ViIGluc3RhbmNlIiw1LDUsMTAsIkNYNDMgeDEiLCJvbiB3ZWIgc2VydmVyIiwxLDgsMTYsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo3NDAsMTEuNzksMy44OSw1LjMzLDMuNzYsNSwiU3RhbmRhcmQgeDUiLCJvbiB3ZWIgaW5zdGFuY2UiLDUsNSwxMCwiQ1g0MyB4MSIsIm9uIHdlYiBzZXJ2ZXIiLDEsOCwxNiwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCjc2MCwxMS45MSwzLjkyLDUuMzcsMy44NCw1LCJTdGFuZGFyZCB4NSIsIm9uIHdlYiBpbnN0YW5jZSIsNSw1LDEwLCJDWDQzIHgxIiwib24gd2ViIHNlcnZlciIsMSw4LDE2LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKNzgwLDEyLjA0LDMuOTYsNS40MSwzLjk1LDYsIlN0YW5kYXJkIHg0IiwiUHJvIHgxIiw1LDYsMTIsIkNYMzMgeDEiLCJDWDIzIHgxIiwyLDYsMTIsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo4MDAsMTIuMTYsNC4wMCw1LjQ2LDQuMDIsNiwiU3RhbmRhcmQgeDQiLCJQcm8gUGx1cyB4MSIsNSw4LDE2LCJDWDMzIHgxIiwiQ1gzMyB4MSIsMiw4LDE2LDEsMSwxLDIsIm1hbmFnZWQgc2VydmljZSIKODIwLDEyLjI5LDQuMDQsNS41MCw0LjEzLDYsIlN0YW5kYXJkIHg1IiwiUHJvIFBsdXMgeDEiLDYsOSwxOCwiQ1g0MyB4MSIsIkNYMzMgeDEiLDIsMTIsMjQsMSwxLDEsMiwibWFuYWdlZCBzZXJ2aWNlIgo4NDAsMTIuNDEsNC4wNyw1LjU0LDQuMjEsNiwiU3RhbmRhcmQgeDUiLCJQcm8gUGx1cyB4MSIsNiw5LDE4LCJDWDQzIHgxIiwiQ1gzMyB4MSIsMiwxMiwyNCwxLDEsMSwyLCJtYW5hZ2VkIHNlcnZpY2UiCg==";
+ document.getElementById('dl').addEventListener('click',function(){
+   var bin=atob(CSV_B64),b=new Uint8Array(bin.length);
+   for(var i=0;i<bin.length;i++)b[i]=bin.charCodeAt(i);
+   var u=URL.createObjectURL(new Blob([b],{type:'text/csv'})),a=document.createElement('a');
+   a.href=u;a.download='AscendOS-Hardware-Requirements.csv';a.click();
+   setTimeout(function(){URL.revokeObjectURL(u)},1000);
+ });
+</script>
+</body></html>

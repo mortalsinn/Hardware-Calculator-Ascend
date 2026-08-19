@@ -1,141 +1,142 @@
 AscendOS - Hardware Requirements by Seat Count
-Generated from the AscendOS cost model. Managed platform (Render) sizing.
-Assumes 5 Code Compass searches per seat per working day; peak hour 3x the average.
+Hardware specification only. Three deployment options: Managed platform (Render), Raw VPS (Hetzner), Serverless (Google Cloud Run).
+Assumes 5 Code Compass searches per seat per working day. Peak hour sized at 3x the daily average.
+Required = computed need. Totals include the search index host, which becomes its own machine past a threshold.
 
 Code Compass only
-Every seat runs 5 Compass searches per working day. No Inspector, no Estimating.
-Seats,Peak concurrent scans,vCPU required,App RAM (GB),Search index RAM (GB),Recommended instances,Provisioned vCPU,Provisioned RAM (GB),Deployment shape,Infrastructure USD/mo,AI usage USD/mo,Total USD/mo,Total per seat USD/mo
-20,0.13,0.39,1.24,0.44,"Standard x1",1,2,"App + index on one instance",50.25,29.92,81.31,4.07
-40,0.25,0.42,1.29,0.52,"Standard x1",1,2,"App + index on one instance",53.94,59.85,115.70,2.89
-60,0.38,0.46,1.33,0.63,"Standard x1",1,2,"App + index on one instance",57.66,89.78,150.48,2.51
-80,0.50,0.50,1.38,0.70,"Standard x2",2,4,"App + index on one instance",86.38,119.70,209.90,2.62
-100,0.63,0.54,1.42,0.81,"Standard x2",2,4,"App + index on one instance",90.35,149.63,244.93,2.45
-120,0.75,0.57,1.46,0.89,"Standard x2",2,4,"App + index on one instance",94.07,179.55,279.35,2.33
-140,0.88,0.61,1.51,1.00,"Standard x2",2,4,"App + index on one instance",97.79,209.48,314.13,2.24
-160,1.00,0.65,1.55,1.07,"Standard x2",2,4,"App + index on one instance",101.51,239.40,348.55,2.18
-180,1.13,0.69,1.59,1.18,"Standard x2",2,4,"App + index on one instance",105.23,269.32,383.33,2.13
-200,1.25,0.72,1.64,1.25,"Standard x2",2,4,"App + index on one instance",108.95,299.25,417.75,2.09
-220,1.38,0.76,1.68,1.37,"Standard x2",2,4,"App + index on one instance",112.67,329.18,452.53,2.06
-240,1.50,0.80,1.72,1.44,"Standard x2",2,4,"App + index on one instance",116.39,359.10,486.95,2.03
-260,1.63,0.84,1.77,1.55,"Standard x2",2,4,"App + index on one instance",120.36,389.02,521.98,2.01
-280,1.75,0.88,1.81,1.62,"Standard x2",2,4,"App + index on one instance",124.08,418.95,556.40,1.99
-300,1.88,0.91,1.86,1.73,"Standard x2",2,4,"App + index on one instance",127.80,448.88,591.18,1.97
-320,2.00,0.95,1.90,1.81,"Standard x2",2,4,"App + index on one instance",131.52,478.80,625.60,1.96
-340,2.13,0.99,1.94,1.92,"Standard x2",2,4,"App + index on one instance",135.24,508.73,660.38,1.94
-360,2.25,1.02,1.99,1.99,"Standard x2",2,4,"App + index on one instance",138.96,538.65,694.80,1.93
-380,2.38,1.06,2.03,2.10,"Standard x3",3,6,"App + index on one instance",167.68,568.58,754.58,1.99
-400,2.50,1.10,2.08,2.18,"Standard x3",3,6,"App + index on one instance",171.40,598.50,789.00,1.97
-420,2.63,1.14,2.12,2.29,"Standard x3",3,6,"App + index on one instance",175.12,628.42,823.78,1.96
-440,2.75,1.17,2.16,2.36,"Standard x3",3,6,"App + index on one instance",179.09,658.35,858.45,1.95
-460,2.88,1.21,2.21,2.47,"Standard x3",3,6,"App + index on one instance",182.81,688.27,893.23,1.94
-480,3.00,1.25,2.25,2.55,"Standard x3",3,6,"App + index on one instance",186.53,718.20,927.65,1.93
-500,3.13,1.29,2.29,2.66,"Standard x3",3,6,"App + index on one instance",190.25,748.13,962.43,1.92
-520,3.25,1.32,2.34,2.73,"Standard x3",3,6,"App + index on one instance",193.97,778.05,996.85,1.92
-540,3.38,1.36,2.38,2.84,"Standard x3",3,6,"App + index on one instance",197.69,807.98,1031.63,1.91
-560,3.50,1.40,2.42,2.92,"Standard x3",3,6,"App + index on one instance",201.41,837.90,1066.05,1.90
-580,3.63,1.44,2.47,3.03,"Standard x3",3,6,"App + index on one instance",205.13,867.83,1100.83,1.90
-600,3.75,1.48,2.51,3.10,"Standard x3",3,6,"App + index on one instance",209.10,897.75,1135.50,1.89
-620,3.88,1.51,2.56,3.21,"Standard x3",3,6,"App + index on one instance",212.82,927.67,1170.28,1.89
-640,4.00,1.55,2.60,3.28,"Standard x3",3,6,"App + index on one instance",216.54,957.60,1204.70,1.88
-660,4.13,1.59,2.64,3.40,"Standard x4",4,8,"App + index on one instance",245.26,987.53,1264.48,1.92
-680,4.25,1.63,2.69,3.47,"Standard x4",4,8,"App + index on one instance",248.98,1017.45,1298.90,1.91
-700,4.38,1.66,2.73,3.58,"Standard x4",4,8,"App + index on one instance",252.70,1047.38,1333.68,1.91
-720,4.50,1.70,2.77,3.65,"Standard x4",4,8,"App + index on one instance",256.42,1077.30,1368.10,1.90
-740,4.63,1.74,2.82,3.76,"Standard x4",4,8,"App + index on one instance",260.14,1107.22,1402.88,1.90
-760,4.75,1.77,2.86,3.84,"Standard x4",4,8,"App + index on one instance",263.86,1137.15,1437.30,1.89
-780,4.88,1.81,2.91,3.95,"Standard x4",4,8,"App + index on one instance",267.83,1167.08,1472.33,1.89
-800,5.00,1.85,2.95,4.02,"Standard x4",4,8,"App + index on one instance",271.55,1197.00,1506.75,1.88
-820,5.13,1.89,2.99,4.13,"Standard x4",4,8,"App + index on one instance",603.02,1226.92,1869.28,2.28
-840,5.25,1.92,3.04,4.21,"Standard x4",4,8,"App + index on one instance",606.74,1256.85,1903.70,2.27
+Every seat runs 5 Code Compass searches per working day.
+Seats,Peak concurrent jobs,vCPU required,App RAM required (GB),Search index RAM (GB),Search index disk (GB),MANAGED: web instances,MANAGED: index host,MANAGED: total machines,MANAGED: total vCPU,MANAGED: total RAM (GB),VPS: web servers,VPS: index host,VPS: total machines,VPS: total vCPU,VPS: total RAM (GB),SERVERLESS: peak instances,SERVERLESS: warm instances,SERVERLESS: peak vCPU,SERVERLESS: peak RAM (GB),SERVERLESS: search index
+20,0.13,0.39,1.24,0.44,1,"Standard x1","on web instance",1,1,2,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+40,0.25,0.42,1.29,0.52,1,"Standard x1","on web instance",1,1,2,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+60,0.38,0.46,1.33,0.63,1,"Standard x1","on web instance",1,1,2,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+80,0.50,0.50,1.38,0.70,1,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+100,0.63,0.54,1.42,0.81,2,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+120,0.75,0.57,1.46,0.89,2,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+140,0.88,0.61,1.51,1.00,2,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+160,1.00,0.65,1.55,1.07,2,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+180,1.13,0.69,1.59,1.18,2,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+200,1.25,0.72,1.64,1.25,2,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+220,1.38,0.76,1.68,1.37,2,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+240,1.50,0.80,1.72,1.44,2,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+260,1.63,0.84,1.77,1.55,3,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+280,1.75,0.88,1.81,1.62,3,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+300,1.88,0.91,1.86,1.73,3,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+320,2.00,0.95,1.90,1.81,3,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+340,2.13,0.99,1.94,1.92,3,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+360,2.25,1.02,1.99,1.99,3,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+380,2.38,1.06,2.03,2.10,3,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+400,2.50,1.10,2.08,2.18,3,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+420,2.63,1.14,2.12,2.29,3,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+440,2.75,1.17,2.16,2.36,4,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+460,2.88,1.21,2.21,2.47,4,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+480,3.00,1.25,2.25,2.55,4,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+500,3.13,1.29,2.29,2.66,4,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+520,3.25,1.32,2.34,2.73,4,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+540,3.38,1.36,2.38,2.84,4,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+560,3.50,1.40,2.42,2.92,4,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+580,3.63,1.44,2.47,3.03,4,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+600,3.75,1.48,2.51,3.10,5,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+620,3.88,1.51,2.56,3.21,5,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+640,4.00,1.55,2.60,3.28,5,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+660,4.13,1.59,2.64,3.40,5,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+680,4.25,1.63,2.69,3.47,5,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+700,4.38,1.66,2.73,3.58,5,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+720,4.50,1.70,2.77,3.65,5,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+740,4.63,1.74,2.82,3.76,5,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+760,4.75,1.77,2.86,3.84,5,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+780,4.88,1.81,2.91,3.95,6,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+800,5.00,1.85,2.95,4.02,6,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+820,5.13,1.89,2.99,4.13,6,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+840,5.25,1.92,3.04,4.21,6,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
 
-Code Compass + 200 Inspector users
+Code Compass, plus 200 Code Inspector users
 All seats run Compass. 200 of them also run Code Inspector 5 times per working day.
-Seats,Peak concurrent scans,vCPU required,App RAM (GB),Search index RAM (GB),Recommended instances,Provisioned vCPU,Provisioned RAM (GB),Deployment shape,Infrastructure USD/mo,AI usage USD/mo,Total USD/mo,Total per seat USD/mo
-20,0.70,0.56,1.44,0.44,"Standard x1",1,2,"App + index on one instance",52.74,341.25,395.19,19.76
-40,1.40,0.77,1.69,0.52,"Standard x2",2,4,"App + index on one instance",83.98,682.50,768.53,19.21
-60,2.09,0.98,1.93,0.63,"Standard x2",2,4,"App + index on one instance",90.22,1023.75,1117.22,18.62
-80,2.79,1.19,2.18,0.70,"Standard x2",2,4,"App + index on one instance",96.46,1365.00,1465.56,18.32
-100,3.49,1.40,2.42,0.81,"Standard x2",2,4,"App + index on one instance",102.95,1706.25,1814.50,18.14
-120,4.19,1.61,2.67,0.89,"Standard x2",2,4,"App + index on one instance",109.19,2047.50,2162.84,18.02
-140,4.89,1.82,2.91,1.00,"Standard x2",2,4,"App + index on one instance",115.43,2388.75,2511.53,17.94
-160,5.58,2.02,3.15,1.07,"Standard x3",3,6,"App + index on one instance",146.67,2730.00,2884.87,18.03
-180,6.28,2.23,3.40,1.18,"Standard x3",3,6,"App + index on one instance",152.91,3071.25,3233.55,17.96
-200,6.98,2.44,3.64,1.25,"Standard x3",3,6,"App + index on one instance",159.15,3412.50,3581.89,17.91
-220,7.10,2.48,3.69,1.37,"Standard x3",3,6,"App + index on one instance",162.87,3442.43,3616.67,16.44
-240,7.23,2.52,3.73,1.44,"Standard x3",3,6,"App + index on one instance",166.59,3472.35,3651.09,15.21
-260,7.35,2.56,3.77,1.55,"Standard x3",3,6,"App + index on one instance",170.56,3502.28,3686.12,14.18
-280,7.48,2.59,3.82,1.62,"Standard x3",3,6,"App + index on one instance",174.28,3532.20,3720.54,13.29
-300,7.60,2.63,3.86,1.73,"Standard x3",3,6,"App + index on one instance",178.00,3562.13,3755.32,12.52
-320,7.73,2.67,3.91,1.81,"Standard x3",3,6,"App + index on one instance",181.72,3592.05,3789.74,11.84
-340,7.85,2.71,3.95,1.92,"Standard x3",3,6,"App + index on one instance",185.44,3621.97,3824.52,11.25
-360,7.98,2.74,3.99,1.99,"Standard x3",3,6,"App + index on one instance",189.16,3651.90,3858.94,10.72
-380,8.10,2.78,4.04,2.10,"Standard x4",4,8,"App + index on one instance",217.88,3681.83,3918.72,10.31
-400,8.23,2.82,4.08,2.18,"Standard x4",4,8,"App + index on one instance",221.60,3711.75,3953.14,9.88
-420,8.35,2.86,4.12,2.29,"Standard x4",4,8,"App + index on one instance",225.32,3741.68,3987.92,9.50
-440,8.48,2.89,4.17,2.36,"Standard x4",4,8,"App + index on one instance",229.29,3771.60,4022.60,9.14
-460,8.60,2.93,4.21,2.47,"Standard x4",4,8,"App + index on one instance",233.01,3801.53,4057.37,8.82
-480,8.73,2.97,4.26,2.55,"Standard x4",4,8,"App + index on one instance",236.73,3831.45,4091.80,8.52
-500,8.85,3.01,4.30,2.66,"Standard x4",4,8,"App + index on one instance",240.45,3861.38,4126.57,8.25
-520,8.98,3.04,4.34,2.73,"Standard x4",4,8,"App + index on one instance",244.17,3891.30,4161.00,8.00
-540,9.10,3.08,4.39,2.84,"Standard x4",4,8,"App + index on one instance",247.89,3921.22,4195.77,7.77
-560,9.23,3.12,4.43,2.92,"Standard x4",4,8,"App + index on one instance",251.61,3951.15,4230.20,7.55
-580,9.35,3.16,4.47,3.03,"Standard x4",4,8,"App + index on one instance",255.33,3981.07,4264.97,7.35
-600,9.48,3.19,4.52,3.10,"Standard x4",4,8,"App + index on one instance",259.30,4011.00,4299.65,7.17
-620,9.60,3.23,4.56,3.21,"Standard x4",4,8,"App + index on one instance",263.02,4040.92,4334.42,6.99
-640,9.73,3.27,4.61,3.28,"Standard x4",4,8,"App + index on one instance",266.74,4070.85,4368.85,6.83
-660,9.85,3.31,4.65,3.40,"Standard x5",5,10,"App + index on one instance",295.46,4100.77,4428.62,6.71
-680,9.98,3.34,4.69,3.47,"Standard x5",5,10,"App + index on one instance",626.93,4130.70,4790.80,7.05
-700,10.10,3.38,4.74,3.58,"Standard x5",5,10,"App + index on one instance",630.65,4160.63,4825.57,6.89
-720,10.23,3.42,4.78,3.65,"Standard x5",5,10,"App + index on one instance",634.37,4190.55,4860.00,6.75
-740,10.35,3.46,4.82,3.76,"Standard x5",5,10,"App + index on one instance",638.09,4220.48,4894.77,6.61
-760,10.48,3.49,4.87,3.84,"Standard x5",5,10,"App + index on one instance",641.81,4250.40,4929.20,6.49
-780,10.60,3.53,4.91,3.95,"Standard x5",5,10,"App + index on one instance",645.78,4280.33,4964.22,6.36
-800,10.73,3.57,4.96,4.02,"Standard x5",5,10,"App + index on one instance",649.50,4310.25,4998.65,6.25
-820,10.85,3.61,5.00,4.13,"Standard x5",5,10,"App + index on one instance",653.22,4340.18,5033.42,6.14
-840,10.98,3.64,5.04,4.21,"Standard x5",5,10,"App + index on one instance",656.94,4370.10,5067.85,6.03
+Seats,Peak concurrent jobs,vCPU required,App RAM required (GB),Search index RAM (GB),Search index disk (GB),MANAGED: web instances,MANAGED: index host,MANAGED: total machines,MANAGED: total vCPU,MANAGED: total RAM (GB),VPS: web servers,VPS: index host,VPS: total machines,VPS: total vCPU,VPS: total RAM (GB),SERVERLESS: peak instances,SERVERLESS: warm instances,SERVERLESS: peak vCPU,SERVERLESS: peak RAM (GB),SERVERLESS: search index
+20,0.70,0.56,1.44,0.44,1,"Standard x1","on web instance",1,1,2,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+40,1.40,0.77,1.69,0.52,1,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+60,2.09,0.98,1.93,0.63,1,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+80,2.79,1.19,2.18,0.70,1,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+100,3.49,1.40,2.42,0.81,2,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+120,4.19,1.61,2.67,0.89,2,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+140,4.89,1.82,2.91,1.00,2,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+160,5.58,2.02,3.15,1.07,2,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+180,6.28,2.23,3.40,1.18,2,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+200,6.98,2.44,3.64,1.25,2,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+220,7.10,2.48,3.69,1.37,2,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+240,7.23,2.52,3.73,1.44,2,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+260,7.35,2.56,3.77,1.55,3,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+280,7.48,2.59,3.82,1.62,3,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+300,7.60,2.63,3.86,1.73,3,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+320,7.73,2.67,3.91,1.81,3,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+340,7.85,2.71,3.95,1.92,3,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+360,7.98,2.74,3.99,1.99,3,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+380,8.10,2.78,4.04,2.10,3,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+400,8.23,2.82,4.08,2.18,3,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+420,8.35,2.86,4.12,2.29,3,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+440,8.48,2.89,4.17,2.36,4,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+460,8.60,2.93,4.21,2.47,4,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+480,8.73,2.97,4.26,2.55,4,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+500,8.85,3.01,4.30,2.66,4,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+520,8.98,3.04,4.34,2.73,4,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+540,9.10,3.08,4.39,2.84,4,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+560,9.23,3.12,4.43,2.92,4,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+580,9.35,3.16,4.47,3.03,4,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+600,9.48,3.19,4.52,3.10,5,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+620,9.60,3.23,4.56,3.21,5,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+640,9.73,3.27,4.61,3.28,5,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+660,9.85,3.31,4.65,3.40,5,"Standard x5","on web instance",5,5,10,"CX43 x1","on web server",1,8,16,1,1,1,2,"managed service"
+680,9.98,3.34,4.69,3.47,5,"Standard x5","on web instance",5,5,10,"CX43 x1","on web server",1,8,16,1,1,1,2,"managed service"
+700,10.10,3.38,4.74,3.58,5,"Standard x5","on web instance",5,5,10,"CX43 x1","on web server",1,8,16,1,1,1,2,"managed service"
+720,10.23,3.42,4.78,3.65,5,"Standard x5","on web instance",5,5,10,"CX43 x1","on web server",1,8,16,1,1,1,2,"managed service"
+740,10.35,3.46,4.82,3.76,5,"Standard x5","on web instance",5,5,10,"CX43 x1","on web server",1,8,16,1,1,1,2,"managed service"
+760,10.48,3.49,4.87,3.84,5,"Standard x5","on web instance",5,5,10,"CX43 x1","on web server",1,8,16,1,1,1,2,"managed service"
+780,10.60,3.53,4.91,3.95,6,"Standard x5","on web instance",5,5,10,"CX43 x1","on web server",1,8,16,1,1,1,2,"managed service"
+800,10.73,3.57,4.96,4.02,6,"Standard x5","on web instance",5,5,10,"CX43 x1","on web server",1,8,16,1,1,1,2,"managed service"
+820,10.85,3.61,5.00,4.13,6,"Standard x5","on web instance",5,5,10,"CX43 x1","on web server",1,8,16,1,1,1,2,"managed service"
+840,10.98,3.64,5.04,4.21,6,"Standard x5","on web instance",5,5,10,"CX43 x1","on web server",1,8,16,1,1,1,2,"managed service"
 
-Code Compass + 250 Inspector users
+Code Compass, plus 250 Code Inspector users
 All seats run Compass. 250 of them also run Code Inspector 5 times per working day.
-Seats,Peak concurrent scans,vCPU required,App RAM (GB),Search index RAM (GB),Recommended instances,Provisioned vCPU,Provisioned RAM (GB),Deployment shape,Infrastructure USD/mo,AI usage USD/mo,Total USD/mo,Total per seat USD/mo
-20,0.70,0.56,1.44,0.44,"Standard x1",1,2,"App + index on one instance",52.74,341.25,395.19,19.76
-40,1.40,0.77,1.69,0.52,"Standard x2",2,4,"App + index on one instance",83.98,682.50,768.53,19.21
-60,2.09,0.98,1.93,0.63,"Standard x2",2,4,"App + index on one instance",90.22,1023.75,1117.22,18.62
-80,2.79,1.19,2.18,0.70,"Standard x2",2,4,"App + index on one instance",96.46,1365.00,1465.56,18.32
-100,3.49,1.40,2.42,0.81,"Standard x2",2,4,"App + index on one instance",102.95,1706.25,1814.50,18.14
-120,4.19,1.61,2.67,0.89,"Standard x2",2,4,"App + index on one instance",109.19,2047.50,2162.84,18.02
-140,4.89,1.82,2.91,1.00,"Standard x2",2,4,"App + index on one instance",115.43,2388.75,2511.53,17.94
-160,5.58,2.02,3.15,1.07,"Standard x3",3,6,"App + index on one instance",146.67,2730.00,2884.87,18.03
-180,6.28,2.23,3.40,1.18,"Standard x3",3,6,"App + index on one instance",152.91,3071.25,3233.55,17.96
-200,6.98,2.44,3.64,1.25,"Standard x3",3,6,"App + index on one instance",159.15,3412.50,3581.89,17.91
-220,7.68,2.65,3.89,1.37,"Standard x3",3,6,"App + index on one instance",165.39,3753.75,3930.58,17.87
-240,8.38,2.86,4.13,1.44,"Standard x3",3,6,"App + index on one instance",171.63,4095.00,4278.92,17.83
-260,8.79,2.99,4.28,1.55,"Standard x3",3,6,"App + index on one instance",176.86,4280.59,4470.91,17.20
-280,8.91,3.02,4.32,1.62,"Standard x4",4,8,"App + index on one instance",205.58,4310.51,4530.33,16.18
-300,9.04,3.06,4.36,1.73,"Standard x4",4,8,"App + index on one instance",209.30,4340.44,4565.11,15.22
-320,9.16,3.10,4.41,1.81,"Standard x4",4,8,"App + index on one instance",213.02,4370.36,4599.53,14.37
-340,9.29,3.14,4.45,1.92,"Standard x4",4,8,"App + index on one instance",216.74,4400.29,4634.31,13.63
-360,9.41,3.17,4.49,1.99,"Standard x4",4,8,"App + index on one instance",220.46,4430.21,4668.73,12.97
-380,9.54,3.21,4.54,2.10,"Standard x4",4,8,"App + index on one instance",224.18,4460.14,4703.51,12.38
-400,9.66,3.25,4.58,2.18,"Standard x4",4,8,"App + index on one instance",227.90,4490.06,4737.93,11.84
-420,9.79,3.29,4.63,2.29,"Standard x4",4,8,"App + index on one instance",231.62,4519.99,4772.71,11.36
-440,9.91,3.32,4.67,2.36,"Standard x4",4,8,"App + index on one instance",235.59,4549.91,4807.38,10.93
-460,10.04,3.36,4.71,2.47,"Standard x4",4,8,"App + index on one instance",239.31,4579.84,4842.16,10.53
-480,10.16,3.40,4.76,2.55,"Standard x4",4,8,"App + index on one instance",243.03,4609.76,4876.58,10.16
-500,10.29,3.44,4.80,2.66,"Standard x4",4,8,"App + index on one instance",246.75,4639.69,4911.36,9.82
-520,10.41,3.47,4.84,2.73,"Standard x4",4,8,"App + index on one instance",250.47,4669.61,4945.78,9.51
-540,10.54,3.51,4.89,2.84,"Standard x4",4,8,"App + index on one instance",254.19,4699.54,4980.56,9.22
-560,10.66,3.55,4.93,2.92,"Standard x4",4,8,"App + index on one instance",257.91,4729.46,5014.98,8.96
-580,10.79,3.59,4.98,3.03,"Standard x5",5,10,"App + index on one instance",286.63,4759.39,5074.76,8.75
-600,10.91,3.62,5.02,3.10,"Standard x5",5,10,"App + index on one instance",290.60,4789.31,5109.43,8.52
-620,11.04,3.66,5.06,3.21,"Standard x5",5,10,"App + index on one instance",294.32,4819.24,5144.21,8.30
-640,11.16,3.70,5.11,3.28,"Standard x5",5,10,"App + index on one instance",625.79,4849.16,5506.38,8.60
-660,11.29,3.74,5.15,3.40,"Standard x5",5,10,"App + index on one instance",629.51,4879.09,5541.16,8.40
-680,11.41,3.77,5.19,3.47,"Standard x5",5,10,"App + index on one instance",633.23,4909.01,5575.58,8.20
-700,11.54,3.81,5.24,3.58,"Standard x5",5,10,"App + index on one instance",636.95,4938.94,5610.36,8.01
-720,11.66,3.85,5.28,3.65,"Standard x5",5,10,"App + index on one instance",640.67,4968.86,5644.78,7.84
-740,11.79,3.89,5.33,3.76,"Standard x5",5,10,"App + index on one instance",644.39,4998.79,5679.56,7.68
-760,11.91,3.92,5.37,3.84,"Standard x5",5,10,"App + index on one instance",648.11,5028.71,5713.98,7.52
-780,12.04,3.96,5.41,3.95,"Standard x4",4,8,"Index on its own instance",712.08,5058.64,5809.01,7.45
-800,12.16,4.00,5.46,4.02,"Standard x4",4,8,"Index on its own instance",805.80,5088.56,5933.43,7.42
-820,12.29,4.04,5.50,4.13,"Standard x5",5,10,"Index on its own instance",834.52,5118.49,5993.21,7.31
-840,12.41,4.07,5.54,4.21,"Standard x5",5,10,"Index on its own instance",838.24,5148.41,6027.63,7.18
+Seats,Peak concurrent jobs,vCPU required,App RAM required (GB),Search index RAM (GB),Search index disk (GB),MANAGED: web instances,MANAGED: index host,MANAGED: total machines,MANAGED: total vCPU,MANAGED: total RAM (GB),VPS: web servers,VPS: index host,VPS: total machines,VPS: total vCPU,VPS: total RAM (GB),SERVERLESS: peak instances,SERVERLESS: warm instances,SERVERLESS: peak vCPU,SERVERLESS: peak RAM (GB),SERVERLESS: search index
+20,0.70,0.56,1.44,0.44,1,"Standard x1","on web instance",1,1,2,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+40,1.40,0.77,1.69,0.52,1,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+60,2.09,0.98,1.93,0.63,1,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+80,2.79,1.19,2.18,0.70,1,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+100,3.49,1.40,2.42,0.81,2,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+120,4.19,1.61,2.67,0.89,2,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+140,4.89,1.82,2.91,1.00,2,"Standard x2","on web instance",2,2,4,"CX23 x1","on web server",1,2,4,1,1,1,2,"managed service"
+160,5.58,2.02,3.15,1.07,2,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+180,6.28,2.23,3.40,1.18,2,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+200,6.98,2.44,3.64,1.25,2,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+220,7.68,2.65,3.89,1.37,2,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+240,8.38,2.86,4.13,1.44,2,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+260,8.79,2.99,4.28,1.55,3,"Standard x3","on web instance",3,3,6,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+280,8.91,3.02,4.32,1.62,3,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+300,9.04,3.06,4.36,1.73,3,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+320,9.16,3.10,4.41,1.81,3,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+340,9.29,3.14,4.45,1.92,3,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+360,9.41,3.17,4.49,1.99,3,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+380,9.54,3.21,4.54,2.10,3,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+400,9.66,3.25,4.58,2.18,3,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+420,9.79,3.29,4.63,2.29,3,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+440,9.91,3.32,4.67,2.36,4,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+460,10.04,3.36,4.71,2.47,4,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+480,10.16,3.40,4.76,2.55,4,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+500,10.29,3.44,4.80,2.66,4,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+520,10.41,3.47,4.84,2.73,4,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+540,10.54,3.51,4.89,2.84,4,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+560,10.66,3.55,4.93,2.92,4,"Standard x4","on web instance",4,4,8,"CX33 x1","on web server",1,4,8,1,1,1,2,"managed service"
+580,10.79,3.59,4.98,3.03,4,"Standard x5","on web instance",5,5,10,"CX43 x1","on web server",1,8,16,1,1,1,2,"managed service"
+600,10.91,3.62,5.02,3.10,5,"Standard x5","on web instance",5,5,10,"CX43 x1","on web server",1,8,16,1,1,1,2,"managed service"
+620,11.04,3.66,5.06,3.21,5,"Standard x5","on web instance",5,5,10,"CX43 x1","on web server",1,8,16,1,1,1,2,"managed service"
+640,11.16,3.70,5.11,3.28,5,"Standard x5","on web instance",5,5,10,"CX43 x1","on web server",1,8,16,1,1,1,2,"managed service"
+660,11.29,3.74,5.15,3.40,5,"Standard x5","on web instance",5,5,10,"CX43 x1","on web server",1,8,16,1,1,1,2,"managed service"
+680,11.41,3.77,5.19,3.47,5,"Standard x5","on web instance",5,5,10,"CX43 x1","on web server",1,8,16,1,1,1,2,"managed service"
+700,11.54,3.81,5.24,3.58,5,"Standard x5","on web instance",5,5,10,"CX43 x1","on web server",1,8,16,1,1,1,2,"managed service"
+720,11.66,3.85,5.28,3.65,5,"Standard x5","on web instance",5,5,10,"CX43 x1","on web server",1,8,16,1,1,1,2,"managed service"
+740,11.79,3.89,5.33,3.76,5,"Standard x5","on web instance",5,5,10,"CX43 x1","on web server",1,8,16,1,1,1,2,"managed service"
+760,11.91,3.92,5.37,3.84,5,"Standard x5","on web instance",5,5,10,"CX43 x1","on web server",1,8,16,1,1,1,2,"managed service"
+780,12.04,3.96,5.41,3.95,6,"Standard x4","Pro x1",5,6,12,"CX33 x1","CX23 x1",2,6,12,1,1,1,2,"managed service"
+800,12.16,4.00,5.46,4.02,6,"Standard x4","Pro Plus x1",5,8,16,"CX33 x1","CX33 x1",2,8,16,1,1,1,2,"managed service"
+820,12.29,4.04,5.50,4.13,6,"Standard x5","Pro Plus x1",6,9,18,"CX43 x1","CX33 x1",2,12,24,1,1,1,2,"managed service"
+840,12.41,4.07,5.54,4.21,6,"Standard x5","Pro Plus x1",6,9,18,"CX43 x1","CX33 x1",2,12,24,1,1,1,2,"managed service"
