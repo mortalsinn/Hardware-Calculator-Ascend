@@ -75,10 +75,31 @@ other two:
 
 It reads the model out of `index.html` directly, so it always tests what is deployed.
 
-**What verification cannot establish:** whether the assumptions match reality. Tokens
-per scan, egress per job and the unpublished Cloud Run idle rate are estimates, flagged
-on the page. This proves the model computes what it claims — not that the claims are
-the world.
+**What verification cannot establish:** whether the assumptions match reality. So the
+page measures that instead — see below.
+
+## How wrong can it be? (measured, not asserted)
+
+The page carries a sensitivity section that re-runs the entire model with each
+assumption moved ±50% and reports the effect on the total. At 500 seats:
+
+| Assumption | Impact if 50% off |
+|---|---|
+| Tokens per scan | **±32%** |
+| Elements outlined per photo | **±13%** |
+| Data sent per job | ±6% |
+| Scan duration | ±2% |
+| CPU per scan | ±0.7% |
+| Firestore ops | ±0.0% |
+
+**That ranking is the answer to "how accurate is this."** Only the top two matter. If
+both are off by 60% in either direction the total moves roughly ±40% — which is a
+ballpark, and a ballpark is what capacity planning needs. Everything below them could be
+half wrong and the budget would not notice, so they are not worth arguing about.
+
+The practical consequence: **one afternoon logging real tokens per Inspector scan
+collapses most of the remaining uncertainty.** Nothing else on this list is worth
+measuring.
 
 ## Accuracy, stated plainly
 

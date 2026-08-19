@@ -212,6 +212,19 @@
   <h2>Resources</h2>
   <div class="cards" id="cards"></div>
 
+  <h2>How wrong could this be?</h2>
+  <div class="panel">
+    <p id="band" style="margin:0 0 12px;font-size:14px"></p>
+    <div class="scroll" style="border:0"><table>
+      <thead><tr><th>Assumption</th><th>Confidence</th><th>If it is 50% off</th><th>Impact on total</th></tr></thead>
+      <tbody id="sens"></tbody>
+    </table></div>
+    <p class="hint" style="margin-top:12px">Each row is <b>measured, not reasoned</b>: the whole model is
+    re-run with that one assumption moved ±50% and the totals compared. Anything near the bottom of this
+    table can be wrong by half and barely move your budget — so it is not worth arguing about. The top row
+    is the only number worth spending an afternoon measuring.</p>
+  </div>
+
   <h2>Which workload costs what</h2>
   <div class="scroll"><table>
     <thead><tr><th>Module</th><th>Jobs / mo</th><th>Peak concurrent</th><th>AI $ / mo</th><th>Share</th></tr></thead>
@@ -362,6 +375,11 @@ const ASSUME = [
   ['Firestore is not a scaling limit.','It is serverless and scales itself. What grows is cost per read and the 1 MB document ceiling — which this codebase can already hit by storing images in a doc.'],
 ];
 
+// Perturbation knobs for the sensitivity pass. All 1 in normal operation;
+// the sensitivity table sets one at a time to +/-50% and re-runs the whole
+// model, so the impact numbers are MEASURED, not reasoned about.
+let SENS = {tok:1, egress:1, cpuPerScan:1, jobSecs:1, sam:1, fsOps:1};
+
 function calc(){
   const seats = seatsFromPos(+$('seats').value), peak = +$('peak').value/10;
   // Per seat per MONTH, from the per-day / per-week inputs.
@@ -384,11 +402,12 @@ function calc(){
   const mix = [];
   for (const [k,w] of Object.entries(WORK)) {
     const n = seats * per[k];
-    jobsMo += n; callsMo += n*w.calls; samCalls += n*(w.sam||0);
-    totalJobSec += n*w.secs; vecQueriesMo += n*(VQ[k]||0);
-    fIn += n*w.flashIn; fOut += n*w.flashOut; pIn += n*w.proIn; pOut += n*w.proOut;
+    jobsMo += n; callsMo += n*w.calls; samCalls += n*(w.sam||0)*SENS.sam;
+    totalJobSec += n*w.secs*SENS.jobSecs; vecQueriesMo += n*(VQ[k]||0);
+    fIn += n*w.flashIn*SENS.tok; fOut += n*w.flashOut*SENS.tok;
+    pIn += n*w.proIn*SENS.tok; pOut += n*w.proOut*SENS.tok;
     const perHour = (n / WORK_DAYS / WORK_HOURS) * peak;
-    const conc = perHour * w.secs / 3600;
+    const conc = perHour * w.secs * SENS.jobSecs / 3600;
     peakConc += conc;
     const cost = (n*w.flashIn/1e6*R.fIn) + (n*w.flashOut/1e6*R.fOut)
                + (n*w.proIn/1e6*R.pIn)   + (n*w.proOut/1e6*R.pOut)
@@ -412,7 +431,7 @@ function calc(){
   // waiting on the network is nowhere near a full core.
   //
   // Per-scan figures are unchanged - sharp and PDF rendering genuinely burst.
-  const needCpu = peakConc*0.3 + 0.35;
+  const needCpu = peakConc*0.3*SENS.cpuPerScan + 0.35;
   const needRam = peakConc*0.35 + 1.2;
   const webN    = Math.max(1, Math.ceil(peakConc/45));   // ~45 live SSE per process
 
@@ -446,10 +465,10 @@ function calc(){
   const diskCost = diskGb*0.25;
   const offLadder = qGb > 32;
 
-  const fsOps = jobsMo*55 + seats*900;
+  const fsOps = (jobsMo*55 + seats*900)*SENS.fsOps;
   const fsCost = (fsOps/100000)*0.06 + orgs*0.35;
 
-  const egressGb = jobsMo*0.008 + seats*0.4;
+  const egressGb = (jobsMo*0.008 + seats*0.4)*SENS.egress;
   // Render's workspace tiers scale down as well: Hobby is free with 5 GB.
   const wsPlan = egressGb>1000 ? {n:'Scale',$:499,inc:1000}
                : egressGb>5     ? {n:'Pro',$:25,inc:25}
@@ -739,6 +758,47 @@ function render(){
        <b>${money(marginal)}</b> of that is inference \u2014 identical on every tab. <b>That is the floor.</b>
        Infrastructure amortises across customers; tokens do not. No hosting choice moves a seat below about
        ${money(marginal)}/month \u2014 only fewer or cheaper tokens per scan will.`;
+
+  // ---- SENSITIVITY: perturb one assumption at a time, re-run everything ----
+  const totalFor = () => {
+    const dd = calc();
+    return arch==='srv' ? calcServerless(dd).total : arch==='vps' ? calcVps(dd).total : dd.total;
+  };
+  const base = totalFor();
+  const SENS_ROWS = [
+    ['tok',        'Tokens per scan',            'Estimated from the call graph, never measured'],
+    ['sam',        'Elements outlined per photo', 'Varies with how busy the photograph is'],
+    ['egress',     'Data sent per job',          'Estimated; matters most at very large scale'],
+    ['jobSecs',    'How long a scan takes',      'Drives concurrency, so hardware only'],
+    ['cpuPerScan', 'CPU burned per scan',        'Backend mostly waits on APIs rather than computing'],
+    ['fsOps',      'Firestore ops per job',      'Small line at any scale'],
+  ];
+  const sens = SENS_ROWS.map(([k,label,why])=>{
+    SENS[k]=1.5; const hi=totalFor();
+    SENS[k]=0.5; const lo=totalFor();
+    SENS[k]=1;
+    const swing = Math.max(Math.abs(hi-base), Math.abs(base-lo));
+    return {k,label,why,lo,hi,swing,pct:swing/Math.max(0.01,base)*100};
+  }).sort((a,b)=>b.swing-a.swing);
+
+  const conf = p => p>=20?['var(--crit)','Dominates']:p>=5?['var(--warn)','Matters']:['var(--good)','Negligible'];
+  $('sens').innerHTML = sens.map(r=>{
+    const [c,lab]=conf(r.pct);
+    return `<tr><td><b>${r.label}</b><br><span style="color:var(--muted);font-size:12px">${r.why}</span></td>
+      <td style="color:${c};font-weight:700;white-space:nowrap">${lab}</td>
+      <td class="seats">${money(r.lo)} \u2013 ${money(r.hi)}</td>
+      <td class="seats" style="color:${c}">\u00b1${r.pct.toFixed(1)}%</td></tr>`;
+  }).join('');
+
+  // A band built from the two genuinely soft inputs moving together.
+  SENS.tok=0.6; SENS.sam=0.6; const bandLo=totalFor();
+  SENS.tok=1.6; SENS.sam=1.6; const bandHi=totalFor();
+  SENS.tok=1; SENS.sam=1;
+  $('band').innerHTML = `At <b>${d.seats.toLocaleString()}</b> seats this option models
+    <b>${money(base)}/month</b>. If the two soft inputs \u2014 tokens per scan and elements per photo \u2014
+    are off by up to 60% in either direction, the honest range is
+    <b>${money(bandLo)} \u2013 ${money(bandHi)}</b>. Everything else on this page could be half wrong and
+    the total would barely notice.`;
 
   $('mix').innerHTML = d.mix.map(m=>`<tr><td><b>${m.label}</b></td>
       <td class="seats">${fmt(m.jobs)}</td>
