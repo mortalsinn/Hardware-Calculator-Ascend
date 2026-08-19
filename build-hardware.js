@@ -141,15 +141,17 @@ for (const sc of SCENARIOS) data[sc.key] = SEATS.map(n => row(n, Math.min(sc.ins
 
 // ---------------------------------------------------------------- CSV
 const HEAD = ['Seats',
-  'Peak concurrent jobs (low usage)','Peak concurrent jobs (high usage)',
+  'Jobs running at once - quiet usage','Jobs running at once - busy usage',
   'vCPU required (high)','App RAM required GB (high)','Search index RAM GB','Search index disk GB',
-  'A App Service: web plan','A App Service: tier','A App Service: index host','A: total machines','A: total vCPU','A: total RAM GB',
-  'B Virtual Machines: web','B Virtual Machines: index host','B: total machines','B: total vCPU','B: total RAM GB',
-  'C Container Apps: peak replicas','C: warm replicas','C: replica vCPU','C: replica RAM GB','C: index host','C: total machines',
+  'A App Service: web tier (size x how many)','A App Service: plan tier','A App Service: index host (size x how many)','A: machines to buy (web + index)','A: total vCPU','A: total RAM GB',
+  'B VMs: web tier (size x how many)','B VMs: index host (size x how many)','B: machines to buy (web + index)','B: total vCPU','B: total RAM GB',
+  'C Container Apps: peak replicas (platform-managed)','C: warm replicas','C: vCPU per replica','C: RAM GB per replica','C: index host (size x how many)','C: machines to buy (index only)',
   'Azure AI Search tier (alternative to self-hosting)','AI Search partitions','AI Search vector quota needed GB'];
 
 const csv = [];
 csv.push('AscendOS - Hardware Requirements by Seat Count');
+csv.push('"Jobs running at once" = searches and scans in flight at the SAME INSTANT during the busiest hour. Not jobs per day, not users signed in. Shown as a range because usage is a range; all hardware is sized on the busy figure.');
+csv.push('"Machines to buy" = things ShiftIT provisions, summed: application tier + search index host. On Container Apps the replicas are NOT counted - the platform starts and stops those itself, so only the index is a standing machine.');
 csv.push('Hardware specification only, on Microsoft Azure. Three deployment options: A App Service (PaaS), B Virtual Machines, C Container Apps.');
 csv.push(`Usage: Code Compass ${USAGE.low.compass}-${USAGE.high.compass} searches per seat per working day. Code Inspector ${USAGE.low.inspector}-${USAGE.high.inspector} scans per user per working day.`);
 csv.push('Hardware columns are sized on the HIGH end of that range. Peak hour sized at 3x the daily average.');
@@ -166,7 +168,7 @@ for (const sc of SCENARIOS) {
       h.vcpu.toFixed(2), h.appRam.toFixed(2), h.indexGb.toFixed(2), h.indexDisk,
       `"${h.azAppWeb}"`, `"${h.azAppTier}"`, `"${h.azAppIdx}"`, h.azAppMachines, h.azAppCpu, h.azAppRam,
       `"${h.azVmWeb}"`, `"${h.azVmIdx}"`, h.azVmMachines, h.azVmCpu, h.azVmRam,
-      h.azCaPeak, h.azCaWarm, h.azCaCpu, h.azCaRam, `"${h.azCaIdx}"`, h.azCaMachines,
+      h.azCaPeak, h.azCaWarm, 1, 2, `"${h.azCaIdx}"`, h.azCaMachines - h.azCaPeak,
       `"${h.azSearchTier}"`, h.azSearchPart, h.azSearchGb].join(','));
   }
   csv.push('');

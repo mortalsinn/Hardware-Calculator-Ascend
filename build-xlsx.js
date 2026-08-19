@@ -41,6 +41,11 @@ const readme = { name:'Read Me', cols:[3,110], rows:[
   ['',NOTE('Peak hour is sized at 3x the flat daily average, because real usage clusters at the start of the day and after lunch rather than spreading evenly.')],
   ['',NOTE(`Usage is a range, so every row is computed twice. All hardware figures follow the HIGH bound (${USAGE.high.compass} searches, ${USAGE.high.inspector} scans) — a fleet sized on average usage is under-provisioned on every busy day. The low bound appears beside it in the concurrency columns.`)],
   [],
+  ['',B('Two column names worth pinning down')],
+  ['',NOTE('"Jobs at once" - the number of searches and photo scans in flight at the SAME INSTANT, at the busiest moment of the busiest day. Not jobs per day, and not people signed in. A search holds a CPU core for a second or two and then releases it, which is why a few thousand searches a day resolve to a handful running simultaneously. This is the figure that determines hardware. It appears as two columns because usage is a range, and every machine figure is sized on the busier of the two.')],
+  ['',NOTE('"Machines to buy" - everything ShiftIT would actually provision, added together: the application tier plus the machine holding the search index. On App Service that is N plan instances plus one index VM. On Virtual Machines it is the web servers plus an index server, or one server carrying both at small scale. On Container Apps only the index counts, because the platform starts and stops replicas itself - counting those would imply a standing fleet that does not exist.')],
+  ['',NOTE('These are CAPACITY figures, not availability figures. A single instance of anything is a single point of failure; designing for redundancy would at minimum double the application tier and is a separate decision.')],
+  [],
   ['',B('Reading the tables')],
   ['',NOTE('"Required" is what the model computes. The machine columns show the smallest sensible allocation covering it, which is almost always more — that gap is deliberate headroom, not waste.')],
   ['',NOTE('App RAM and index RAM are never summed. Application memory scales with concurrent jobs; the index is a fixed working set that grows with the corpus. On options A and C they are always on different machines.')],
@@ -74,8 +79,8 @@ const summary = { name:'Summary', freeze:{y:4}, cols:[8,34,11,14,9,9,9,14,9,9,9,
   [B('Note'),NOTE('On options A and C the search index is always a separate machine — neither App Service nor Container Apps has block storage. Option B is the only one where it can share the web machine, and only at small scale.')],
 ]};
 
-function optionSheet(name, title, blurb, header, widths, rowFor, splitKey) {
-  const rows = [[T(title)],[NOTE(blurb)],[]];
+function optionSheet(name, title, blurb, header, widths, rowFor, splitKey, machinesNote) {
+  const rows = [[T(title)],[NOTE(blurb)],[], ...HOW_TO_READ(machinesNote)];
   for (const sc of SCENARIOS) {
     rows.push([[sc.title,S.band], ...header.slice(1).map(()=>['',S.band])]);
     rows.push([[sc.sub,S.note]]);
@@ -88,12 +93,23 @@ function optionSheet(name, title, blurb, header, widths, rowFor, splitKey) {
     rows.push([]);
   }
   if (splitKey) rows.push([B('Shaded rows'),NOTE('the search index moves onto its own machine here')]);
-  return { name, cols:widths, freeze:{y:3}, rows };
+  return { name, cols:widths, freeze:{y:7}, rows };
 }
 const cc = r => [N1(+r.lo.concurrent.toFixed(1)), N1(+r.hi.concurrent.toFixed(1))];
 
-const HW_H = ['Seats','Peak conc. low','Peak conc. high','Web tier','Index host','Machines','Total vCPU','Total RAM GB','Index disk GB'];
-const HW_W = [8,13,13,18,18,11,11,13,13];
+const HW_H = ['Seats','Jobs at once (quiet usage)','Jobs at once (busy usage)',
+  'Web tier (size x how many)','Index host (size x how many)','Machines to buy (web + index)',
+  'Total vCPU (all machines)','Total RAM GB (all machines)','Index disk GB'];
+const HW_W = [8,15,15,20,20,15,14,14,12];
+
+// Repeated at the top of every option sheet: the two column names that are not
+// self-explanatory, in plain words, before any numbers appear.
+const HOW_TO_READ = (verb) => ([
+  [B('How to read this sheet')],
+  [NOTE('"Jobs at once" - searches and photo scans in flight at the SAME INSTANT, at the busiest moment of the busiest day. Not jobs per day, and not people signed in. A job holds a CPU core for only a second or two, so this is what determines the hardware. Two columns because usage is a range; everything to the right is sized on the busy figure.')],
+  [NOTE(verb)],
+  []
+]);
 
 const appService = optionSheet('A - App Service',
   'Option A — Azure App Service (Premium v3)',
@@ -101,7 +117,8 @@ const appService = optionSheet('A - App Service',
   HW_H, HW_W,
   r => { const h=r.hi; return [[r.seats,S.left],...cc(r),[h.azAppWeb,S.left],[h.azAppIdx,S.left],
     [h.azAppMachines,S.num1],[h.azAppCpu,S.num1],[h.azAppRam,S.num1],[h.indexDisk,S.num1]]; },
-  null);
+  null,
+  '"Machines to buy" - App Service plan instances plus the one VM holding the search index. "P0v3 x7" means seven instances of 1 vCPU / 4 GB each; with the index VM that is 8 machines.');
 
 const vms = optionSheet('B - Virtual Machines',
   'Option B — Azure Virtual Machines (Bsv2 burstable)',
@@ -110,16 +127,19 @@ const vms = optionSheet('B - Virtual Machines',
   (r,split) => { const h=r.hi, st=split?S.split:S.num1, lt=split?S.split:S.left;
     return [[r.seats,lt],...cc(r),[h.azVmWeb,lt],[h.azVmIdx,lt],
       [h.azVmMachines,st],[h.azVmCpu,st],[h.azVmRam,st],[h.indexDisk,st]]; },
-  'azVmColocated');
+  'azVmColocated',
+  '"Machines to buy" - web servers plus the index server, or a single server carrying both at small scale. Where the index host reads "on web server" the count is 1, and both workloads share it.');
 
 const containerApps = optionSheet('C - Container Apps',
   'Option C — Azure Container Apps',
   'Replicas exist only while requests are in flight and scale to zero. Allocation is fixed at 1 vCPU : 2 GiB, capped at 4 vCPU / 8 GiB per replica. Replica count follows a configured concurrency threshold, not a platform limit — Container Apps has no per-replica request cap. One replica absorbs this whole range at the assumed 45 concurrent requests per replica; for availability rather than capacity, run at least two. The index cannot live here and needs its own machine at every seat count.',
-  ['Seats','Peak conc. low','Peak conc. high','Peak replicas','Warm replicas','Replica vCPU','Replica RAM GB','Index host (separate)','Total machines'],
-  [8,13,13,13,13,12,14,20,13],
+  ['Seats','Jobs at once (quiet usage)','Jobs at once (busy usage)','Peak replicas (platform-managed)',
+   'Warm replicas','vCPU per replica','RAM GB per replica','Index host (size x how many)','Machines to buy (index only)'],
+  [8,15,15,18,13,13,14,20,15],
   r => { const h=r.hi; return [[r.seats,S.left],...cc(r),[h.azCaPeak,S.num1],[h.azCaWarm,S.num1],
-    [h.azCaCpu,S.num1],[h.azCaRam,S.num1],[h.azCaIdx,S.left],[h.azCaMachines,S.num1]]; },
-  null);
+    [1,S.num1],[2,S.num1],[h.azCaIdx,S.left],[h.azCaMachines - h.azCaPeak,S.num1]]; },
+  null,
+  '"Machines to buy" - the index host ONLY. Replicas are not machines you provision: Container Apps starts and stops them as traffic moves, and bills by request. The peak replica column says how many run at the busiest moment, not what you order.');
 
 const indexSheet = { name:'Search index', freeze:{y:9}, cols:[8,13,13,20,18,11,16], rows:[
   [T('The search index — the one forced decision')],

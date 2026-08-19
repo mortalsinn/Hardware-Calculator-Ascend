@@ -10,6 +10,11 @@ const xb64 = fs.existsSync(XLSX_PATH) ? fs.readFileSync(XLSX_PATH).toString('bas
 const U = `${USAGE.low.compass}–${USAGE.high.compass}`;
 const I = `${USAGE.low.inspector}–${USAGE.high.inspector}`;
 const KEY_SEATS = [100, 200, 400, 600, 840];
+const jobs = (lo, hi) => `<b>${lo.concurrent.toFixed(1)} &ndash; ${hi.concurrent.toFixed(1)} jobs running at once</b> means that at the
+  busiest moment of the busiest hour, that many searches and scans are in flight simultaneously &mdash;
+  not per day, and not the number of people signed in. The pair is a range because usage is: the
+  lower figure assumes ${USAGE.low.compass} searches per seat per day, the higher assumes ${USAGE.high.compass}. Everything to the
+  right of it is sized on the higher figure.`;
 const at = (k,n) => data[k][SEATS.indexOf(n)];
 const last = k => data[k][data[k].length-1].hi;
 const lastLo = k => data[k][data[k].length-1].lo;
@@ -35,19 +40,32 @@ ${rows.map((r,i)=>`<tr${flags[i]?' class="split"':''}>${cells(r, flags[i]).map((
 
 const conc = r => [`${r.lo.concurrent.toFixed(1)} <span class="dash">&ndash;</span> ${r.hi.concurrent.toFixed(1)}`];
 
-const HW_COLS = [['Seats','t'],['Peak concurrent<br><span class="lt">low &ndash; high</span>','rng'],
-  ['Web tier','t'],['Index host','t'],['Machines',''],['Total<br>vCPU',''],['Total<br>RAM GB',''],['Index<br>disk GB','']];
-const CA_COLS = [['Seats','t'],['Peak concurrent<br><span class="lt">low &ndash; high</span>','rng'],
-  ['Peak<br>replicas',''],['Warm<br>replicas',''],['Replica<br>vCPU',''],['Replica<br>RAM GB',''],
-  ['Index host<br><span class="lt">separate machine</span>','t'],['Machines','']];
+const CONC_H = `Jobs running at once<br><span class="lt">quiet usage &rarr; busy usage</span>`;
+const HW_COLS = [['Seats','t'],[CONC_H,'rng'],
+  ['Web tier<br><span class="lt">size &times; how many</span>','t'],
+  ['Index host<br><span class="lt">size &times; how many</span>','t'],
+  ['Machines to buy<br><span class="lt">web + index</span>',''],
+  ['Total vCPU<br><span class="lt">across all</span>',''],
+  ['Total RAM GB<br><span class="lt">across all</span>',''],['Index<br>disk GB','']];
+// Container Apps replicas are NOT machines anyone buys -- they come and go with
+// traffic. Adding them to a machine count implied a standing fleet that does
+// not exist. Only the index is a machine on this option.
+const CA_COLS = [['Seats','t'],[CONC_H,'rng'],
+  ['Peak replicas<br><span class="lt">at busiest moment</span>',''],
+  ['Warm replicas<br><span class="lt">kept alive</span>',''],
+  ['vCPU per<br>replica',''],['RAM GB per<br>replica',''],
+  ['Index host<br><span class="lt">size &times; how many</span>','t'],
+  ['Machines to buy<br><span class="lt">index only</span>','']];
 const IX_COLS = [['Seats','t'],['Index<br>RAM GB',''],['Index<br>disk GB',''],
   ['Self-hosted VM<br><span class="lt">Qdrant</span>','t'],['AI Search tier<br><span class="lt">alternative</span>','t'],
   ['Partitions',''],['Vector quota<br>needed GB','']];
 
-const optionPanel = (id, letter, title, blurb, cols, cells, splitKey, foot) => `
+const WORKED_SEATS = 400;
+const optionPanel = (id, letter, title, blurb, cols, cells, splitKey, foot, worked) => `
 <section class="panel" id="p-${id}">
   <h2><span class="badge">${letter}</span>${title}</h2>
   <p class="lede">${blurb}</p>
+  <div class="note worked"><b>How to read a row.</b> ${worked(at('insp250', WORKED_SEATS).lo, at('insp250', WORKED_SEATS).hi)}</div>
   ${SCENARIOS.map(sc => `<div class="block">
     <h3>${esc(sc.title)}</h3>
     <p class="sub">${esc(sc.sub)}</p>
@@ -110,6 +128,11 @@ const page = `<!doctype html>
  .note{border-left:3px solid var(--accent);background:var(--panel);padding:11px 15px;
    margin:16px 0;font-size:13px;color:var(--mut);max-width:88ch}
  .note b{color:var(--ink)}
+ .note.worked{border-left-color:#7a9a3f;background:var(--panel)}
+ .note.legend dl{margin:0}
+ .note.legend dt{margin-top:9px;font-size:13px}
+ .note.legend dd{margin:1px 0 0}
+ @media (prefers-color-scheme:dark){.note.worked{border-left-color:#9dbd5f}}
  dl{margin:0;font-size:13px;color:var(--mut);max-width:88ch}
  dt{font-weight:600;color:var(--ink);margin-top:12px}
  dd{margin:2px 0 0}
@@ -188,6 +211,21 @@ If the download button does nothing, this page is inside a sandbox that blocks d
     <p>Both need ${last('insp250').azAppMachines} machines on App Service. They differ lower down the range.</p></div>
   </div>
 
+  <div class="note legend"><b>Two column names worth pinning down before you read the tabs.</b>
+  <dl style="margin-top:7px">
+   <dt>&ldquo;Jobs running at once&rdquo;</dt>
+   <dd>The number of searches and scans <em>in flight at the same instant</em>, at the busiest moment of the
+   busiest hour. Not jobs per day, and not people signed in &mdash; a search holds a CPU core for a second or
+   two and then lets go, so this is what actually determines how much hardware you need. It is shown as a
+   range because usage is a range: the lower number assumes ${USAGE.low.compass} searches per seat per day, the higher
+   assumes ${USAGE.high.compass}. <b>Every machine figure is sized on the higher one.</b></dd>
+   <dt>&ldquo;Machines to buy&rdquo;</dt>
+   <dd>Physical things ShiftIT would provision, added up: the application tier plus the search index host.
+   On App Service and Container Apps the index is always its own machine, so it is always at least +1.
+   On Container Apps the replicas are <em>not</em> counted &mdash; the platform starts and stops those on its own,
+   and only the index is a standing machine.</dd>
+  </dl></div>
+
   <div class="note"><b>Does Azure change the requirement? No.</b> Peak concurrency, cores, memory and
   disk are properties of the workload, not the vendor &mdash; those columns are identical whoever hosts it.
   What Azure changes is the ladder of purchasable units, and two things about the deployment&rsquo;s shape:
@@ -219,19 +257,36 @@ ${optionPanel('a','A','App Service &mdash; managed platform (PaaS)',
  'Premium v3 instances behind the platform&rsquo;s own load balancer. Premium rather than Standard is deliberate: HTTP-driven autoscaling is Premium-only, Standard cannot be made zone-redundant, and Standard caps at 10 instances &mdash; a ceiling this range reaches. P0v3 (1 vCPU / 4 GB) is the scaling unit because 1-core steps waste the least; <b>P1v3 or P2v3 substitute directly at half or a quarter of the count.</b> The search index is always a separate machine here &mdash; see the Search index tab.',
  HW_COLS, r => { const h=r.hi; return [`<b>${r.seats}</b>`, ...conc(r), esc(h.azAppWeb), esc(h.azAppIdx), h.azAppMachines, h.azAppCpu, h.azAppRam, h.indexDisk]; },
  null,
- 'Instance count stays well inside the 30-instance Premium v3 limit across this whole range. Zone redundancy, if required, enforces a minimum of two instances and bills for both.')}
+ 'Instance count stays well inside the 30-instance Premium v3 limit across this whole range. Zone redundancy, if required, enforces a minimum of two instances and bills for both.',
+ (lo,hi) => `Take the <b>${WORKED_SEATS}-seat</b> row. ${jobs(lo,hi)}
+  To carry that you run <b>${esc(hi.azAppWeb)}</b> &mdash; ${hi.azAppWeb.split(' x')[1]} App Service instances, each 1 vCPU and 4 GB &mdash;
+  and <b>one separate VM</b> (${esc(hi.azAppIdx)}) holding the search index, because App Service cannot store it.
+  So you are buying <b>${hi.azAppMachines} machines</b> in total: ${hi.azAppWeb.split(' x')[1]} for the app plus 1 for the index.
+  Added up that is <b>${hi.azAppCpu} vCPU and ${hi.azAppRam} GB</b>.`)}
 
 ${optionPanel('b','B','Virtual Machines &mdash; raw infrastructure',
  'Bsv2 burstable VMs, the right family for this workload: short CPU spikes on a low average. B2s_v2 and larger bank credits at a 40% base, and average utilisation here sits well below that, so credits accumulate rather than drain. <b>Note there is no Azure equivalent of AWS &ldquo;Unlimited&rdquo; mode</b> &mdash; an exhausted credit bank throttles to base and cannot be bought past. Sized for fewest machines, since operating them is the real cost of this option.',
  HW_COLS, r => { const h=r.hi; return [`<b>${r.seats}</b>`, ...conc(r), esc(h.azVmWeb), esc(h.azVmIdx), h.azVmMachines, h.azVmCpu, h.azVmRam, h.indexDisk]; },
  'azVmColocated',
- 'Shaded rows are where the search index moves onto its own VM. This is the only option of the three where it can share the web machine at all, because it is the only one with block storage.')}
+ 'Shaded rows are where the search index moves onto its own VM. This is the only option of the three where it can share the web machine at all, because it is the only one with block storage.',
+ (lo,hi) => `Take the <b>${WORKED_SEATS}-seat</b> row. ${jobs(lo,hi)}
+  To carry that you run <b>${esc(hi.azVmWeb)}</b> for the application${hi.azVmColocated
+    ? `, with the search index sitting on that same server &mdash; still small enough to fit`
+    : `, plus <b>${esc(hi.azVmIdx)}</b> holding the search index on its own`}.
+  So you are buying <b>${hi.azVmMachines} machine${hi.azVmMachines>1?'s':''}</b>, totalling
+  <b>${hi.azVmCpu} vCPU and ${hi.azVmRam} GB</b>.`)}
 
 ${optionPanel('c','C','Container Apps &mdash; request-scaled containers',
  'Replicas exist only while requests are in flight and scale to zero. Allocation is fixed at a 1 vCPU : 2 GiB ratio, capped at 4 vCPU / 8 GiB per replica. <b>This option is unavoidably a hybrid:</b> Container Apps offers only ephemeral storage and Azure Files, so the search index cannot live here and needs its own machine regardless. Replica count follows a configured concurrency threshold, not a platform limit &mdash; Container Apps has no per-replica request cap.',
- CA_COLS, r => { const h=r.hi; return [`<b>${r.seats}</b>`, ...conc(r), h.azCaPeak, h.azCaWarm, h.azCaCpu, h.azCaRam, esc(h.azCaIdx), h.azCaMachines]; },
+ CA_COLS, r => { const h=r.hi; return [`<b>${r.seats}</b>`, ...conc(r), h.azCaPeak, h.azCaWarm, 1, 2, esc(h.azCaIdx), h.azCaMachines - h.azCaPeak]; },
  null,
- 'One replica absorbs this whole range at the assumed 45 concurrent requests per replica. For availability rather than capacity, run at least two.')}
+ 'One replica absorbs this whole range at the assumed 45 concurrent requests per replica. For availability rather than capacity, run at least two.',
+ (lo,hi) => `Take the <b>${WORKED_SEATS}-seat</b> row. ${jobs(lo,hi)}
+  Container Apps starts and stops replicas by itself as traffic moves, so <b>you do not buy replicas</b> &mdash;
+  <b>${hi.azCaPeak}</b> is simply how many are running at the busiest moment, each 1 vCPU and 2 GB.
+  The only machine you actually buy on this option is the one holding the search index
+  (<b>${esc(hi.azCaIdx)}</b>), because Container Apps has nowhere to store it.
+  So: <b>${hi.azCaMachines - hi.azCaPeak} standing machine</b>, and the web tier bills by traffic instead.`)}
 
 <section class="panel" id="p-index">
   <h2><span class="badge">&#9679;</span>Search index &mdash; the one real decision</h2>
