@@ -118,11 +118,22 @@ function shape(seats, inspectorSeats, u) {
   };
 }
 
-const row = (seats, inspectorSeats) => ({
-  seats,
-  lo: shape(seats, inspectorSeats, USAGE.low),
-  hi: shape(seats, inspectorSeats, USAGE.high),
-});
+// The chain a reader can follow: jobs a day -> jobs in the busy hour -> jobs
+// running at the same moment. Showing only the last number made it look like
+// an arbitrary figure; showing the steps makes it obvious.
+const WORK_HOURS = 8, PEAK_MULTIPLE = 3;
+
+const row = (seats, inspectorSeats) => {
+  const perDay = seats * USAGE.high.compass
+               + Math.min(inspectorSeats, seats) * USAGE.high.inspector;
+  return {
+    seats,
+    jobsPerDay: Math.round(perDay),
+    jobsPerBusyHour: Math.round(perDay / WORK_HOURS * PEAK_MULTIPLE),
+    lo: shape(seats, inspectorSeats, USAGE.low),
+    hi: shape(seats, inspectorSeats, USAGE.high),
+  };
+};
 
 const SEATS = [];
 for (let n = 20; n <= 840; n += 20) SEATS.push(n);
@@ -141,18 +152,20 @@ for (const sc of SCENARIOS) data[sc.key] = SEATS.map(n => row(n, Math.min(sc.ins
 
 // ---------------------------------------------------------------- CSV
 // Requirements only. What the software needs; not what to buy.
-const HEAD = ['Seats (reference)',
-  'Compass only: jobs at once (quiet usage)','Compass only: jobs at once (busy usage)',
-  'Compass only: vCPU required','Compass only: RAM GB required',
-  'All modules: jobs at once (quiet usage)','All modules: jobs at once (busy usage)',
-  'All modules: vCPU required','All modules: RAM GB required',
+const HEAD = ['Seats',
+  'Compass only: searches per day','Compass only: searches in the busiest hour',
+  'Compass only: running at the same time','Compass only: vCPU required','Compass only: RAM GB required',
+  'All modules: jobs per day','All modules: jobs in the busiest hour',
+  'All modules: running at the same time','All modules: vCPU required','All modules: RAM GB required',
   'Search index: RAM GB','Search index: disk GB'];
 
 const csv = [];
 csv.push('AscendOS - Software Hardware Requirements');
 csv.push('What the software needs in order to run, at a range of load levels. It does not specify machines, instance types or topology.');
-csv.push('"Jobs at once" = searches and scans running at the SAME MOMENT, averaged over the busiest hour. Not jobs per day, not users signed in. A value below 1 is normal and means the work is intermittent; it is not a fraction of a machine.');
-csv.push(`Usage assumed: Code Compass ${USAGE.low.compass}-${USAGE.high.compass} searches per seat per working day; Code Inspector ${USAGE.low.inspector}-${USAGE.high.inspector} scans per user per working day. Busiest hour taken at 3x the flat daily average.`);
+csv.push('Read each row left to right: jobs a day, then how many of those land in the busiest hour, then how many are running at the same moment. That last figure is what the hardware has to cope with.');
+csv.push('"Running at the same time" is an average across the busy hour. A value below 1 is normal and means the work is intermittent - it is not a fraction of a machine.');
+csv.push(`All figures assume the BUSY end of expected usage: ${USAGE.high.compass} Code Compass searches per seat per working day and ${USAGE.high.inspector} Code Inspector scans per user per day. If usage settles at the quiet end (${USAGE.low.compass} and ${USAGE.low.inspector}) every figure is about a quarter lower.`);
+csv.push('The busiest hour is taken at 3x the flat daily average, because usage clusters at the start of the day and after lunch rather than spreading evenly.');
 csv.push('vCPU and RAM are sized on the BUSY end of each usage range, and cover the APPLICATION TIER ONLY. The search index is listed separately and is never added to them.');
 csv.push('"Compass only" = every seat running Code Compass alone (light case). "All modules" = the same plus 250 users also running Code Inspector (heavy case). A real deployment sits between them.');
 csv.push('The search index requires block-level storage with a POSIX filesystem and must fit in RAM. It will not run on NFS, SMB or object storage. See the Platform requirements sheet of the workbook.');
@@ -162,13 +175,13 @@ csv.push(HEAD.join(','));
 for (let i = 0; i < SEATS.length; i++) {
   const c = data.compass[i], f = data.insp250[i];
   csv.push([SEATS[i],
-    c.lo.concurrent.toFixed(2), c.hi.concurrent.toFixed(2), c.hi.vcpu.toFixed(2), c.hi.appRam.toFixed(2),
-    f.lo.concurrent.toFixed(2), f.hi.concurrent.toFixed(2), f.hi.vcpu.toFixed(2), f.hi.appRam.toFixed(2),
-    f.hi.indexGb.toFixed(2), f.hi.indexDisk].join(','));
+    c.jobsPerDay, c.jobsPerBusyHour, c.hi.concurrent.toFixed(1), c.hi.vcpu.toFixed(1), c.hi.appRam.toFixed(1),
+    f.jobsPerDay, f.jobsPerBusyHour, f.hi.concurrent.toFixed(1), f.hi.vcpu.toFixed(1), f.hi.appRam.toFixed(1),
+    f.hi.indexGb.toFixed(1), f.hi.indexDisk].join(','));
 }
 const CSV = csv.join('\n');
 fs.writeFileSync(path.join(__dirname, 'hardware.csv'), CSV);
-module.exports = { SEATS, SCENARIOS, data, CSV, HEAD, USAGE };
+module.exports = { SEATS, SCENARIOS, data, CSV, HEAD, USAGE, WORK_HOURS, PEAK_MULTIPLE };
 
 console.log(`usage: compass ${USAGE.low.compass}-${USAGE.high.compass}/day, inspector ${USAGE.low.inspector}-${USAGE.high.inspector}/day`);
 console.log('rows/scenario:', SEATS.length, '| csv bytes:', CSV.length);

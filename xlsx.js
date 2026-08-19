@@ -14,11 +14,11 @@ const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>
 const colName = n => { let s=''; n=n+1; while(n>0){ const m=(n-1)%26; s=String.fromCharCode(65+m)+s; n=(n-m-1)/26; } return s; };
 
 // Style slots, referenced by name so the sheets never hardcode an index.
-const S = { plain:0, bold:1, title:2, head:3, num1:4, num2:5, note:6, band:7, split:8, left:9, sub:10, headL:11, num:12, splitNum:13 };
+const S = { plain:0, bold:1, title:2, head:3, num1:4, num2:5, note:6, band:7, split:8, left:9, sub:10, headL:11, num:12, splitNum:13, thousands:14 };
 
 const STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
-<numFmts count="2"><numFmt numFmtId="model" formatCode="0.0"/><numFmt numFmtId="165" formatCode="0.00"/></numFmts>
+<numFmts count="3"><numFmt numFmtId="model" formatCode="0.0"/><numFmt numFmtId="165" formatCode="0.00"/><numFmt numFmtId="166" formatCode="#,##0"/></numFmts>
 <fonts count="6">
  <font><sz val="11"/><name val="Calibri"/></font>
  <font><b/><sz val="11"/><name val="Calibri"/></font>
@@ -39,7 +39,7 @@ const STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
  <border><left style="thin"><color rgb="FFBFC7D4"/></left><right style="thin"><color rgb="FFBFC7D4"/></right><top style="thin"><color rgb="FFBFC7D4"/></top><bottom style="thin"><color rgb="FFBFC7D4"/></bottom><diagonal/></border>
 </borders>
 <cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
-<cellXfs count="14">
+<cellXfs count="15">
  <xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>
  <xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0"/>
  <xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0"/>
@@ -54,6 +54,7 @@ const STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
  <xf numFmtId="0" fontId="3" fillId="2" borderId="1" xfId="0" applyAlignment="1"><alignment horizontal="left" vertical="center" wrapText="1"/></xf>
  <xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyAlignment="1"><alignment horizontal="right"/></xf>
  <xf numFmtId="0" fontId="1" fillId="4" borderId="1" xfId="0" applyAlignment="1"><alignment horizontal="right"/></xf>
+ <xf numFmtId="166" fontId="0" fillId="0" borderId="1" xfId="0" applyAlignment="1"><alignment horizontal="right"/></xf>
 </cellXfs>
 <cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
 </styleSheet>`.replace('numFmtId="model"','numFmtId="164"');

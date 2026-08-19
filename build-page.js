@@ -12,25 +12,31 @@ const STAGES = [20, 100, 200, 300, 400, 500, 600, 700, 840];
 const at = (k,n) => data[k][SEATS.indexOf(n)];
 const last = k => data[k][data[k].length-1].hi;
 
-const reqTable = (seatList) => `<div class="scroll"><table>
-<thead>
- <tr class="grp"><th></th>
-  <th colspan="3" class="g1">Compass only &mdash; light case</th>
-  <th colspan="3" class="g2">All modules &mdash; heavy case</th>
-  <th colspan="2" class="g3">Search index</th></tr>
- <tr><th class="t">Seats<br><span class="lt">reference</span></th>
-  <th class="g1">Jobs at once</th><th class="g1">vCPU</th><th class="g1">RAM GB</th>
-  <th class="g2">Jobs at once</th><th class="g2">vCPU</th><th class="g2">RAM GB</th>
-  <th class="g3">RAM GB</th><th class="g3">Disk GB</th></tr>
-</thead>
+// Read left to right and the last column stops being mysterious: jobs a day,
+// how many land in the busiest hour, how many are running at the same moment.
+const CHAIN_H = (unit) => `<thead><tr>
+ <th class="t">Seats</th>
+ <th>${unit} per day</th>
+ <th>in the busiest hour</th>
+ <th class="key">running at the<br>same time</th>
+ <th>vCPU needed</th>
+ <th>RAM needed<br>GB</th></tr></thead>`;
+
+const chainTable = (scenarioKey, unit, seatList) => `<div class="scroll"><table>
+${CHAIN_H(unit)}
 <tbody>
-${seatList.map(n => { const c = at('compass',n), f = at('insp250',n);
+${seatList.map(n => { const r = data[scenarioKey][SEATS.indexOf(n)];
  return `  <tr><td class="t"><b>${n}</b></td>
-    <td class="rng">${c.lo.concurrent.toFixed(1)} <span class="dash">&ndash;</span> ${c.hi.concurrent.toFixed(1)}</td>
-    <td>${c.hi.vcpu.toFixed(1)}</td><td>${c.hi.appRam.toFixed(1)}</td>
-    <td class="rng">${f.lo.concurrent.toFixed(1)} <span class="dash">&ndash;</span> ${f.hi.concurrent.toFixed(1)}</td>
-    <td>${f.hi.vcpu.toFixed(1)}</td><td>${f.hi.appRam.toFixed(1)}</td>
-    <td>${f.hi.indexGb.toFixed(1)}</td><td>${f.hi.indexDisk}</td></tr>`;}).join('\n')}
+   <td>${r.jobsPerDay.toLocaleString('en')}</td>
+   <td>${r.jobsPerBusyHour.toLocaleString('en')}</td>
+   <td class="key">${r.hi.concurrent.toFixed(1)}</td>
+   <td>${r.hi.vcpu.toFixed(1)}</td><td>${r.hi.appRam.toFixed(1)}</td></tr>`;}).join('\n')}
+</tbody></table></div>`;
+
+const indexTable = (seatList) => `<div class="scroll"><table class="narrow">
+<thead><tr><th class="t">Seats</th><th>Index RAM GB</th><th>Index disk GB</th></tr></thead>
+<tbody>${seatList.map(n => { const r = data.insp250[SEATS.indexOf(n)].hi;
+ return `<tr><td class="t"><b>${n}</b></td><td>${r.indexGb.toFixed(1)}</td><td>${r.indexDisk}</td></tr>`;}).join('')}
 </tbody></table></div>`;
 
 const page = `<!doctype html>
@@ -84,6 +90,11 @@ const page = `<!doctype html>
  .arith td{border:0;border-bottom:1px solid var(--line);padding:3px 12px 3px 0;text-align:left;color:var(--mut);white-space:normal}
  .arith td.v{text-align:right;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
  .arith tr.tot td{border-bottom:0;border-top:1px solid var(--accent);padding-top:5px}
+ table.narrow{max-width:340px}
+ th.key,td.key{background:var(--accentb)}
+ thead th.key{background:#16406f}
+ td.key{font-weight:700;color:var(--ink)}
+ @media (prefers-color-scheme:dark){thead th.key{background:#2a5a94}}
  dl{margin:0;font-size:13.5px;color:var(--mut);max-width:88ch}
  dt{font-weight:600;color:var(--ink);margin-top:14px}
  dd{margin:3px 0 0}
@@ -121,8 +132,8 @@ const page = `<!doctype html>
 <div class="masthead">
   <div><h1>AscendOS &mdash; Hardware Requirements</h1>
   <p class="for">Prepared for ShiftIT &middot; what the software needs, not what to buy</p></div>
-  <div class="meta">Code Compass ${U} searches / seat / day<br>
-  Code Inspector ${I} scans / user / day<br>20&ndash;840 seats</div>
+  <div class="meta">Sized at busy usage: ${USAGE.high.compass} Compass searches / seat / day<br>
+  and ${USAGE.high.inspector} Inspector scans / user / day<br>20&ndash;840 seats</div>
 </div>
 
 <div class="bar">
@@ -150,32 +161,34 @@ its own page. If a download does nothing, this page is inside a sandbox that blo
   that time is spent waiting on an external model API rather than computing. That is why the sizing is
   driven by <b>how many jobs run at the same moment</b> &mdash; not by seat count, and not by requests per day.</p>
 
-  <div class="note key"><b>&ldquo;Jobs at once&rdquo; &mdash; the number everything else follows from.</b>
-  It is the count of searches and scans running at the same moment, averaged across the busiest hour of
-  the day. <b>A value below 1 is normal</b> and simply means the work is intermittent. Worked through at
-  20 seats:
+  <div class="note key"><b>The one column worth understanding: &ldquo;running at the same time&rdquo;.</b>
+  <br><br>It is not a fraction of a machine, and it is not how many people are logged in. It is
+  <b>how many searches are being worked on simultaneously</b> &mdash; how many people are sitting watching a
+  spinner at the same instant, during the busiest hour of the day.
+  <br><br>Take 840 seats. Read the row left to right and it builds itself:
   <table class="arith">
-   <tr><td>20 seats &times; ${USAGE.high.compass} searches a day</td><td class="v">400 searches a day</td></tr>
-   <tr><td>spread across an 8-hour working day</td><td class="v">50 an hour</td></tr>
-   <tr><td>the busy hour runs at 3&times; the daily average</td><td class="v">150 an hour</td></tr>
-   <tr><td>each search occupies a core for about 12 seconds</td><td class="v">150 &times; 12s = 1,800 core-seconds</td></tr>
-   <tr class="tot"><td>1,800 seconds of work inside a 3,600-second hour</td><td class="v"><b>0.5 jobs at once</b></td></tr>
+   <tr><td>840 people each run about 20 searches in a day</td><td class="v">18,550 jobs a day</td></tr>
+   <tr><td>the busy hour carries 3&times; its even share of those</td><td class="v">6,956 in that hour</td></tr>
+   <tr><td>each one occupies a core for 12&ndash;55 seconds</td><td class="v">most finish before the next arrives</td></tr>
+   <tr class="tot"><td>so at any given instant, mid-flight</td><td class="v"><b>31 jobs running at once</b></td></tr>
   </table>
-  <b>It is not a fraction of a machine.</b> It describes how heavily the application tier is worked, and
-  only begins to drive the requirement once it passes 1. It is also an average rather than a ceiling:
-  arrivals are random, so 0.5 still produces brief moments with two or three jobs at once, and the
-  platform needs the headroom to absorb them.
-  <br><br>Job lengths differ by module &mdash; a Compass search runs about <b>12 seconds</b>, an Inspector photo
-  scan about <b>55</b> &mdash; which is why a few hundred Inspector users move the figure more than several
-  hundred extra Compass seats do.</div>
+  Nearly 7,000 searches an hour sounds enormous; 31 running simultaneously does not. Both are the same
+  fact. A search takes seconds and then the core is free again, so they overlap far less than the daily
+  total suggests. <b>That overlap is the entire hardware question</b> &mdash; and it is why 840 seats need
+  ${last('insp250').vcpu.toFixed(1)} vCPU rather than hundreds.
+  <br><br><b>A number below 1 is normal too.</b> At 20 seats it is 1.3, and for Compass alone 0.5 &mdash;
+  meaning a job is in progress about half the busy hour and nothing is running the rest of it.
+  <br><br>It is an average, not a ceiling: arrivals are random, so short moments with two or three times
+  the figure still happen, and the platform needs headroom to absorb them.</div>
 
   <h3>The two scenarios</h3>
-  <p class="lede"><b>Compass only</b> is every seat running Code Compass and nothing else &mdash; the light
-  case. <b>All modules</b> adds 250 users running Code Inspector as well, the heaviest realistic
-  configuration. Any actual deployment sits between the two. Each is shown as a range because usage is a
-  range: Code Compass ${U} searches per seat per working day, Code Inspector ${I} scans per user per day.
-  <b>The vCPU and RAM figures beside each range are sized on the busy end of it</b> &mdash; a platform sized on
-  average usage is short on every busy day.</p>
+  <p class="lede"><b>Light case</b> is every seat running Code Compass and nothing else. <b>Heavy case</b>
+  adds 250 people also running Code Inspector &mdash; the most demanding configuration we would expect. Any
+  real deployment sits between the two, so they bracket the answer rather than predicting it.</p>
+  <p class="lede">Both are stated at the <b>busy end of expected usage</b>: ${USAGE.high.compass} Code Compass searches per seat
+  per working day, ${USAGE.high.inspector} Code Inspector scans per user. A platform sized on average usage is short on every
+  busy day, so there is no point publishing the average. <b>If usage settles at the quiet end (${USAGE.low.compass} and ${USAGE.low.inspector}),
+  every figure here is about a quarter lower.</b></p>
 
   <div class="note"><b>What the figures cover.</b> vCPU and RAM are the <b>application tier only</b>. The
   search index is listed separately because it is a fixed working set that grows with the size of the
@@ -187,21 +200,37 @@ its own page. If a download does nothing, this page is inside a sandbox that blo
 
 <section class="panel" id="p-req">
   <h2>Requirements by load stage</h2>
-  <p class="lede">Nine reference points across the range. Application tier vCPU and RAM, with the search
-  index sized separately. Between these points the requirement rises smoothly &mdash; there is no threshold
-  or step change anywhere in this range.</p>
-  ${reqTable(STAGES)}
-  <div class="note"><b>At the top of the range</b>, 840 seats with 250 Inspector users needs
+  <p class="lede">Read each table left to right: how many jobs a day, how many of those land in the
+  busiest hour, and how many are therefore running at the same moment. That last figure is what the
+  hardware has to cope with, and the two columns after it are the answer. Between these nine points the
+  requirement rises smoothly &mdash; there is no threshold or step change anywhere in the range.</p>
+  <h3>Light case &mdash; every seat running Code Compass, nothing else</h3>
+  ${chainTable('compass','searches',STAGES)}
+
+  <h3>Heavy case &mdash; the same, plus 250 people also running Code Inspector</h3>
+  ${chainTable('insp250','jobs',STAGES)}
+
+  <h3>Search index &mdash; sized separately, and never added to the above</h3>
+  <p class="lede">The index does not grow with load. It grows with the size of the building-code corpus
+  we have ingested, so it tracks seats only because more customers means more of their own documents.</p>
+  ${indexTable(STAGES)}
+
+  <div class="note"><b>At the top of the range:</b> 840 seats with 250 Inspector users comes to
   <b>${last('insp250').vcpu.toFixed(1)} vCPU and ${last('insp250').appRam.toFixed(1)} GB</b> for the application tier, plus
-  <b>${last('insp250').indexGb.toFixed(1)} GB of RAM and ${last('insp250').indexDisk} GB of disk</b> for the search index. Compass alone at the same
-  seat count needs ${last('compass').vcpu.toFixed(1)} vCPU and ${last('compass').appRam.toFixed(1)} GB.</div>
+  <b>${last('insp250').indexGb.toFixed(1)} GB of RAM and ${last('insp250').indexDisk} GB of disk</b> for the search index. Code Compass alone at the
+  same seat count needs ${last('compass').vcpu.toFixed(1)} vCPU and ${last('compass').appRam.toFixed(1)} GB.</div>
 </section>
 
 <section class="panel" id="p-detail">
   <h2>Full detail</h2>
   <p class="lede">The same figures at every 20 seats, if a specific number is needed. Columns are
-  identical to the load stage table.</p>
-  ${reqTable(SEATS)}
+  identical to the load stage tables.</p>
+  <h3>Light case &mdash; Code Compass only</h3>
+  ${chainTable('compass','searches',SEATS)}
+  <h3>Heavy case &mdash; plus 250 Code Inspector users</h3>
+  ${chainTable('insp250','jobs',SEATS)}
+  <h3>Search index</h3>
+  ${indexTable(SEATS)}
 </section>
 
 <section class="panel" id="p-plat">

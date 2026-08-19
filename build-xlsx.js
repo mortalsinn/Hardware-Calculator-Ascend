@@ -33,28 +33,28 @@ const band = (text, n) => ({ cells: [[text, S.band], ...Array(n - 1).fill(['', S
                              mergeAcross: n, height: 19 });
 
 // ---------------------------------------------------------------- columns
-// A two-row header: the group on top, the measure beneath. Stacking
-// "Compass only / vCPU" into one cell needed three lines and clipped.
-const REQ_GROUP = ['', 'Compass only — light case', '', '',
-                   'All modules — heavy case', '', '', 'Search index', ''];
-const REQ_H = ['Seats\n(reference)',
-  'Jobs at once', 'vCPU', 'RAM GB',
-  'Jobs at once', 'vCPU', 'RAM GB',
-  'RAM GB', 'Disk GB'];
-const REQ_W = [11, 15, 10, 10, 15, 10, 10, 12, 12];
-// Group cells span their measures. Row number is supplied per sheet.
-const groupMerges = (r) => [`B${r}:D${r}`, `E${r}:G${r}`, `H${r}:I${r}`];
-const groupRow = () => ({ cells: REQ_GROUP.map(t => [t, t ? S.band : S.plain]), height: 18 });
+// Read left to right and the last figure stops being mysterious: jobs a day,
+// how many land in the busiest hour, how many are running at the same moment.
+const CHAIN_H = (unit) => ['Seats', unit + '\nper day', 'in the\nbusiest hour',
+  'RUNNING AT THE\nSAME TIME', 'vCPU\nneeded', 'RAM GB\nneeded'];
+const CHAIN_W = [10, 14, 15, 17, 12, 12];
+const IX_W = [10, 15, 15];
 
-const reqRow = (n, style = S.num) => {
-  const c = at('compass', n), f = at('insp250', n);
-  return [[n, S.left],
-    [`${c.lo.concurrent.toFixed(1)} – ${c.hi.concurrent.toFixed(1)}`, S.left],
-    N1(+c.hi.vcpu.toFixed(1)), N1(+c.hi.appRam.toFixed(1)),
-    [`${f.lo.concurrent.toFixed(1)} – ${f.hi.concurrent.toFixed(1)}`, S.left],
-    N1(+f.hi.vcpu.toFixed(1)), N1(+f.hi.appRam.toFixed(1)),
-    N1(+f.hi.indexGb.toFixed(1)), [f.hi.indexDisk, style]];
+const chainRow = (key, n) => {
+  const r = data[key][SEATS.indexOf(n)];
+  return [[n, S.left], [r.jobsPerDay, S.thousands], [r.jobsPerBusyHour, S.thousands],
+          [+r.hi.concurrent.toFixed(1), S.splitNum],
+          N1(+r.hi.vcpu.toFixed(1)), N1(+r.hi.appRam.toFixed(1))];
 };
+const ixRow = (n) => { const r = data.insp250[SEATS.indexOf(n)].hi;
+  return [[n, S.left], N1(+r.indexGb.toFixed(1)), [r.indexDisk, S.num]]; };
+
+const chainBlock = (title, key, unit, seatList) => ([
+  band(title, CHAIN_H(unit).length),
+  { cells: CHAIN_H(unit).map(H), height: 30 },
+  ...seatList.map(n => chainRow(key, n)),
+  spacer(10),
+]);
 
 // ---------------------------------------------------------------- 1. Read Me
 const RW = [112];
@@ -67,20 +67,22 @@ const readme = { name: 'Read Me', cols: RW, rows: [
   prose('AscendOS is browser-delivered. Code Compass answers building-code questions against an ingested vector index; Code Inspector analyses site photographs; the estimating modules price work. Every one of them is a short job that holds a CPU core for seconds and then releases it, and most of that time is spent waiting on an external model API rather than computing.', RW),
   prose('That behaviour is why the sizing is driven by HOW MANY JOBS RUN AT THE SAME MOMENT rather than by seat count or by requests per day. A few thousand searches spread across a working day resolve to a handful running simultaneously.', RW),
   spacer(),
-  [B('"Jobs at once" — what the number means')],
-  prose('The count of searches and scans running at the same moment, averaged across the busiest hour of the day. A value below 1 is normal and means the work is intermittent. Worked through at 20 seats:', RW),
-  prose('   20 seats x 20 searches a day                        =  400 searches a day', RW, S.plain),
-  prose('   spread across an 8-hour working day                 =   50 an hour', RW, S.plain),
-  prose('   the busy hour runs at 3x the daily average          =  150 an hour', RW, S.plain),
-  prose('   each search occupies a core for about 12 seconds    =  150 x 12s = 1,800 core-seconds', RW, S.plain),
-  prose('   1,800 seconds of work inside a 3,600-second hour    =  0.5 JOBS AT ONCE', RW, S.bold),
-  prose('It is not a fraction of a machine. It describes how heavily the application tier is worked, and it only begins to drive the requirement once it passes 1. It is also an average rather than a ceiling: arrivals are random, so 0.5 still produces brief moments with two or three jobs at once, and the platform should have the headroom to absorb them.', RW),
+  [B('The one column worth understanding: "running at the same time"')],
+  prose('It is not a fraction of a machine, and it is not how many people are logged in. It is how many searches are being worked on SIMULTANEOUSLY - how many people are sitting watching a spinner at the same instant, during the busiest hour of the day.', RW),
+  prose('Take the 840-seat row. Read it left to right and it builds itself:', RW),
+  prose('   840 people each run about 20 searches in a day    =  18,550 jobs a day', RW, S.plain),
+  prose('   the busy hour carries 3x its even share of those  =   6,956 in that hour', RW, S.plain),
+  prose('   each one occupies a core for 12-55 seconds        =  most finish before the next arrives', RW, S.plain),
+  prose('   so at any given instant, mid-flight               =  31 RUNNING AT ONCE', RW, S.bold),
+  prose('Nearly 7,000 searches an hour sounds enormous; 31 running simultaneously does not. Both are the same fact. A search takes seconds and then the core is free again, so they overlap far less than the daily total suggests. That overlap is the entire hardware question, and it is why 840 seats need about 10 vCPU rather than hundreds.', RW),
+  prose('A number below 1 is normal too. At 20 seats it is 1.3, and for Compass alone 0.5 - meaning a job is in progress about half the busy hour and nothing is running the rest of it.', RW),
+  prose('It is an average, not a ceiling: arrivals are random, so short moments with two or three times the figure still happen, and the platform needs headroom to absorb them.', RW),
   prose('Job lengths differ by module: a Compass search runs about 12 seconds, an Inspector photo scan about 55. That is why a few hundred Inspector users move the figure more than several hundred extra Compass seats do.', RW),
   spacer(),
-  [B('The two columns of scenarios')],
-  prose('"Compass only" is every seat running Code Compass and nothing else — the light case. "All modules" adds 250 users running Code Inspector as well, which is the heaviest realistic configuration. Any actual deployment sits between the two.', RW),
-  prose(`Each is shown as a range, because usage is a range: Code Compass ${U} searches per seat per working day, Code Inspector ${I} scans per user per working day. The vCPU and RAM figures beside each range are sized on the BUSY end of it — a platform sized on average usage is short on every busy day.`, RW),
-  prose('The busiest hour is taken at 3x the flat daily average, because real usage clusters at the start of the day and after lunch rather than spreading evenly.', RW),
+  [B('The two cases')],
+  prose('LIGHT CASE - every seat running Code Compass and nothing else. HEAVY CASE - the same, plus 250 people also running Code Inspector, the most demanding configuration we would expect. Any real deployment sits between the two, so they bracket the answer rather than predicting it.', RW),
+  prose(`Both are stated at the BUSY end of expected usage: ${USAGE.high.compass} Code Compass searches per seat per working day and ${USAGE.high.inspector} Code Inspector scans per user. A platform sized on average usage is short on every busy day, so there is no point publishing the average. If usage settles at the quiet end (${USAGE.low.compass} and ${USAGE.low.inspector}), every figure here is about a quarter lower.`, RW),
+  prose('The busiest hour is taken at 3x the flat daily average, because usage clusters at the start of the day and after lunch rather than spreading evenly.', RW),
   spacer(),
   [B('What the figures cover, and what they do not')],
   prose('The vCPU and RAM columns are the APPLICATION TIER only. The search index is listed separately because it is a fixed working set that grows with the size of the code corpus rather than with load, and because it has storage requirements the application tier does not — see the Platform requirements sheet. The two are never summed.', RW),
@@ -91,33 +93,33 @@ const readme = { name: 'Read Me', cols: RW, rows: [
 ]};
 
 // ---------------------------------------------------------------- 2. Load stages
-const STAGE_GROUP_ROW = 8;
-const stages = { name: 'Requirements by load', cols: REQ_W, freeze: { y: 9 },
-  merges: groupMerges(STAGE_GROUP_ROW), rows: [
+const stages = { name: 'Requirements by load', cols: CHAIN_W, freeze: { y: 7 }, rows: [
   [T('What the software needs, by load stage')],
-  prose('Application tier vCPU and RAM, plus the search index sized separately. Figures are what the software requires; how that is packaged into machines is your decision.', REQ_W),
+  prose('Read each table left to right: how many jobs a day, how many of those land in the busiest hour, and how many are therefore running at the same moment. That last figure is what the hardware has to cope with, and the two columns after it are the answer.', CHAIN_W),
+  prose('Figures are what the software requires. How that is packaged into machines is your decision.', CHAIN_W),
+  prose('"Running at the same time" is an average across the busy hour. A value below 1 is normal and means the work is intermittent - it is not a fraction of a machine. Full explanation on the Read Me sheet.', CHAIN_W),
+  prose('vCPU and RAM cover the APPLICATION TIER only. The search index is sized separately below and is never added to them.', CHAIN_W),
   spacer(),
-  prose('"Jobs at once" = searches and scans running at the same moment, averaged over the busiest hour. Shown low-to-high because assumed usage is a range. A value below 1 is normal and means the work is intermittent — it is not a fraction of a machine. Full explanation on the Read Me sheet.', REQ_W),
-  prose('"Compass only" is the light case: every seat running Code Compass alone. "All modules" is the heavy case: the same, plus 250 users also running Code Inspector. A real deployment sits between them.', REQ_W),
-  prose('vCPU and RAM cover the APPLICATION TIER only and are sized on the busy end of each range. The search index is separate and is never added to them.', REQ_W),
-  spacer(),
-  groupRow(),
-  { cells: REQ_H.map(H), height: 28 },
-  ...STAGES.map(n => reqRow(n)),
+  ...chainBlock('LIGHT CASE  -  every seat running Code Compass, nothing else', 'compass', 'searches', STAGES),
+  ...chainBlock('HEAVY CASE  -  the same, plus 250 people also running Code Inspector', 'insp250', 'jobs', STAGES),
+  band('SEARCH INDEX  -  sized separately, never added to the above', 3),
+  prose('The index does not grow with load. It grows with the size of the building-code corpus ingested, so it tracks seats only because more customers means more of their own documents.', IX_W),
+  { cells: ['Seats','Index RAM GB','Index disk GB'].map(H), height: 20 },
+  ...STAGES.map(ixRow),
   spacer(10),
-  prose('Between these points the requirement rises smoothly — there is no threshold or step change anywhere in this range. The Full detail sheet gives every 20 seats if a specific figure is needed.', REQ_W),
+  prose('Between these nine points the requirement rises smoothly - there is no threshold or step change anywhere in this range. The Full detail sheet gives every 20 seats if a specific figure is needed.', CHAIN_W),
 ]};
 
 // ---------------------------------------------------------------- 3. Full detail
-const DETAIL_GROUP_ROW = 4;
-const detail = { name: 'Full detail', cols: REQ_W, freeze: { y: 5 },
-  merges: groupMerges(DETAIL_GROUP_ROW), rows: [
+const detail = { name: 'Full detail', cols: CHAIN_W, freeze: { y: 4 }, rows: [
   [T('Every 20 seats, 20 to 840')],
-  prose('The same figures as the Load stages sheet, at every increment. Columns are identical.', REQ_W),
+  prose('The same figures as the Load stages sheet, at every increment. Columns are identical.', CHAIN_W),
   spacer(),
-  groupRow(),
-  { cells: REQ_H.map(H), height: 28 },
-  ...SEATS.map(n => reqRow(n)),
+  ...chainBlock('LIGHT CASE  -  Code Compass only', 'compass', 'searches', SEATS),
+  ...chainBlock('HEAVY CASE  -  plus 250 Code Inspector users', 'insp250', 'jobs', SEATS),
+  band('SEARCH INDEX', 3),
+  { cells: ['Seats','Index RAM GB','Index disk GB'].map(H), height: 20 },
+  ...SEATS.map(ixRow),
 ]};
 
 // ---------------------------------------------------------------- 4. Constraints
