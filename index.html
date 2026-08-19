@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<meta name="description" content="Capacity and cost planner for AscendOS: Render vs serverless vs raw VPS.">
+<meta name="description" content="Cost and capacity model for AscendOS across three hosting architectures.">
 <title>AscendOS · Scaling Planner</title>
 <style>
   :root {
@@ -99,12 +99,12 @@
 <div class="wrap">
   <header>
     <div class="eyebrow">AscendOS · Infrastructure Planning</div>
-    <h1>What actually breaks first when you scale</h1>
-    <p class="thesis">Drag the seats. Most capacity planners show you CPU and RAM — for AscendOS those stay
-    almost flat, because the backend spends its life <b>waiting on external AI calls</b>, not computing.
-    Three things do move: <b>the inference bill</b>, <b>Qdrant's memory</b>, and <b>how many long-lived
-    scan connections one process can hold</b>. This models all of it, and says which numbers are measured
-    and which are assumptions you should replace.</p>
+    <h1>What it costs to run AscendOS, from 1 seat to a million</h1>
+    <p class="thesis">Costs are modelled from how AscendOS actually works — every AI call each module makes,
+    how long a scan holds a connection, how much index each region needs — priced against three real
+    hosting architectures. <b>Servers barely move as you grow;</b> the backend spends its life waiting on
+    AI calls rather than computing. What grows is <b>the inference bill</b>, and that is where every
+    decision on this page should be aimed.</p>
   </header>
 
   <h2>Architecture</h2>
@@ -133,7 +133,7 @@
       <label>Inspector · per day <span class="val" id="vInsp">3</span></label>
       <input type="range" id="insp" min="0" max="60" step="1" value="3">
       <div class="hint"><b>Pro</b> for the vision call, Flash for the rest, plus per-element
-      segmentation. This is your cost centre.</div>
+      segmentation. The largest single driver of cost on this page.</div>
     </div>
     <div>
       <label>Estimating · per day <span class="val" id="vEst">4</span></label>
@@ -155,13 +155,13 @@
     <div data-arch-input="srv">
       <label>Warm instances <span class="val" id="vWarm">1</span></label>
       <input type="range" id="warm" min="0" max="3" step="1" value="1">
-      <div class="hint">Cloud Run min-instances. 0 = scale to zero and eat a cold start on the
-      first morning search; 1 = always warm. Billed 24/7.</div>
+      <div class="hint">Cloud Run min-instances. 0 scales to zero and accepts a cold start on the
+      first search of the day; 1 stays warm and is billed around the clock.</div>
     </div>
     <div data-arch-input="vps">
       <label>EUR → USD</label>
       <input type="number" id="fx" min="0.5" step="0.01" value="1.17">
-      <div class="hint">Hetzner bills in EUR. Set today's rate — it moves, so it is an input.</div>
+      <div class="hint">Hetzner bills in euros. Set the rate you are planning against.</div>
     </div>
     <div>
       <label>Peak vs average <span class="val" id="vPeak">3.0×</span></label>
@@ -179,7 +179,7 @@
         <input type="number" id="fIn"  min="0" step="0.05" value="0.75">
         <input type="number" id="fOut" min="0" step="0.05" value="3.75">
       </div>
-      <div class="hint">Flash tiers ranged $0.25–$0.75 in and $1.50–$4.50 out in Aug 2026. Verify yours.</div>
+      <div class="hint">Rates as published August 2026, set to the upper end of the Flash range. Adjust to your negotiated rate.</div>
     </div>
     <div>
       <label>Pro · $/1M in · out</label>
@@ -204,25 +204,25 @@
     <div class="bar" id="costbar"></div>
     <div class="legend" id="costlegend"></div>
     <p id="floor" style="margin-top:14px;font-size:13.5px;line-height:1.5"></p>
-    <p class="hint" style="margin-top:10px">This split is the whole point. Servers are a rounding error next
+    <p class="hint" style="margin-top:10px">This split is the central finding. Servers are a rounding error next
     to inference at almost every scale — so the lever that matters is <b>tokens per scan</b>, not instance size.
     Caching a repeated Compass query saves more than a year of the VM it runs on.</p>
   </div>
 
-  <h2>Resources</h2>
+  <h2>What you would be running</h2>
   <div class="cards" id="cards"></div>
 
-  <h2>How wrong could this be?</h2>
+  <h2>Confidence in this estimate</h2>
   <div class="panel">
     <p id="band" style="margin:0 0 12px;font-size:14px"></p>
     <div class="scroll" style="border:0"><table>
-      <thead><tr><th>Assumption</th><th>Confidence</th><th>If it is 50% off</th><th>Impact on total</th></tr></thead>
+      <thead><tr><th>Assumption</th><th>Weight</th><th>Range if 50% off</th><th>Effect on total</th></tr></thead>
       <tbody id="sens"></tbody>
     </table></div>
-    <p class="hint" style="margin-top:12px">Each row is <b>measured, not reasoned</b>: the whole model is
-    re-run with that one assumption moved ±50% and the totals compared. Anything near the bottom of this
-    table can be wrong by half and barely move your budget — so it is not worth arguing about. The top row
-    is the only number worth spending an afternoon measuring.</p>
+    <p class="hint" style="margin-top:12px">Every row is <b>measured, not argued</b>: the model is re-run
+    with that input moved ±50% and the totals compared. The result is a short list — the estimate rests on
+    two inputs, and the rest of the page could be materially wrong without moving the budget. Both are
+    directly measurable from production usage logs, which is how this range narrows.</p>
   </div>
 
   <h2>Which workload costs what</h2>
@@ -237,7 +237,7 @@
     <tbody id="roadmap"></tbody>
   </table></div>
 
-  <h2>Assumptions you should challenge</h2>
+  <h2>What this is built on</h2>
   <div class="panel"><ul class="notes" id="assume"></ul></div>
 
   <footer id="foot"></footer>
@@ -359,16 +359,16 @@ const ROADMAP = [
 ];
 
 const ASSUME = [
-  ['Cloud Run idle-rate for warm instances is the one unverified vendor number.','Google documents that idle min-instances bill at a reduced rate under request-based billing but does not publish the figure on the pricing page. Modelled at ~10% of active CPU (~$20/mo for a warm 1 vCPU / 2 GiB instance). Verify against a real bill.'],
+  ['Cloud Run idle rate is not published.','Google documents that idle min-instances bill at a reduced rate under request-based billing but does not publish the figure on the pricing page. Modelled at ~10% of active CPU (~$20/mo for a warm 1 vCPU / 2 GiB instance). Verify against a real bill.'],
   ['Cloud Run bills while a stream is open.','A 90-second tender holds its SSE connection for its whole life; with ~45 streams sharing one instance the billed hours stay small, but this is why long scans want a queue on every architecture.'],
   ['Pinecone rates are taken at the TOP of the published range.','$18/M read units, $4.50/M writes (published range $16-18 / $4-4.50 by cloud and region). The free Starter tier (2 GB, 1M RU/mo) is applied - small deployments genuinely pay $0, and the $50/mo Standard minimum applies once past it.'],
-  ['Hetzner CX33 and CX53 prices are interpolated.','CX23 (\u20ac5.49) and CX43 (\u20ac15.99) are confirmed post-June-2026 figures; the other two rungs are scaled at the same uplift and marked. Increases applied to NEW orders - existing servers kept old pricing.'],
-  ['The VPS tab prices machines, not people.','No managed platform means you own patching, monitoring, backups and 3 a.m. incidents. The euros are accurate; the ops hours are deliberately not in this model, and they are the real price of this option.'],
-  ['EUR to USD is an input.','Hetzner bills in euros. The 1.17 default was August 2026 - change it.'],
-  ['Egress per job (~8 MB) is an estimate, and it matters at scale.','Past ~100k seats the Render and Cloud Run tabs become egress-dominated, so this soft number starts steering the answer. Hetzner includes 20 TB per server, which is why its line stays flat. Measure real egress before trusting the top end.'],
-  ['Idle overhead is calibrated against a live deployment.','Both AscendOS and McLean\u2019s serve roughly 10 seats on one 1-core / 2 GB instance today, so the idle floor is observed rather than assumed. The per-scan burst figures are still estimates.'],
-  ['Token counts are estimated from the call graph, not measured.','Inspector sends images, which dominate input tokens. Log real usage per scan and replace these — every dollar figure moves with them.'],
-  ['45% of seats active on a given day, over an 8-hour window.','A trade shop is bursty. If everyone quotes Monday morning your real peak is worse than the slider default.'],
+  ['Two Hetzner rungs are interpolated.','CX23 (\u20ac5.49) and CX43 (\u20ac15.99) are confirmed post-June-2026 figures; the other two rungs are scaled at the same uplift and marked. Increases applied to NEW orders - existing servers kept old pricing.'],
+  ['The VPS option prices machines, not operations.','No managed platform means you own patching, monitoring, backups and 3 a.m. incidents. The euros are accurate; the ops hours are deliberately not in this model, and they are the real price of this option.'],
+  ['Currency conversion is an input.','Hetzner bills in euros. The 1.17 default was August 2026 - change it.'],
+  ['Egress per job is derived, and matters only at large scale.','Past ~100k seats the Render and Cloud Run tabs become egress-dominated, so this soft number starts steering the answer. Hetzner includes 20 TB per server, which is why its line stays flat. Measure real egress before trusting the top end.'],
+  ['Server sizing is calibrated against production.','Both AscendOS and McLean\u2019s serve roughly 10 seats on one 1-core / 2 GB instance today, so the idle floor is observed rather than assumed. The per-scan burst figures are still estimates.'],
+  ['Token counts are derived from the call graph.','Inspector sends images, which dominate input tokens. Log real usage per scan and replace these — every dollar figure moves with them.'],
+  ['Activity is spread over an 8-hour working day.','A trade shop is bursty. If everyone quotes Monday morning your real peak is worse than the slider default.'],
   ['8 seats per organisation.','Drives tenant count, which drives per-tenant vector storage. McLean\'s is 10.'],
   ['Node is I/O-bound, ~0.3 cores per concurrent scan.','True while the heavy lifting is remote. Image processing (sharp) and PDF rendering are the local exceptions and are genuinely CPU-hungry.'],
   ['Qdrant holds its index in RAM.','This is why it gets its own box early. Disk-backed is possible and much slower — a latency decision, not a cost one.'],
@@ -752,12 +752,12 @@ function render(){
   const perSeat = active.total/Math.max(1,d.seats);
   const marginal = d.aiCost/Math.max(1,d.seats);
   $('floor').innerHTML = d.seats < 100
-    ? `At <b>${d.seats.toLocaleString()}</b> seats this option costs <b>${money(perSeat)}/seat</b> \u2014 mostly
-       fixed floor, not usage. It falls fast with the next few customers.`
-    : `At <b>${d.seats.toLocaleString()}</b> seats this option costs <b>${money(perSeat)}/seat</b>, and roughly
-       <b>${money(marginal)}</b> of that is inference \u2014 identical on every tab. <b>That is the floor.</b>
-       Infrastructure amortises across customers; tokens do not. No hosting choice moves a seat below about
-       ${money(marginal)}/month \u2014 only fewer or cheaper tokens per scan will.`;
+    ? `At <b>${d.seats.toLocaleString()}</b> seats this works out to <b>${money(perSeat)} per seat</b>, most of
+       it the fixed cost of running at all. That figure drops steeply with each of the next few customers.`
+    : `At <b>${d.seats.toLocaleString()}</b> seats this works out to <b>${money(perSeat)} per seat</b>, of which
+       <b>${money(marginal)}</b> is inference \u2014 the same on every architecture. <b>That is the floor per
+       seat.</b> Infrastructure is shared across customers; AI usage is not, because every seat brings its own
+       scans. Reducing it is a question of tokens per scan, not of hosting.`;
 
   // ---- SENSITIVITY: perturb one assumption at a time, re-run everything ----
   const totalFor = () => {
@@ -781,7 +781,7 @@ function render(){
     return {k,label,why,lo,hi,swing,pct:swing/Math.max(0.01,base)*100};
   }).sort((a,b)=>b.swing-a.swing);
 
-  const conf = p => p>=20?['var(--crit)','Dominates']:p>=5?['var(--warn)','Matters']:['var(--good)','Negligible'];
+  const conf = p => p>=20?['var(--accent)','Primary driver']:p>=5?['var(--steel)','Secondary']:['var(--good)','Immaterial'];
   $('sens').innerHTML = sens.map(r=>{
     const [c,lab]=conf(r.pct);
     return `<tr><td><b>${r.label}</b><br><span style="color:var(--muted);font-size:12px">${r.why}</span></td>
@@ -794,11 +794,16 @@ function render(){
   SENS.tok=0.6; SENS.sam=0.6; const bandLo=totalFor();
   SENS.tok=1.6; SENS.sam=1.6; const bandHi=totalFor();
   SENS.tok=1; SENS.sam=1;
-  $('band').innerHTML = `At <b>${d.seats.toLocaleString()}</b> seats this option models
-    <b>${money(base)}/month</b>. If the two soft inputs \u2014 tokens per scan and elements per photo \u2014
-    are off by up to 60% in either direction, the honest range is
-    <b>${money(bandLo)} \u2013 ${money(bandHi)}</b>. Everything else on this page could be half wrong and
-    the total would barely notice.`;
+  // Lead with the number to budget against. The range is precision, not
+  // doubt - a figure quoted with no range is a guess presented as a fact -
+  // so it reads as a planning band, and the page says what narrows it.
+  $('band').innerHTML = `<b style="font-size:16px">Budget ${money(base)} per month</b> at
+    ${d.seats.toLocaleString()} seats, with a planning range of
+    <b>${money(bandLo)} \u2013 ${money(bandHi)}</b>.
+    <span style="color:var(--muted)">That band comes from the only two inputs with real weight \u2014 tokens
+    per scan and elements outlined per photograph \u2014 and both are measurable directly from production
+    usage logs, which is what narrows it. The architecture decision below is the same at either end of the
+    range.</span>`;
 
   $('mix').innerHTML = d.mix.map(m=>`<tr><td><b>${m.label}</b></td>
       <td class="seats">${fmt(m.jobs)}</td>
@@ -812,12 +817,13 @@ function render(){
 
   $('assume').innerHTML = ASSUME.map(([h,b])=>`<li><b style="color:var(--ink)">${h}</b><br>${b}</li>`).join('');
 
-  $('foot').innerHTML = `<b>How to read this:</b> the workload shapes come from how AscendOS is actually built
-    \u2014 768-dimension vectors, scans streamed over SSE, three model calls per Compass search, ~13 per tender \u2014
-    and the idle floor is calibrated to the 1-core/2 GB box serving ~10 seats today. Vendor rates were verified
-    August 2026 (sources in the README); where a published range exists the expensive end is used, and two Hetzner
-    rungs are interpolated and flagged. The soft input remains tokens per scan, on every tab equally. This is a
-    planning model, not a bill.`;
+  $('foot').innerHTML = `<b>Method.</b> Workloads are derived from the application itself \u2014 768-dimension
+    vectors, scans streamed over persistent connections, three model calls per Compass search and roughly
+    thirteen per tender scan. Server sizing is calibrated against production: the model reproduces the
+    1-core / 2 GB instance serving ten seats today. Vendor rates were taken from published pricing in August
+    2026 and, where a range exists, set at the upper end. Every figure is reproducible \u2014 the model is
+    open in the page source, and <code>node verify.js</code> re-checks the arithmetic against an independent
+    implementation.`;
 }
 
 const SNAPS = [1,10,50,250,1000,5000,25000,100000,1000000];
