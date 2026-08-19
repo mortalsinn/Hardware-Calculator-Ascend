@@ -1,5 +1,5 @@
 const fs = require('fs'); const path = require('path');
-const { SEATS, SCENARIOS, data, CSV, USAGE, CORPUS, CORPUS_GROWTH, ASSUMPTIONS } = require('./build-hardware.js');
+const { SEATS, SCENARIOS, data, CSV, USAGE, CORPUS, CORPUS_GROWTH, ASSUMPTIONS, futureImpact } = require('./build-hardware.js');
 
 const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 const b64 = Buffer.from(CSV, 'utf8').toString('base64');
@@ -143,8 +143,8 @@ const page = `<!doctype html>
 <div class="masthead">
   <div><h1>AscendOS &mdash; Hardware Requirements</h1>
   <p class="for">Prepared for ShiftIT &middot; what the software needs, not what to buy</p></div>
-  <div class="meta">Busy usage: ${USAGE.high.compass} Compass + ${USAGE.high.estimating} estimating / seat / day,<br>
-  ${USAGE.high.inspector} Inspector scans / user / day<br>20&ndash;840 seats &middot; tender scans excluded</div>
+  <div class="meta">Busy usage: ${USAGE.high.compass} Compass searches / seat / day,<br>
+  ${USAGE.high.inspector} Inspector scans / user / day<br>20&ndash;840 seats &middot; Compass and Inspector only</div>
 </div>
 
 <div class="bar">
@@ -166,11 +166,13 @@ its own page. If a download does nothing, this page is inside a sandbox that blo
   add up to.</p>
 
   <h3>What the software does</h3>
-  <p class="lede">AscendOS is browser-delivered. Code Compass answers building-code questions against an
-  ingested vector index; Code Inspector analyses site photographs; the estimating modules price work.
-  Every one of them is a short job that holds a CPU core for seconds and then releases it, and most of
-  that time is spent waiting on an external model API rather than computing. That is why the sizing is
-  driven by <b>how many jobs run at the same moment</b> &mdash; not by seat count, and not by requests per day.</p>
+  <p class="lede">AscendOS is browser-delivered. <b>Code Compass</b> answers building-code questions
+  against an ingested vector index; <b>Code Inspector</b> analyses site photographs for code compliance.
+  Both are short jobs that hold a CPU core for seconds and then release it, and most of that time is
+  spent waiting on an external model API rather than computing. That is why the sizing is driven by
+  <b>how many jobs run at the same moment</b> &mdash; not by seat count, and not by requests per day.</p>
+  <p class="lede">Estimating and tender modules exist in the product but are still in development and
+  not deployed, so they carry no load and appear nowhere in these figures.</p>
 
   <div class="note key"><b>The one column worth understanding: &ldquo;running at the same time&rdquo;.</b>
   <br><br>It is not a fraction of a machine, and it is not how many people are logged in. It is
@@ -178,35 +180,38 @@ its own page. If a download does nothing, this page is inside a sandbox that blo
   spinner at the same instant, during the busiest hour of the day.
   <br><br>Take 840 seats. Read the row left to right and it builds itself:
   <table class="arith">
-   <tr><td>840 seats &times; (${USAGE.high.compass} searches + ${USAGE.high.estimating} estimating jobs), plus 250 &times; ${USAGE.high.inspector} scans</td><td class="v">${data.insp250[SEATS.indexOf(840)].jobsPerDay.toLocaleString('en')} jobs a day</td></tr>
+   <tr><td>840 seats &times; ${USAGE.high.compass} searches, plus 250 people &times; ${USAGE.high.inspector} photo scans</td><td class="v">${data.insp250[SEATS.indexOf(840)].jobsPerDay.toLocaleString('en')} jobs a day</td></tr>
    <tr><td>the busy hour carries 3&times; its even share of those</td><td class="v">${data.insp250[SEATS.indexOf(840)].jobsPerBusyHour.toLocaleString('en')} in that hour</td></tr>
    <tr><td>each one occupies a core for 12&ndash;55 seconds</td><td class="v">most finish before the next arrives</td></tr>
    <tr class="tot"><td>so at any given instant, mid-flight</td><td class="v"><b>${data.insp250[SEATS.indexOf(840)].hi.concurrent.toFixed(0)} jobs running at once</b></td></tr>
   </table>
-  Eight and a half thousand jobs an hour sounds enormous; ${data.insp250[SEATS.indexOf(840)].hi.concurrent.toFixed(0)} running simultaneously does not. Both are the same
+  Nearly seven thousand jobs an hour sounds enormous; ${data.insp250[SEATS.indexOf(840)].hi.concurrent.toFixed(0)} running simultaneously does not. Both are the same
   fact. A search takes seconds and then the core is free again, so they overlap far less than the daily
   total suggests. <b>That overlap is the entire hardware question</b> &mdash; and it is why 840 seats need
   ${last('insp250').vcpu.toFixed(1)} vCPU rather than hundreds.
-  <br><br><b>A number below 1 is normal too.</b> At 20 seats without Code Inspector it is
-  ${data.compass[0].hi.concurrent.toFixed(1)} &mdash; meaning a job is in progress about that share of the busy hour and nothing is
-  running the rest of it.
+  <br><br><b>A number below 1 is normal too.</b> At 20 seats with Code Compass alone it is
+  ${data.compass[0].hi.concurrent.toFixed(1)} &mdash; meaning a search is in progress about half the busy hour and nothing is running
+  the rest of it.
   <br><br>It is an average, not a ceiling: arrivals are random, so short moments with two or three times
   the figure still happen, and the platform needs headroom to absorb them.</div>
 
   <h3>The two scenarios</h3>
-  <p class="lede">The <b>first table</b> is every seat running Code Compass and the estimating modules.
-  The <b>second</b> adds 250 people also running Code Inspector &mdash; the most demanding configuration we
-  would expect. Any real deployment sits between the two, so they bracket the answer rather than
-  predicting it.</p>
-  <p class="lede">Both are stated at the <b>busy end of expected usage</b>: ${USAGE.high.compass} Code Compass searches and
-  ${USAGE.high.estimating} estimating jobs per seat per working day, plus ${USAGE.high.inspector} Code Inspector scans per user. A platform
-  sized on average usage is short on every busy day, so there is no point publishing the average.
-  <b>If usage settles at the quiet end (${USAGE.low.compass}, ${USAGE.low.estimating} and ${USAGE.low.inspector}), every figure here is about a quarter lower.</b></p>
-  <div class="note"><b>Tender scans are excluded.</b> They are the heaviest job the platform runs &mdash;
-  about 95 seconds and 13 model API calls each, against 12 seconds for a Compass search &mdash; and no rate
-  has been established for them. They are left out rather than guessed at. If tenders are going to run
-  regularly, these figures need revisiting: even one per seat per week would add roughly 5 to the
-  &ldquo;running at the same time&rdquo; column at 840 seats.</div>
+  <p class="lede">The <b>first table</b> is every seat running Code Compass. The <b>second</b> adds 250
+  people also running Code Inspector &mdash; the most demanding configuration currently in scope. Any real
+  deployment sits between the two, so they bracket the answer rather than predicting it.</p>
+  <p class="lede">Both are stated at the <b>busy end of expected usage</b>: ${USAGE.high.compass} Code Compass searches per
+  seat per working day, plus ${USAGE.high.inspector} Code Inspector scans per user. A platform sized on average usage is
+  short on every busy day, so there is no point publishing the average. <b>If usage settles at the quiet
+  end (${USAGE.low.compass} and ${USAGE.low.inspector}), every figure here is about a quarter lower.</b></p>
+
+  <div class="note"><b>Scope: these two modules only.</b> AscendOS also contains estimating and tender
+  modules, but they are still in development and are not deployed to anyone, so they carry no load and
+  are excluded from every figure here. That is a deliberate exclusion, not an oversight.
+  <br><br>For planning, this is what they would add at 840 seats if they ship:
+  <table class="arith">
+   ${futureImpact(840).map(f => `<tr><td>${f.module} at ${f.rate} ${f.unit}</td><td class="v">+${f.conc} running at once &middot; +${f.vcpu} vCPU &middot; +${f.ram} GB</td></tr>`).join('')}
+  </table>
+  Neither changes the storage or network requirements &mdash; only the application tier grows.</div>
 
   <div class="note"><b>What the figures cover.</b> vCPU and RAM are the <b>application tier only</b>. The
   search index is listed separately because it is a fixed working set that grows with the size of the
@@ -222,10 +227,10 @@ its own page. If a download does nothing, this page is inside a sandbox that blo
   busiest hour, and how many are therefore running at the same moment. That last figure is what the
   hardware has to cope with, and the two columns after it are the answer. Between these nine points the
   requirement rises smoothly &mdash; there is no threshold or step change anywhere in the range.</p>
-  <h3>Without Code Inspector &mdash; every seat running Code Compass and Estimating</h3>
+  <h3>Code Compass only &mdash; every seat running searches</h3>
   ${chainTable('compass','searches',STAGES)}
 
-  <h3>All modules &mdash; the same, plus 250 people also running Code Inspector</h3>
+  <h3>Code Compass + Code Inspector &mdash; the same, plus 250 people also running scans</h3>
   ${chainTable('insp250','jobs',STAGES)}
 
   <h3>Search index &mdash; sized separately, and never added to the above</h3>
@@ -252,9 +257,9 @@ its own page. If a download does nothing, this page is inside a sandbox that blo
   <h2>Full detail</h2>
   <p class="lede">The same figures at every 20 seats, if a specific number is needed. Columns are
   identical to the load stage tables.</p>
-  <h3>Without Code Inspector &mdash; Compass and Estimating</h3>
+  <h3>Code Compass only</h3>
   ${chainTable('compass','searches',SEATS)}
-  <h3>All modules &mdash; plus 250 Code Inspector users</h3>
+  <h3>Code Compass + Code Inspector, 250 users</h3>
   ${chainTable('insp250','jobs',SEATS)}
 
 </section>
@@ -267,11 +272,11 @@ its own page. If a download does nothing, this page is inside a sandbox that blo
    <thead><tr><th class="t">Input</th><th class="t">Value</th><th class="t">Source</th></tr></thead>
    <tbody>${ASSUMPTIONS.map(([k,v,src]) => `<tr><td class="t"><b>${esc(k)}</b></td><td class="t">${esc(v)}</td><td class="t src">${esc(src)}</td></tr>`).join('')}</tbody>
   </table></div>
-  <div class="note"><b>The one open item.</b> Tender scans are excluded because no usage rate has been
-  established for them, and they are by some distance the heaviest job the platform runs &mdash; roughly 95
-  seconds and 13 model API calls each. Everything else above is either measured or stated. If tender
-  scanning is going to be part of normal use, tell us the expected rate and these figures will need
-  redoing.</div>
+  <div class="note"><b>Modules not in scope.</b> The estimating and tender modules are in development
+  and deployed to nobody, so they carry no load. Their job durations are listed above only so the effect
+  of releasing them can be judged without rebuilding this document: at 840 seats estimating would add
+  about ${futureImpact(840)[0].conc} to the concurrency figure and tender scanning about ${futureImpact(840)[1].conc}. Neither would change the
+  storage or network requirements.</div>
   <div class="note"><b>Derived, not assumed.</b> The vCPU and memory figures come from the two
   coefficients at the bottom of the table applied to the concurrency figure, which itself comes from the
   usage rates and job durations above it. Nothing in the requirement columns is a judgement call laid on

@@ -33,21 +33,28 @@ global.document = {
 };
 const M = eval(js + '\n;({calc, calcServerless, calcVps})');
 
-// EVERY module the platform runs, with the rate for each. An earlier draft
-// carried Compass and Inspector only and still called the result "all
-// modules"; Estimating was set to zero despite a stated rate, which
-// understated the load at 840 seats by roughly a third.
+// SCOPE: Code Compass, and Code Compass plus Code Inspector. Nothing else.
+// The estimating and tender modules exist in the codebase but are still in
+// development and are not deployed to anyone, so they carry no load.
+//
+// They are set to zero DELIBERATELY and the exclusion is stated on the page.
+// An earlier draft also had them at zero, but silently, while calling the
+// result "all modules" -- a zero nobody can see is indistinguishable from an
+// oversight, which is exactly how it read.
 const USAGE = {
-  low:  { compass: 15, inspector: 5, estimating: 3 },
-  high: { compass: 20, inspector: 7, estimating: 5 },
+  low:  { compass: 15, inspector: 5 },
+  high: { compass: 20, inspector: 7 },
 };
 
-// Tender scans are the heaviest job on the platform at ~95 seconds and 13 API
-// calls each, and no rate has been established for them. They are EXCLUDED
-// rather than guessed, and that exclusion is stated in the documents. If
-// tenders are run regularly these figures need revisiting: at one per seat per
-// week, 840 seats would add roughly 5 to the concurrent figure.
-const TENDER_RATE = 0;
+const ESTIMATING_RATE = 0;   // module in development, not deployed
+const TENDER_RATE     = 0;   // module in development, not deployed
+
+// What the two unreleased modules would add if they ship, so the figure is on
+// hand rather than needing this whole document rebuilt to answer the question.
+const FUTURE = [
+  { module: 'Estimating', rate: 5, unit: 'per seat per day', secs: 20 },
+  { module: 'Tender scans', rate: 1, unit: 'per seat per week', secs: 95 },
+];
 
 // The vector index is NOT driven by user load, and only marginally by customer
 // count. It is driven by how much building code has been ingested: one book per
@@ -78,8 +85,8 @@ const posFor = n => Math.log10(Math.max(1, n)) / 6 * 1000;
 function shape(seats, inspectorSeats, u) {
   Object.assign(vals, {
     seats: String(posFor(seats)),
-    comp: String(u.compass), insp: '0', est: String(u.estimating),
-    tend: String(TENDER_RATE),
+    comp: String(u.compass), insp: '0',
+    est: String(ESTIMATING_RATE), tend: String(TENDER_RATE),
     peak: '30', warm: '1', fx: '1.17',
     // `reg` is the count of ingested CODE BOOKS, not geographic regions. It was
     // set to 1, which modelled a single book and left the index 92% customer
@@ -161,7 +168,6 @@ const WORK_HOURS = 8, PEAK_MULTIPLE = 3;
 
 const row = (seats, inspectorSeats) => {
   const perDay = seats * USAGE.high.compass
-               + seats * USAGE.high.estimating
                + Math.min(inspectorSeats, seats) * USAGE.high.inspector;
   return {
     seats,
@@ -176,12 +182,12 @@ const SEATS = [];
 for (let n = 20; n <= 840; n += 20) SEATS.push(n);
 
 const SCENARIOS = [
-  { key: 'compass', title: 'Code Compass and Estimating',
-    sub: `Every seat runs ${USAGE.low.compass}–${USAGE.high.compass} Code Compass searches and ${USAGE.low.estimating}–${USAGE.high.estimating} estimating jobs per working day. No Code Inspector.`, insp: 0 },
-  { key: 'insp200', title: 'All modules, 200 Code Inspector users',
-    sub: `Every seat runs Compass and Estimating. 200 of them also run Code Inspector ${USAGE.low.inspector}–${USAGE.high.inspector} times per working day.`, insp: 200 },
-  { key: 'insp250', title: 'All modules, 250 Code Inspector users',
-    sub: `Every seat runs Compass and Estimating. 250 of them also run Code Inspector ${USAGE.low.inspector}–${USAGE.high.inspector} times per working day.`, insp: 250 },
+  { key: 'compass', title: 'Code Compass only',
+    sub: `Every seat runs ${USAGE.low.compass}–${USAGE.high.compass} Code Compass searches per working day.`, insp: 0 },
+  { key: 'insp200', title: 'Code Compass + Code Inspector, 200 users',
+    sub: `Every seat runs Compass. 200 of them also run Code Inspector ${USAGE.low.inspector}–${USAGE.high.inspector} times per working day.`, insp: 200 },
+  { key: 'insp250', title: 'Code Compass + Code Inspector, 250 users',
+    sub: `Every seat runs Compass. 250 of them also run Code Inspector ${USAGE.low.inspector}–${USAGE.high.inspector} times per working day.`, insp: 250 },
 ];
 
 const data = {};
@@ -190,10 +196,10 @@ for (const sc of SCENARIOS) data[sc.key] = SEATS.map(n => row(n, Math.min(sc.ins
 // ---------------------------------------------------------------- CSV
 // Requirements only. What the software needs; not what to buy.
 const HEAD = ['Seats',
-  'Without Inspector: jobs per day','Without Inspector: jobs in the busiest hour',
-  'Without Inspector: running at the same time','Without Inspector: vCPU required','Without Inspector: RAM GB required',
-  'All modules: jobs per day','All modules: jobs in the busiest hour',
-  'All modules: running at the same time','All modules: vCPU required','All modules: RAM GB required',
+  'Compass only: searches per day','Compass only: searches in the busiest hour',
+  'Compass only: running at the same time','Compass only: vCPU required','Compass only: RAM GB required',
+  'Compass + Inspector: jobs per day','Compass + Inspector: jobs in the busiest hour',
+  'Compass + Inspector: running at the same time','Compass + Inspector: vCPU required','Compass + Inspector: RAM GB required',
   'Search index: RAM GB','Search index: disk GB'];
 
 const csv = [];
@@ -204,9 +210,9 @@ csv.push('"Running at the same time" is an average across the busy hour. A value
 csv.push(`All figures assume the BUSY end of expected usage: ${USAGE.high.compass} Code Compass searches per seat per working day and ${USAGE.high.inspector} Code Inspector scans per user per day. If usage settles at the quiet end (${USAGE.low.compass} and ${USAGE.low.inspector}) every figure is about a quarter lower.`);
 csv.push('The busiest hour is taken at 3x the flat daily average, because usage clusters at the start of the day and after lunch rather than spreading evenly.');
 csv.push('vCPU and RAM are sized on the BUSY end of each usage range, and cover the APPLICATION TIER ONLY. The search index is listed separately and is never added to them.');
-csv.push('"Compass only" = every seat running Code Compass alone (light case). "All modules" = the same plus 250 users also running Code Inspector (heavy case). A real deployment sits between them.');
-csv.push('TENDER SCANS ARE EXCLUDED - the heaviest job on the platform at ~95 seconds and 13 model API calls each, with no usage rate established. If tenders run regularly these figures need revisiting.');
-csv.push('"Without Code Inspector" = every seat running Code Compass and the estimating modules. "All modules" = the same plus 250 users also running Code Inspector.');
+
+csv.push('SCOPE: Code Compass, and Code Compass plus Code Inspector. The estimating and tender modules are still in development, are not deployed to anyone, and carry no load - they are excluded deliberately, not overlooked.');
+csv.push('"Compass only" = every seat running Code Compass. "Compass + Inspector" = the same plus 250 users also running Code Inspector.');
 csv.push('The search index requires block-level storage with a POSIX filesystem and must fit in RAM. It will not run on NFS, SMB or object storage. See the Platform requirements sheet of the workbook.');
 csv.push('The search index is NOT driven by user load. It holds the ingested building codes - one book per jurisdiction per edition, 14 Canadian jurisdictions, a new National Building Code roughly every 4 years with older editions retained. It grows with TIME and never falls. The figure below is at today\u2019s corpus of ' + (CORPUS.jurisdictions*CORPUS.editionsToday) + ' books; see the Search index section of the workbook for its growth.');
 csv.push('These are capacity figures, not availability figures.');
@@ -242,13 +248,13 @@ const CORPUS_GROWTH = [1, 2, 3, 4, 5, 6].map(editions => {
 // they were never on the page.
 const ASSUMPTIONS = [
   ['Code Compass searches', `${USAGE.low.compass}–${USAGE.high.compass} per seat per working day`, 'Stated by Ironwood'],
-  ['Estimating jobs', `${USAGE.low.estimating}–${USAGE.high.estimating} per seat per working day`, 'Stated by Ironwood'],
+  ['Estimating module', 'NOT IN SCOPE — still in development, not deployed', 'Stated by Ironwood'],
   ['Code Inspector scans', `${USAGE.low.inspector}–${USAGE.high.inspector} per user per working day, for the named subset`, 'Stated by Ironwood'],
-  ['Tender scans', 'EXCLUDED — no rate established', 'Heaviest job on the platform. See note below'],
+  ['Tender module', 'NOT IN SCOPE — still in development, not deployed', 'Stated by Ironwood'],
   ['Compass job duration', '12 seconds, 3 model API calls', 'Measured in the platform'],
-  ['Estimating job duration', '20 seconds, 3 model API calls', 'Measured in the platform'],
+  ['Estimating job duration', '20 seconds, 3 model API calls — if it ships', 'Measured in the platform'],
   ['Inspector job duration', '55 seconds, 4 model API calls', 'Measured in the platform'],
-  ['Tender job duration', '95 seconds, 13 model API calls', 'Measured in the platform'],
+  ['Tender job duration', '95 seconds, 13 model API calls — if it ships', 'Measured in the platform'],
   ['Working day', `${WORK_HOURS} hours`, 'Assumption'],
   ['Busiest hour', `${PEAK_MULTIPLE}× the flat daily average`, 'Assumption — usage clusters morning and after lunch'],
   ['Seats per customer organisation', String(CORPUS.seatsPerOrg), 'Assumption — McLean\u2019s runs 10'],
@@ -263,7 +269,18 @@ const ASSUMPTIONS = [
 ];
 
 module.exports = { SEATS, SCENARIOS, data, CSV, HEAD, USAGE, WORK_HOURS, PEAK_MULTIPLE,
-  CORPUS, TENDER_RATE, indexGbFor, CORPUS_GROWTH, ASSUMPTIONS };
+  CORPUS, TENDER_RATE, ESTIMATING_RATE, FUTURE, indexGbFor, CORPUS_GROWTH, ASSUMPTIONS,
+  futureImpact };
+
+// Concurrency a not-yet-released module would add at a given seat count.
+function futureImpact(seats) {
+  return FUTURE.map(f => {
+    const perDay = f.unit.includes('week') ? seats * f.rate / 5 : seats * f.rate;
+    const conc = perDay / WORK_HOURS * PEAK_MULTIPLE * f.secs / 3600;
+    return { ...f, seats, perDay: Math.round(perDay), conc: +conc.toFixed(1),
+             vcpu: +(conc * 0.3).toFixed(1), ram: +(conc * 0.35).toFixed(1) };
+  });
+}
 
 console.log(`usage: compass ${USAGE.low.compass}-${USAGE.high.compass}/day, inspector ${USAGE.low.inspector}-${USAGE.high.inspector}/day`);
 console.log('rows/scenario:', SEATS.length, '| csv bytes:', CSV.length);
