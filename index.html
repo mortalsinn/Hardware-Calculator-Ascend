@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Capacity and cost planner for AscendOS on Render.com.">
+<title>AscendOS · Scaling Planner</title>
+<style>
+  :root {
+    --paper:#e9edf2; --card:#f7f9fb; --ink:#111820; --muted:#5d6b7a; --line:#cfd8e3;
+    --accent:#e2661a; --steel:#33628a; --good:#186b52; --warn:#9a6408; --crit:#a83227;
+    --grid:rgba(51,98,138,.07);
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--paper:#0d1219;--card:#151d27;--ink:#e4eaf1;--muted:#8a99a9;--line:#243140;
+      --accent:#f5822f;--steel:#6ba3d0;--good:#3fbf94;--warn:#e0a83c;--crit:#e8695c;--grid:rgba(107,163,208,.07);}
+  }
+  :root[data-theme="dark"]{--paper:#0d1219;--card:#151d27;--ink:#e4eaf1;--muted:#8a99a9;--line:#243140;
+    --accent:#f5822f;--steel:#6ba3d0;--good:#3fbf94;--warn:#e0a83c;--crit:#e8695c;--grid:rgba(107,163,208,.07);}
+  :root[data-theme="light"]{--paper:#e9edf2;--card:#f7f9fb;--ink:#111820;--muted:#5d6b7a;--line:#cfd8e3;
+    --accent:#e2661a;--steel:#33628a;--good:#186b52;--warn:#9a6408;--crit:#a83227;--grid:rgba(51,98,138,.07);}
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:22px 22px;
+    font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;padding:30px 18px 60px;}
+  .wrap{max-width:1080px;margin:0 auto}
+  .eyebrow{font:700 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+  h1{font-size:clamp(24px,4vw,34px);letter-spacing:-.02em;margin:10px 0 10px;text-wrap:balance;font-weight:800}
+  .thesis{color:var(--muted);max-width:64ch;margin:0 0 6px;font-size:15.5px}
+  .thesis b{color:var(--ink);font-weight:700}
+  h2{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+    margin:34px 0 12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:700}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px}
+  .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px 22px}
+  label{display:block;font-size:12px;font-weight:700;letter-spacing:.04em;color:var(--muted);margin-bottom:7px;text-transform:uppercase}
+  .val{float:right;font-family:ui-monospace,monospace;color:var(--accent);font-variant-numeric:tabular-nums}
+  input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;margin:0}
+  input[type=number]{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:6px;
+    background:var(--paper);color:var(--ink);font-family:ui-monospace,monospace;font-size:14px}
+  .hint{font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.4}
+
+  .tier{margin-top:18px;border:1px solid var(--line);border-left:5px solid var(--accent);
+    border-radius:10px;padding:16px 18px;background:var(--card)}
+  .tier .tname{font:800 17px/1.2 system-ui;letter-spacing:-.01em}
+  .tier .tsub{color:var(--muted);font-size:13.5px;margin-top:5px}
+
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:14px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:13px 14px}
+  .kpi .k{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .kpi .v{font:800 24px/1.15 ui-monospace,monospace;font-variant-numeric:tabular-nums;margin-top:7px;letter-spacing:-.02em}
+  .kpi .u{font-size:12px;color:var(--muted);font-weight:600}
+
+  .bar{height:30px;border-radius:6px;overflow:hidden;display:flex;border:1px solid var(--line);margin-top:6px}
+  .bar span{display:block;height:100%}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:10px;font-size:12.5px;color:var(--muted)}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px}
+  .legend b{color:var(--ink);font-family:ui-monospace,monospace;font-variant-numeric:tabular-nums}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:15px 16px}
+  .card h3{margin:0 0 3px;font-size:15px;font-weight:800;display:flex;align-items:center;gap:9px}
+  .dot{width:9px;height:9px;border-radius:50%;flex:none}
+  .card .why{font-size:12.5px;color:var(--muted);margin:6px 0 12px;line-height:1.45}
+  .row{display:flex;justify-content:space-between;gap:12px;padding:5px 0;font-size:13.5px;border-top:1px dashed var(--line)}
+  .row:first-of-type{border-top:0}
+  .row b{font-family:ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:700}
+  .flag{margin-top:11px;font-size:12.5px;padding:9px 11px;border-radius:7px;line-height:1.45}
+
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+  th,td{padding:10px 13px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);font-weight:700;white-space:nowrap}
+  tr:last-child td{border-bottom:0}
+  tr.on{background:color-mix(in srgb,var(--accent) 11%,transparent)}
+  tr.on td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+  td.seats{font-family:ui-monospace,monospace;white-space:nowrap;font-weight:700}
+  .notes{columns:2;column-gap:26px;font-size:13px;color:var(--muted)}
+  .notes li{break-inside:avoid;margin-bottom:9px}
+  @media(max-width:640px){.notes{columns:1}}
+  footer{margin-top:32px;font-size:12.5px;color:var(--muted);max-width:74ch;line-height:1.6}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">AscendOS · Infrastructure Planning</div>
+    <h1>What actually breaks first when you scale</h1>
+    <p class="thesis">Drag the seats. Most capacity planners show you CPU and RAM — for AscendOS those stay
+    almost flat, because the backend spends its life <b>waiting on external AI calls</b>, not computing.
+    Three things do move: <b>the inference bill</b>, <b>Qdrant's memory</b>, and <b>how many long-lived
+    scan connections one process can hold</b>. This models all of it, and says which numbers are measured
+    and which are assumptions you should replace.</p>
+  </header>
+
+  <h2>Inputs</h2>
+  <div class="panel controls">
+    <div>
+      <label>Seats <span class="val" id="vSeats">50</span></label>
+      <input type="range" id="seats" min="0" max="1000" step="1" value="425">
+      <div class="hint">1 → 1,000,000, logarithmic — six orders of magnitude do not fit on a linear track.
+      McLean's is 10. Snap points below.</div>
+      <div id="snaps" style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px"></div>
+    </div>
+    <div>
+      <label>Compass · per day <span class="val" id="vComp">10</span></label>
+      <input type="range" id="comp" min="0" max="60" step="1" value="10">
+      <div class="hint">Per seat. Flash · 3 calls each. Cheapest workload you have.</div>
+    </div>
+    <div>
+      <label>Inspector · per day <span class="val" id="vInsp">15</span></label>
+      <input type="range" id="insp" min="0" max="60" step="1" value="15">
+      <div class="hint"><b>Pro</b> for the vision call, Flash for the rest, plus per-element
+      segmentation. This is your cost centre.</div>
+    </div>
+    <div>
+      <label>Estimating · per week <span class="val" id="vEst">40</span></label>
+      <input type="range" id="est" min="0" max="120" step="1" value="40">
+      <div class="hint">Flash · ~3 calls. Modelled as an estimating SESSION, not a full tender
+      ingest — see assumptions.</div>
+    </div>
+    <div>
+      <label>Tender PDF scans · per month <span class="val" id="vTend">2</span></label>
+      <input type="range" id="tend" min="0" max="40" step="1" value="2">
+      <div class="hint">Flash · ~13 calls, 3 consensus passes. Rare but heavy.</div>
+    </div>
+    <div>
+      <label>Peak vs average <span class="val" id="vPeak">3.0×</span></label>
+      <input type="range" id="peak" min="10" max="80" step="1" value="30">
+      <div class="hint">Everyone quotes Monday morning. Sizing follows the peak.</div>
+    </div>
+    <div>
+      <label>Flash · $/1M in · out</label>
+      <div style="display:flex;gap:7px">
+        <input type="number" id="fIn"  min="0" step="0.05" value="0.75">
+        <input type="number" id="fOut" min="0" step="0.05" value="3.75">
+      </div>
+      <div class="hint">Flash tiers ranged $0.25–$0.75 in and $1.50–$4.50 out in Aug 2026. Verify yours.</div>
+    </div>
+    <div>
+      <label>Pro · $/1M in · out</label>
+      <div style="display:flex;gap:7px">
+        <input type="number" id="pIn"  min="0" step="0.1" value="2.00">
+        <input type="number" id="pOut" min="0" step="0.1" value="12.00">
+      </div>
+      <div class="hint">Gemini 3.1 Pro ≤200K context. Output is <b>6× input</b> — verbosity is the lever.</div>
+    </div>
+    <div>
+      <label>Segmentation · $ per element</label>
+      <input type="number" id="sam" min="0" step="0.001" value="0.004">
+      <div class="hint">Billed per element outlined, so a busy photograph costs more than a quiet one.</div>
+    </div>
+  </div>
+
+  <div class="tier" id="tier"></div>
+  <div class="kpis" id="kpis"></div>
+
+  <h2>Where the money goes</h2>
+  <div class="panel">
+    <div class="bar" id="costbar"></div>
+    <div class="legend" id="costlegend"></div>
+    <p id="floor" style="margin-top:14px;font-size:13.5px;line-height:1.5"></p>
+    <p class="hint" style="margin-top:10px">This split is the whole point. Servers are a rounding error next
+    to inference at almost every scale — so the lever that matters is <b>tokens per scan</b>, not instance size.
+    Caching a repeated Compass query saves more than a year of the VM it runs on.</p>
+  </div>
+
+  <h2>Resources</h2>
+  <div class="cards" id="cards"></div>
+
+  <h2>Which workload costs what</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>Module</th><th>Jobs / mo</th><th>Peak concurrent</th><th>AI $ / mo</th><th>Share</th></tr></thead>
+    <tbody id="mix"></tbody>
+  </table></div>
+
+  <h2>What changes, and when</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>Seats</th><th>Shape</th><th>What forces the change</th></tr></thead>
+    <tbody id="roadmap"></tbody>
+  </table></div>
+
+  <h2>Assumptions you should challenge</h2>
+  <div class="panel"><ul class="notes" id="assume"></ul></div>
+
+  <footer id="foot"></footer>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+// Log scale: position 0-1000 maps 1 → 1,000,000, then rounded to something a
+// human would actually say out loud.
+function seatsFromPos(pos){
+  const raw = Math.pow(10, (pos/1000)*6);
+  const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = mag <= 10 ? 1 : mag/10;
+  return Math.max(1, Math.round(raw/step)*step);
+}
+const posFromSeats = n => Math.round(Math.log10(Math.max(1,n))/6*1000);
+const fmt = n => n >= 1e9 ? (n/1e9).toFixed(2)+'B' : n >= 1e6 ? (n/1e6).toFixed(2)+'M'
+  : n >= 1e3 ? (n/1e3).toFixed(1)+'k' : (Math.round(n*10)/10).toLocaleString();
+const money = n => n >= 1000 ? '$'+(n/1000).toFixed(1)+'k' : '$'+n.toFixed(n<10?2:0);
+
+// Per-workload shape. Token counts are order-of-magnitude estimates from the
+// call graph, not measurements — see the assumptions list.
+// Per job: which model does what. Flash everywhere except the Inspector's
+// vision call, which is Pro because it reads photographs.
+const WORK = {
+  compass: { calls:3,  secs:12, flashIn:9000,  flashOut:2000, proIn:0,     proOut:0,    sam:0,  label:'Compass' },
+  inspect: { calls:4,  secs:55, flashIn:6000,  flashOut:1000, proIn:24000, proOut:3000, sam:14, label:'Inspector' },
+  estim:   { calls:3,  secs:20, flashIn:12000, flashOut:2000, proIn:0,     proOut:0,    sam:0,  label:'Estimating' },
+  tender:  { calls:13, secs:95, flashIn:70000, flashOut:9000, proIn:0,     proOut:0,    sam:0,  label:'Tender scan' },
+};
+// Render instance ladder — specs from Render's own compute-plans docs,
+// prices as published Aug 2026. Both web services and background workers use
+// this same ladder.
+const RENDER = [
+  {n:'Starter',   cpu:0.5, ram:0.5, $:7},
+  {n:'Standard',  cpu:1,   ram:2,   $:25},
+  {n:'Pro',       cpu:2,   ram:4,   $:85},
+  {n:'Pro Plus',  cpu:4,   ram:8,   $:175},
+  {n:'Pro Max',   cpu:4,   ram:16,  $:225},
+  {n:'Pro Ultra', cpu:8,   ram:32,  $:450},
+];
+// CHEAPEST combination that fits — not the smallest single plan.
+//
+// Naively picking the first plan large enough produces a cliff: needing 4.1
+// CPU skips Pro Plus (4 CPU, $175) and lands on Pro Ultra ($450), when two
+// Pro Plus instances cost $350 and survive one of them dying. Render's ladder
+// is not linear in price per core, so scaling out is often cheaper than up.
+function fitRender(cpu, ram, {minRam=0, maxCount=24, minCount=1}={}){
+  let best = null;
+  for (const p of RENDER) {
+    // A box too small to hold one unit of work is not a cheaper answer, it is
+    // a broken one. Image processing (sharp) and PDF rendering need real
+    // headroom, so the web tier has a floor regardless of arithmetic.
+    if (p.ram < minRam) continue;
+    // Connections and capacity size the SAME fleet. Multiplying them was a
+    // bug that produced 364 instances where 26 were needed.
+    const count = Math.max(minCount, Math.ceil(Math.max(cpu/p.cpu, ram/p.ram)));
+    // Hundreds of tiny instances is nominally cheapest and operationally
+    // absurd — deploys, restarts and connection pools all get worse.
+    if (count > maxCount) continue;
+    const cost = p.$ * count;
+    if (!best || cost < best.cost) best = {plan:p, count, cost};
+  }
+  const top = RENDER[RENDER.length-1];
+  return best || {plan:top, count:Math.max(1,Math.ceil(Math.max(cpu/top.cpu, ram/top.ram))), cost:top.$};
+}
+const SEATS_PER_ORG = 8, ACTIVE_FRACTION = .45, WORK_HOURS = 8, WORK_DAYS = 21;
+const SAM_COST = 0.004;           // per mask call, external segmentation
+const VEC_BYTES = 768*4 + 2200;   // 768 dims float32 + payload text, per vector
+const CODE_VECTORS = 420000;      // ingested code books across regions
+const TENANT_VECTORS = 5000;      // shop_knowledge + vision_training + visual_sops
+
+const TIERS = [
+  { max:5,     name:'A laptop',            sub:'Genuinely. One process, Qdrant in a container, Firestore free tier. The interesting engineering at this size is correctness, not capacity.' },
+  { max:50,    name:'Single box',          sub:'One VM runs everything — Qdrant, Node, scheduler. Comfortably idle, because the backend spends its life waiting on someone else\'s API. This is where you are.' },
+  { max:300,   name:'Split the memory',    sub:'Qdrant moves to its own machine. It is RAM-bound and competing with Node for the same gigabytes. Add a cache in front of embeddings and repeated Compass queries.' },
+  { max:1500,  name:'Queue the work',      sub:'Scans stop running inside the request. A job queue plus a worker pool decouples a 90-second tender from an HTTP connection — the single biggest architectural change on this list, and the one that is painful to retrofit later.' },
+  { max:5000,  name:'Replicate & region',  sub:'Qdrant replicas for read scaling, workers in an autoscaling group, code-book PDFs on a CDN, committed inference spend instead of list price.' },
+  { max:20000, name:'Shard & isolate',     sub:'Qdrant sharded by region, multi-region active-active, per-tenant rate isolation so one customer\'s Monday morning cannot starve another\'s.' },
+  { max:100000,name:'Own the inference',   sub:'Self-hosted embeddings become clearly cheaper than per-token API at this volume, and segmentation is worth bringing in-house. The bill stops being someone else\'s pricing page and becomes GPUs you operate.' },
+  { max:1e9,   name:'Platform',            sub:'A different company. Tenant data sharded across database instances, vector search as its own service with its own team, capacity planned in racks and committed contracts rather than instances.' },
+];
+
+const ROADMAP = [
+  ['1–5','A laptop or one small VM','Nothing. At this size capacity is not the problem you have.'],
+  ['5–50','One VM · 4 vCPU / 8 GB · Qdrant local · Firestore','Nothing. Comfortably idle — the backend is waiting on APIs, not working.'],
+  ['50–300','Qdrant on its own box (RAM-sized) · Redis cache · 2 Node instances','Qdrant wants the whole index resident. Sharing RAM with Node is what degrades first.'],
+  ['300–1.5k','Job queue + worker pool · load balancer · CDN for code PDFs','Long-lived scan connections. A 90-second tender held open through HTTP caps concurrency long before CPU does.'],
+  ['1.5k–5k','Qdrant replicas · autoscaling workers · regional deploys · committed AI spend','Read throughput on the vector store, and inference list-price becoming the dominant line item.'],
+  ['5k–20k','Qdrant sharding · multi-region · per-tenant quotas · analytics warehouse','Index no longer fits one machine. Firestore still fine for the APP — a warehouse is for reporting, not scale.'],
+  ['20k–100k','Self-hosted embeddings + segmentation on own GPUs · inference as a service','Per-token API pricing stops competing with running the models yourself. This is a hiring decision as much as a technical one.'],
+  ['100k–1M','Tenant-sharded databases · vector search as its own service · racks and contracts','Single-project Firestore limits, and a vector index measured in terabytes. Also the point where "we" is a platform team, not a repo.'],
+];
+
+const ASSUME = [
+  ['Token counts are estimated from the call graph, not measured.','Inspector sends images, which dominate input tokens. Log real usage per scan and replace these — every dollar figure moves with them.'],
+  ['45% of seats active on a given day, over an 8-hour window.','A trade shop is bursty. If everyone quotes Monday morning your real peak is worse than the slider default.'],
+  ['8 seats per organisation.','Drives tenant count, which drives per-tenant vector storage. McLean\'s is 10.'],
+  ['Node is I/O-bound, ~0.3 cores per concurrent scan.','True while the heavy lifting is remote. Image processing (sharp) and PDF rendering are the local exceptions and are genuinely CPU-hungry.'],
+  ['Qdrant holds its index in RAM.','This is why it gets its own box early. Disk-backed is possible and much slower — a latency decision, not a cost one.'],
+  ['Firestore is not a scaling limit.','It is serverless and scales itself. What grows is cost per read and the 1 MB document ceiling — which this codebase can already hit by storing images in a doc.'],
+];
+
+function calc(){
+  const seats = seatsFromPos(+$('seats').value), peak = +$('peak').value/10;
+  // Per seat per MONTH, from the per-day / per-week inputs.
+  const per = {
+    compass: +$('comp').value * WORK_DAYS,
+    inspect: +$('insp').value * WORK_DAYS,
+    estim:   +$('est').value  * 4.33,
+    tender:  +$('tend').value,
+  };
+  const R = { fIn:+$('fIn').value||0, fOut:+$('fOut').value||0,
+              pIn:+$('pIn').value||0, pOut:+$('pOut').value||0, sam:+$('sam').value||0 };
+
+  let jobsMo=0, callsMo=0, peakConc=0, samCalls=0;
+  let fIn=0,fOut=0,pIn=0,pOut=0;
+  const mix = [];
+  for (const [k,w] of Object.entries(WORK)) {
+    const n = seats * per[k];
+    jobsMo += n; callsMo += n*w.calls; samCalls += n*(w.sam||0);
+    fIn += n*w.flashIn; fOut += n*w.flashOut; pIn += n*w.proIn; pOut += n*w.proOut;
+    const perHour = (n / WORK_DAYS / WORK_HOURS) * peak;
+    const conc = perHour * w.secs / 3600;
+    peakConc += conc;
+    const cost = (n*w.flashIn/1e6*R.fIn) + (n*w.flashOut/1e6*R.fOut)
+               + (n*w.proIn/1e6*R.pIn)   + (n*w.proOut/1e6*R.pOut)
+               + n*(w.sam||0)*R.sam;
+    mix.push({label:w.label, jobs:n, conc, cost});
+  }
+  const orgs = Math.ceil(seats / SEATS_PER_ORG);
+  const tokens = fIn+fOut+pIn+pOut;
+
+  const flashCost = fIn/1e6*R.fIn + fOut/1e6*R.fOut;
+  const proCost   = pIn/1e6*R.pIn + pOut/1e6*R.pOut;
+  const samCost   = samCalls*R.sam;
+  const aiCost    = flashCost + proCost + samCost;
+
+  // --- Compute, sized on concurrency, then fitted to Render's ladder.
+  const needCpu = peakConc*0.3 + 1;
+  const needRam = peakConc*0.35 + 1.5;
+  const webN    = Math.max(1, Math.ceil(peakConc/45));   // ~45 live SSE per process
+  // 2 GB floor per instance: sharp buffers and PDF rendering need it.
+  // webN is the CONNECTION floor; capacity may demand more, never fewer.
+  const web     = fitRender(needCpu, needRam, {minRam:2, maxCount:64, minCount:webN});
+  const webCost = web.plan.$ * web.count;
+
+  // Qdrant as a Render private service — RAM is the binding constraint.
+  const vectors = CODE_VECTORS + orgs*TENANT_VECTORS;
+  const qGb = Math.max(2, Math.ceil(vectors*VEC_BYTES*1.4/1e9));
+  const qdr = fitRender(2, qGb, {minRam:2, maxCount:8});
+  const qdrCost = qdr.plan.$ * qdr.count;
+  const diskGb = Math.ceil(qGb*1.3);
+  const diskCost = diskGb*0.25;
+  const offLadder = qGb > 32;
+
+  const fsOps = jobsMo*55 + seats*900;
+  const fsCost = (fsOps/100000)*0.06 + orgs*0.35;
+
+  const egressGb = jobsMo*0.008 + seats*0.4;
+  const wsPlan = egressGb>1000 ? {n:'Scale',$:499,inc:1000} : {n:'Pro',$:25,inc:25};
+  const bwCost = wsPlan.$ + Math.max(0, egressGb-wsPlan.inc)*0.15;
+
+  const infraCost = webCost + qdrCost + diskCost + bwCost;
+  const total = aiCost + infraCost + fsCost;
+
+  const tier = TIERS.find(t => seats <= t.max);
+  return {seats,orgs,jobsMo,callsMo,tokens,peakConc,vectors,qGb,fsOps,fsCost,mix,
+    flashCost,proCost,samCost,aiCost,samCalls,
+    web,webN,webCost,needCpu,needRam,qdr,qdrCost,diskGb,diskCost,offLadder,
+    egressGb,wsPlan,bwCost,infraCost,total,tier,tierIdx:TIERS.indexOf(tier),R};
+}
+
+function health(v,warn,crit){ return v>=crit?['crit','At the limit']:v>=warn?['warn','Watch']:['good','Comfortable']; }
+
+function render(){
+  const d = calc();
+  $('vSeats').textContent = d.seats.toLocaleString();
+  $('vComp').textContent = $('comp').value;
+  $('vInsp').textContent = $('insp').value;
+  $('vEst').textContent = $('est').value;
+  $('vTend').textContent = $('tend').value;
+  $('vPeak').textContent = (+$('peak').value/10).toFixed(1)+'×';
+
+  $('tier').innerHTML = `<div class="tname">Tier ${d.tierIdx+1} · ${d.tier.name}</div>
+    <div class="tsub">${d.tier.sub}</div>`;
+
+  $('kpis').innerHTML = [
+    ['Peak concurrent scans', Math.ceil(d.peakConc), 'in flight at once'],
+    ['Jobs / month', fmt(d.jobsMo), 'across all modules'],
+    ['AI calls / month', fmt(d.callsMo), 'model round-trips'],
+    ['Tokens / month', fmt(d.tokens), 'in + out'],
+    ['Monthly total', money(d.total), 'all-in run rate'],
+    ['Cost per seat', money(d.total/Math.max(1,d.seats)), 'per month'],
+  ].map(([k,v,u])=>`<div class="kpi"><div class="k">${k}</div><div class="v">${v}</div><div class="u">${u}</div></div>`).join('');
+
+  const parts = [['Pro · Inspector vision',d.proCost,'var(--accent)'],
+                 ['Segmentation',d.samCost,'var(--crit)'],
+                 ['Flash · everything else',d.flashCost,'var(--warn)'],
+                 ['Render compute',d.infraCost,'var(--steel)'],
+                 ['Firestore',d.fsCost,'var(--good)']];
+  $('costbar').innerHTML = parts.map(([n,v,c])=>
+    `<span style="width:${(v/d.total*100).toFixed(2)}%;background:${c}" title="${n}"></span>`).join('');
+  $('costlegend').innerHTML = parts.map(([n,v,c])=>
+    `<span><i style="background:${c}"></i>${n} <b>${money(v)}</b> · ${(v/d.total*100).toFixed(0)}%</span>`).join('');
+
+  const [cpuS,cpuT] = health(d.peakConc, 40, 90);
+  const [qS,qT]     = health(d.qGb, 24, 56);
+  const cards = [
+    ['Render · web service', cpuS, cpuT, 'Node waits on remote APIs far more than it computes, so sizing follows CONCURRENCY, not seats. Peak in-flight scans come from Little\'s Law: arrival rate × how long each holds a connection.',
+      [['Peak concurrent scans', Math.ceil(d.peakConc)],
+       ['Needs', d.needCpu.toFixed(1)+' vCPU · '+d.needRam.toFixed(1)+' GB'],
+       ['Plan', d.web.plan.n+' ('+d.web.plan.cpu+' CPU / '+d.web.plan.ram+' GB)'],
+       ['Instances', d.web.count + (d.webN>1 && d.web.count===d.webN ? ' (connection-bound)' : '')],
+       ['Compute cost', money(d.webCost)+'/mo']],
+      d.webN>1 ? 'Multiple instances needed for CONNECTIONS, not CPU — a scan holds an SSE connection open for its whole life. This is the point to move scans onto background workers.' : ''],
+    ['Qdrant · private service', qS, qT, 'Render has no managed vector database, so this is a Private Service with a persistent disk. RAM is the binding constraint — the index wants to be resident.',
+      [['Total vectors', fmt(d.vectors)],
+       ['Code books', fmt(CODE_VECTORS)+' (fixed)'],
+       ['RAM for index', d.qGb+' GB'],
+       ['Plan', d.offLadder ? 'Off the standard ladder' : d.qdr.plan.n+' ('+d.qdr.plan.ram+' GB)'],
+       ['Disk '+d.diskGb+' GB', money(d.diskCost)+'/mo'],
+       ['Qdrant cost', money(d.qdrCost+d.diskCost)+'/mo']],
+      d.qGb>2000 ? 'Terabytes of index. This is vector search as its own service with its own team — and per-tenant knowledge almost certainly needs ageing out rather than keeping forever.'
+        : d.qGb>56 ? 'Past a single machine. Shard by region — the code books already partition that way, and tenant filtering is already how retrieval is scoped.'
+        : d.qGb>24 ? 'Give it a dedicated box; it should not compete with Node for memory.' : ''],
+    ['Firestore', 'good', 'Scales itself', 'Serverless — it will not fall over. What grows is the bill and the shape of your queries. A different database is an analytics decision, not a capacity one.',
+      [['Organisations', d.orgs.toLocaleString()],['Ops / month', fmt(d.fsOps)],['Est. cost', money(d.fsCost)]],
+      d.orgs > 20000
+        ? 'Past roughly 20k organisations, tenant data wants sharding across database instances — and analytics should have left for a warehouse long before this.'
+        : 'Real ceiling is the 1 MB per-document limit, which this codebase can already hit by storing an image in a doc rather than in Storage.'],
+    ['AI inference', d.aiCost>d.infraCost*8?'warn':'good', d.aiCost>d.infraCost*8?'Dominant cost':'Proportionate',
+      'Scales with SCANS, not seats. Inspector is the cost centre twice over: it is the only workload on Pro, and it is the only one paying per-element segmentation.',
+      [['Pro · Inspector vision', money(d.proCost)],
+       ['Segmentation ('+fmt(d.samCalls)+')', money(d.samCost)],
+       ['Flash · all other calls', money(d.flashCost)],
+       ['Total tokens', fmt(d.tokens)],
+       ['Share of spend', (d.aiCost/d.total*100).toFixed(0)+'%']],
+      d.aiCost > 60000
+        ? 'At this volume, running the embedding and segmentation models yourself is plainly cheaper than per-token pricing. That is a hiring decision as much as a technical one.'
+        : 'Biggest levers, in order: cache repeated queries, cut tokens per scan, then negotiate rate. Instance size is not on the list.'],
+  ];
+  const col = s => s==='crit'?'var(--crit)':s==='warn'?'var(--warn)':'var(--good)';
+  $('cards').innerHTML = cards.map(([t,s,st,why,rows,flag])=>`<div class="card">
+    <h3><span class="dot" style="background:${col(s)}"></span>${t}
+      <span style="margin-left:auto;font-size:11px;font-weight:700;color:${col(s)};text-transform:uppercase;letter-spacing:.09em">${st}</span></h3>
+    <p class="why">${why}</p>
+    ${rows.map(([k,v])=>`<div class="row"><span>${k}</span><b>${v}</b></div>`).join('')}
+    ${flag?`<div class="flag" style="background:color-mix(in srgb,${col(s)} 13%,transparent);color:${col(s)}">${flag}</div>`:''}
+  </div>`).join('');
+
+  // The finding that falls out of the model rather than being asserted:
+  // per-seat cost collapses early, then flattens and never improves again.
+  const perSeat = d.total/Math.max(1,d.seats);
+  const marginal = (d.aiCost/Math.max(1,d.seats));
+  $('floor').innerHTML = d.seats < 100
+    ? `At <b>${d.seats.toLocaleString()}</b> seats you are paying <b>${money(perSeat)}/seat</b> — almost all of it
+       the minimum viable server, not usage. That number falls fast with the next few customers.`
+    : `At <b>${d.seats.toLocaleString()}</b> seats the cost per seat is <b>${money(perSeat)}</b>, and roughly
+       <b>${money(marginal)}</b> of that is inference alone. <b>This is the floor.</b> Servers amortise across
+       customers; tokens do not — every new seat brings its own scans. Growth will not make a seat cheaper than
+       about ${money(marginal)}/month. Only fewer or cheaper tokens per scan will.`;
+
+  const mixRows = d.mix.map(m=>`<tr><td><b>${m.label}</b></td>
+      <td class="seats">${fmt(m.jobs)}</td>
+      <td class="seats">${m.conc<1?m.conc.toFixed(2):Math.ceil(m.conc)}</td>
+      <td class="seats">${money(m.cost)}</td>
+      <td class="seats">${(m.cost/d.aiCost*100).toFixed(0)}%</td></tr>`).join('');
+  $('mix').innerHTML = mixRows;
+
+  $('roadmap').innerHTML = ROADMAP.map((r,i)=>
+    `<tr class="${i===d.tierIdx?'on':''}"><td class="seats">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('');
+
+  $('assume').innerHTML = ASSUME.map(([h,b])=>`<li><b style="color:var(--ink)">${h}</b><br>${b}</li>`).join('');
+
+  $('foot').innerHTML = `<b>How to read this:</b> the shapes and breakpoints come from how AscendOS is actually
+    built — 768-dimension vectors across four Qdrant collections, streamed scans held open over SSE, three model
+    calls per Compass search and roughly thirteen per tender. The dollar figures are estimates built on the
+    assumptions above, and the token counts are the softest of them. Log real per-scan usage and the picture
+    sharpens considerably. Nothing here is a measurement of a running system at scale.`;
+}
+
+const SNAPS = [1,10,50,250,1000,5000,25000,100000,1000000];
+$('snaps').innerHTML = SNAPS.map(n=>
+  `<button data-n="${n}" style="font:700 11px ui-monospace,monospace;padding:3px 8px;border-radius:5px;
+   border:1px solid var(--line);background:var(--paper);color:var(--muted);cursor:pointer">
+   ${n>=1000?(n/1000)+'k':n}</button>`).join('');
+$('snaps').addEventListener('click', e => {
+  const n = e.target.dataset && e.target.dataset.n;
+  if (!n) return;
+  $('seats').value = posFromSeats(+n);
+  render();
+});
+
+document.querySelectorAll('input').forEach(el=>el.addEventListener('input',render));
+render();
+</script>
+
+</body>
+</html>
