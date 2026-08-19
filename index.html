@@ -106,19 +106,19 @@
       <div id="snaps" style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px"></div>
     </div>
     <div>
-      <label>Compass · per day <span class="val" id="vComp">10</span></label>
-      <input type="range" id="comp" min="0" max="60" step="1" value="10">
+      <label>Compass · per day <span class="val" id="vComp">5</span></label>
+      <input type="range" id="comp" min="0" max="60" step="1" value="5">
       <div class="hint">Per seat. Flash · 3 calls each. Cheapest workload you have.</div>
     </div>
     <div>
-      <label>Inspector · per day <span class="val" id="vInsp">15</span></label>
-      <input type="range" id="insp" min="0" max="60" step="1" value="15">
+      <label>Inspector · per day <span class="val" id="vInsp">3</span></label>
+      <input type="range" id="insp" min="0" max="60" step="1" value="3">
       <div class="hint"><b>Pro</b> for the vision call, Flash for the rest, plus per-element
       segmentation. This is your cost centre.</div>
     </div>
     <div>
-      <label>Estimating · per week <span class="val" id="vEst">40</span></label>
-      <input type="range" id="est" min="0" max="120" step="1" value="40">
+      <label>Estimating · per day <span class="val" id="vEst">4</span></label>
+      <input type="range" id="est" min="0" max="40" step="1" value="4">
       <div class="hint">Flash · ~3 calls. Modelled as an estimating SESSION, not a full tender
       ingest — see assumptions.</div>
     </div>
@@ -279,6 +279,7 @@ const ROADMAP = [
 ];
 
 const ASSUME = [
+  ['Idle overhead is calibrated against a live deployment.','Both AscendOS and McLean\u2019s serve roughly 10 seats on one 1-core / 2 GB instance today, so the idle floor is observed rather than assumed. The per-scan burst figures are still estimates.'],
   ['Token counts are estimated from the call graph, not measured.','Inspector sends images, which dominate input tokens. Log real usage per scan and replace these — every dollar figure moves with them.'],
   ['45% of seats active on a given day, over an 8-hour window.','A trade shop is bursty. If everyone quotes Monday morning your real peak is worse than the slider default.'],
   ['8 seats per organisation.','Drives tenant count, which drives per-tenant vector storage. McLean\'s is 10.'],
@@ -323,8 +324,16 @@ function calc(){
   const aiCost    = flashCost + proCost + samCost;
 
   // --- Compute, sized on concurrency, then fitted to Render's ladder.
-  const needCpu = peakConc*0.3 + 1;
-  const needRam = peakConc*0.35 + 1.5;
+  // BASELINE CALIBRATED AGAINST A REAL DEPLOYMENT, not guessed.
+  //
+  // This assumed +1 vCPU and +1.5 GB of idle overhead, which produced two
+  // instances where one is demonstrably enough: AscendOS and McLean's each
+  // run ~10 seats on a single 1-core / 2 GB box today. An idle Node process
+  // waiting on the network is nowhere near a full core.
+  //
+  // Per-scan figures are unchanged - sharp and PDF rendering genuinely burst.
+  const needCpu = peakConc*0.3 + 0.35;
+  const needRam = peakConc*0.35 + 1.2;
   const webN    = Math.max(1, Math.ceil(peakConc/45));   // ~45 live SSE per process
   // 2 GB floor per instance: sharp buffers and PDF rendering need it.
   // webN is the CONNECTION floor; capacity may demand more, never fewer.
@@ -334,7 +343,10 @@ function calc(){
   // Qdrant as a Render private service — RAM is the binding constraint.
   const vectors = CODE_VECTORS + orgs*TENANT_VECTORS;
   const qGb = Math.max(2, Math.ceil(vectors*VEC_BYTES*1.4/1e9));
-  const qdr = fitRender(2, qGb, {minRam:2, maxCount:8});
+  // ONE BOX. Qdrant is stateful: two instances is a CLUSTER, not a bigger
+  // machine, and cannot be conjured to satisfy a RAM number. The plan must
+  // hold the whole index on its own, or we are off the ladder entirely.
+  const qdr = fitRender(2, qGb, {minRam:qGb, maxCount:1});
   const qdrCost = qdr.plan.$ * qdr.count;
   const diskGb = Math.ceil(qGb*1.3);
   const diskCost = diskGb*0.25;

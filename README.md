@@ -12,18 +12,21 @@ Deploy as a **Render Static Site** with the repo root as the publish directory.
 ## The two findings worth knowing
 
 **1. Hardware is not your scaling problem.** The backend spends its life *waiting* on
-external AI calls, so compute follows concurrency rather than headcount. At realistic
-usage, Render compute is roughly **5% of total spend** and stays there. The AI bill is
-everything else.
+external AI calls, so compute follows concurrency rather than headcount. One 1-core /
+2 GB instance genuinely carries ~10 seats — that is not a projection, it is what both
+AscendOS and McLean's run on today, and the model's idle floor is calibrated to it.
+A hundred seats needs two instances.
 
-**2. Cost per seat hits a floor and never improves.** It falls steeply from one seat to
+**2. Cost per seat hits a floor and never improves — and the floor is AI, not iron.** It falls steeply from one seat to
 about a hundred — that early number is mostly the minimum viable server — and then
 flattens permanently. Servers amortise across customers; tokens do not, because every
 new seat brings its own scans. Growth alone will never make a seat cheaper. Only fewer
 or cheaper tokens per scan will.
 
 Within the AI bill, **Inspector is the cost centre twice over**: it is the only workload
-routed to Pro, and the only one paying per-element segmentation.
+routed to Pro, and the only one paying per-element segmentation. It is also the input the
+whole model is most sensitive to — moving Inspector from 3/day to 15/day takes cost per
+seat from roughly $12 to roughly $55. If you change one number, change that one.
 
 ---
 
