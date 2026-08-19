@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<meta name="description" content="Capacity and cost planner for AscendOS on Render.com.">
+<meta name="description" content="Capacity and cost planner for AscendOS: Render vs serverless vs raw VPS.">
 <title>AscendOS · Scaling Planner</title>
 <style>
   :root {
@@ -42,6 +42,14 @@
     background:var(--paper);color:var(--ink);font-family:ui-monospace,monospace;font-size:14px}
   .hint{font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.4}
 
+  .tabbtn{font:700 13px system-ui;padding:9px 16px;border-radius:8px;border:1px solid var(--line);
+    background:var(--card);color:var(--muted);cursor:pointer}
+  .tabbtn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .cmp{display:flex;gap:10px;flex-wrap:wrap}
+  .cmp .c{flex:1;min-width:190px;background:var(--card);border:1px solid var(--line);border-radius:9px;
+    padding:10px 13px;font-size:12.5px;color:var(--muted)}
+  .cmp .c b{display:block;font:800 19px/1.3 ui-monospace,monospace;color:var(--ink);font-variant-numeric:tabular-nums}
+  .cmp .c.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
   .tier{margin-top:18px;border:1px solid var(--line);border-left:5px solid var(--accent);
     border-radius:10px;padding:16px 18px;background:var(--card)}
   .tier .tname{font:800 17px/1.2 system-ui;letter-spacing:-.01em}
@@ -96,6 +104,14 @@
     and which are assumptions you should replace.</p>
   </header>
 
+  <h2>Architecture</h2>
+  <div id="tabs" style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="tabbtn on" data-arch="render">Managed platform · Render</button>
+    <button class="tabbtn" data-arch="srv">Serverless · Cloud Run + Pinecone</button>
+    <button class="tabbtn" data-arch="vps">Raw VPS · Hetzner</button>
+  </div>
+  <div id="compare" style="margin-top:12px"></div>
+
   <h2>Inputs</h2>
   <div class="panel controls">
     <div>
@@ -132,6 +148,17 @@
       <input type="range" id="reg" min="1" max="13" step="1" value="1">
       <div class="hint">Each is one code book, ~45k vectors. Ironwood serves Alberta today — a fixed
       cost that does not grow with seats, only with provinces.</div>
+    </div>
+    <div>
+      <label>Warm instances (serverless) <span class="val" id="vWarm">1</span></label>
+      <input type="range" id="warm" min="0" max="3" step="1" value="1">
+      <div class="hint">Cloud Run min-instances. 0 = scale to zero and eat a cold start on the
+      first morning search; 1 = always warm. Billed 24/7.</div>
+    </div>
+    <div>
+      <label>EUR → USD (VPS tab)</label>
+      <input type="number" id="fx" min="0.5" step="0.01" value="1.17">
+      <div class="hint">Hetzner bills in EUR. Set today's rate — it moves, so it is an input.</div>
     </div>
     <div>
       <label>Peak vs average <span class="val" id="vPeak">3.0×</span></label>
@@ -237,6 +264,24 @@ const RENDER = [
 // CPU skips Pro Plus (4 CPU, $175) and lands on Pro Ultra ($450), when two
 // Pro Plus instances cost $350 and survive one of them dying. Render's ladder
 // is not linear in price per core, so scaling out is often cheaper than up.
+// ---- Verified vendor rates, August 2026. Sources in the README. ----
+// Cloud Run tier-1: per vCPU-second / GiB-second while a request is open,
+// plus per-request fee. Free tier applied in the math, not ignored.
+const CR = {vcpuS:0.000024, memS:0.0000025, reqM:0.40, freeVcpuS:180000, freeMemS:360000, freeReq:2e6};
+// Pinecone serverless Standard. Read units priced at the TOP of the published
+// $16-18 range - deliberately conservative. Starter free tier is real and
+// applied: 2 GB storage, 1M RU/mo.
+const PC = {storeGB:0.33, ruM:18, wuM:4.5, minMo:50, freeGB:2, freeRuM:1e6};
+// Hetzner CX ladder, POST June-2026 increases. CX23 and CX43 are confirmed
+// figures; CX33/CX53 are interpolated at the same uplift and flagged as such.
+// 20 TB traffic included per server, which zeroes the egress line.
+const HZ = [
+  {n:'CX23', cpu:2,  ram:4,  eur:5.49,  sure:true},
+  {n:'CX33', cpu:4,  ram:8,  eur:8.99,  sure:false},
+  {n:'CX43', cpu:8,  ram:16, eur:15.99, sure:true},
+  {n:'CX53', cpu:16, ram:32, eur:29.99, sure:false},
+];
+
 function fitRender(cpu, ram, {minRam=0, maxCount=24, minCount=1}={}){
   let best = null;
   for (const p of RENDER) {
@@ -285,6 +330,12 @@ const ROADMAP = [
 ];
 
 const ASSUME = [
+  ['Cloud Run bills while a stream is open.','A 90-second tender holds its SSE connection for its whole life; with ~45 streams sharing one instance the billed hours stay small, but this is why long scans want a queue on every architecture.'],
+  ['Pinecone rates are taken at the TOP of the published range.','$18/M read units, $4.50/M writes (published range $16-18 / $4-4.50 by cloud and region). The free Starter tier (2 GB, 1M RU/mo) is applied - small deployments genuinely pay $0, and the $50/mo Standard minimum applies once past it.'],
+  ['Hetzner CX33 and CX53 prices are interpolated.','CX23 (\u20ac5.49) and CX43 (\u20ac15.99) are confirmed post-June-2026 figures; the other two rungs are scaled at the same uplift and marked. Increases applied to NEW orders - existing servers kept old pricing.'],
+  ['The VPS tab prices machines, not people.','No managed platform means you own patching, monitoring, backups and 3 a.m. incidents. The euros are accurate; the ops hours are deliberately not in this model, and they are the real price of this option.'],
+  ['EUR to USD is an input.','Hetzner bills in euros. The 1.17 default was August 2026 - change it.'],
+  ['Egress per job (~8 MB) is an estimate, and it matters at scale.','Past ~100k seats the Render and Cloud Run tabs become egress-dominated, so this soft number starts steering the answer. Hetzner includes 20 TB per server, which is why its line stays flat. Measure real egress before trusting the top end.'],
   ['Idle overhead is calibrated against a live deployment.','Both AscendOS and McLean\u2019s serve roughly 10 seats on one 1-core / 2 GB instance today, so the idle floor is observed rather than assumed. The per-scan burst figures are still estimates.'],
   ['Token counts are estimated from the call graph, not measured.','Inspector sends images, which dominate input tokens. Log real usage per scan and replace these — every dollar figure moves with them.'],
   ['45% of seats active on a given day, over an 8-hour window.','A trade shop is bursty. If everyone quotes Monday morning your real peak is worse than the slider default.'],
@@ -306,12 +357,14 @@ function calc(){
   const R = { fIn:+$('fIn').value||0, fOut:+$('fOut').value||0,
               pIn:+$('pIn').value||0, pOut:+$('pOut').value||0, sam:+$('sam').value||0 };
 
-  let jobsMo=0, callsMo=0, peakConc=0, samCalls=0;
+  let jobsMo=0, callsMo=0, peakConc=0, samCalls=0, totalJobSec=0, vecQueriesMo=0;
+  const VQ = {compass:3, inspect:3, estim:1, tender:8}; // vector searches per job
   let fIn=0,fOut=0,pIn=0,pOut=0;
   const mix = [];
   for (const [k,w] of Object.entries(WORK)) {
     const n = seats * per[k];
     jobsMo += n; callsMo += n*w.calls; samCalls += n*(w.sam||0);
+    totalJobSec += n*w.secs; vecQueriesMo += n*(VQ[k]||0);
     fIn += n*w.flashIn; fOut += n*w.flashOut; pIn += n*w.proIn; pOut += n*w.proOut;
     const perHour = (n / WORK_DAYS / WORK_HOURS) * peak;
     const conc = perHour * w.secs / 3600;
@@ -386,7 +439,7 @@ function calc(){
   const total = aiCost + infraCost + fsCost;
 
   const tier = TIERS.find(t => seats <= t.max);
-  return {seats,orgs,jobsMo,callsMo,tokens,peakConc,vectors,qGb,fsOps,fsCost,mix,regions,codeVectors,colocated,
+  return {seats,orgs,jobsMo,callsMo,tokens,peakConc,vectors,qGb,fsOps,fsCost,mix,regions,codeVectors,colocated,totalJobSec,vecQueriesMo,
     flashCost,proCost,samCost,aiCost,samCalls,
     web,webN,webCost,needCpu,needRam,qdr,qdrCost,diskGb,diskCost,offLadder,
     egressGb,wsPlan,bwCost,infraCost,total,tier,tierIdx:TIERS.indexOf(tier),R};
@@ -394,111 +447,270 @@ function calc(){
 
 function health(v,warn,crit){ return v>=crit?['crit','At the limit']:v>=warn?['warn','Watch']:['good','Comfortable']; }
 
+// ============ SERVERLESS: Cloud Run + Pinecone + Firestore ============
+function calcServerless(d){
+  const minInst = +$('warm').value;
+  // One instance: 1 vCPU / 2 GiB, ~45 concurrent SSE streams - the same
+  // per-process ceiling used everywhere else in this model.
+  const peakInst = Math.max(1, Math.ceil(d.peakConc/45));
+  const busyH = WORK_DAYS*WORK_HOURS;               // ~168 working hours / month
+  const warmH = minInst*730;                        // min-instances bill 24/7
+  // Burst capacity exists only while traffic needs it; 0.5 models the ramp
+  // up and down around the peak rather than a square wave.
+  const burstH = Math.max(0, peakInst-minInst)*busyH*0.5;
+  const instH  = warmH + burstH;
+  const vcpuS  = instH*3600*1, memS = instH*3600*2;
+  const cmpCost = Math.max(0,vcpuS-CR.freeVcpuS)*CR.vcpuS + Math.max(0,memS-CR.freeMemS)*CR.memS;
+  const reqMo   = d.jobsMo*8 + d.seats*300;
+  const reqCost = Math.max(0,reqMo-CR.freeReq)/1e6*CR.reqM;
+
+  // Pinecone: storage by size, queries by read units. A query costs 1 RU per
+  // GB of the namespace it searches (0.25 minimum). Retrieval here is scoped
+  // to ONE region's code book plus small tenant collections - that scoping,
+  // which the backend already does, is exactly why serverless vector search
+  // stays cheap for this workload.
+  const storeGB = d.vectors*VEC_BYTES/1e9;
+  const nsGB    = (d.codeVectors/Math.max(1,d.regions))*VEC_BYTES/1e9;
+  const ruPerQ  = Math.max(0.25, nsGB);
+  const ruMo    = d.vecQueriesMo*ruPerQ;
+  const inStarter = storeGB<=PC.freeGB && ruMo<=PC.freeRuM;
+  const pcUsage = storeGB*PC.storeGB + (ruMo/1e6)*PC.ruM;
+  const pcCost  = inStarter ? 0 : Math.max(PC.minMo, pcUsage);
+
+  const egress  = d.egressGb*0.12;                  // GCP premium-tier egress
+  const infra   = cmpCost+reqCost+pcCost+egress;
+  const total   = d.aiCost + d.fsCost + infra;
+  return {minInst,peakInst,instH,cmpCost,reqMo,reqCost,storeGB,nsGB,ruMo,inStarter,pcCost,egress,infra,total};
+}
+
+// ============ RAW VPS: Hetzner CX + self-managed Qdrant ============
+function calcVps(d){
+  const fx = Math.max(0.5, +$('fx').value||1.17);
+  const fitHz = (cpu, ram, {minRam=0,minCount=1,maxOne=false}={}) => {
+    let best=null;
+    for (const pl of HZ){
+      if (pl.ram<minRam) continue;
+      const count = Math.max(minCount, Math.ceil(Math.max(cpu/pl.cpu, ram/pl.ram)));
+      if (maxOne && count>1) continue;
+      const cost=pl.eur*count;
+      if(!best||cost<best.cost) best={plan:pl,count,cost,sharded:false};
+    }
+    return best;
+  };
+  // Same workload, same rule: below the point where the app and its index
+  // stop fitting on one machine, one machine runs both.
+  const colocated = (d.needRam + d.qGb) <= 28 && d.peakConc < 12 && d.webN === 1;
+  const web = fitHz(d.needCpu, d.needRam + (colocated?d.qGb:0), {minRam:4, minCount:d.webN});
+  let qdrBox = colocated ? null : fitHz(2, d.qGb, {minRam:d.qGb, maxOne:true});
+  let sharded = false;
+  if (!colocated && !qdrBox){
+    // Index bigger than the largest shared box: a sharded cluster of CX53s.
+    // Costed honestly, flagged as a different operational animal.
+    const top = HZ[HZ.length-1];
+    qdrBox = {plan:top, count:Math.ceil(d.qGb/top.ram), cost:top.eur*Math.ceil(d.qGb/top.ram), sharded:true};
+    sharded = true;
+  }
+  const serverEur = web.cost + (qdrBox?qdrBox.cost:0);
+  const servers   = web.count + (qdrBox?qdrBox.count:0);
+  // The realities of owning boxes: IPv4 per server, Hetzner backups at 20%
+  // of server price, a load balancer once there is more than one node.
+  // Egress is effectively free - 20 TB is included PER SERVER.
+  const extrasEur = servers*0.5 + serverEur*0.20 + (servers>1?6.5:0);
+  const infra = (serverEur+extrasEur)*fx;
+  const total = d.aiCost + d.fsCost + infra;
+  return {fx,colocated,web,qdrBox,sharded,servers,serverEur,extrasEur,infra,total};
+}
+
+const SRV_TIERS = [
+  {max:100,  name:'Free-tier territory',  sub:'Pinecone Starter covers the whole index and Cloud Run free tier eats most of the compute. Infrastructure is nearly $0 - the bill is tokens and Firestore.'},
+  {max:1500, name:'Warm and steady',      sub:'One warm instance kills the morning cold start; the Pinecone $50 minimum becomes the biggest infra line. Still nothing to patch.'},
+  {max:20000,name:'Queue and commit',     sub:'Scans move to Cloud Tasks + Cloud Run jobs, and committed-use discounts start mattering. Note the architecture barely changes shape - that is the appeal of this option.'},
+  {max:1e9,  name:'Same endgame',         sub:'Every architecture converges here: the bill is inference, and owning GPUs beats renting tokens. The serverless tab just arrives with the least infrastructure baggage.'},
+];
+const VPS_TIERS = [
+  {max:100,  name:'One cheap box',        sub:'A single CX box runs the app AND the index for a few euros. Cheapest possible iron - and you are the ops team, which is the real price.'},
+  {max:1500, name:'A small fleet',        sub:'Two or three boxes behind a load balancer, Qdrant on its own machine. You now own deploys, monitoring, backups and restarts at 3 a.m. Budget hours, not euros.'},
+  {max:20000,name:'You run infrastructure now', sub:'Hand-managed fleets stop scaling around here - Terraform or k3s earns its keep, and that is headcount, not tooling.'},
+  {max:1e9,  name:'A hosting company',    sub:'Dedicated metal, a sharded vector cluster, an ops rotation. The savings over managed platforms are real, and so is the department you just created.'},
+];
+const SRV_ROADMAP = [
+  ['1-100','Cloud Run (min 0-1 warm) · Pinecone Starter (free) · Firestore','Nothing breaks. Scale-to-zero pays a 2-5 s cold start on the first search of the morning - one warm instance removes it.'],
+  ['100-1k','1-2 warm · Pinecone Standard ($50 floor)','Concurrency: ~45 open SSE streams per instance is the practical ceiling before requests queue.'],
+  ['1k-10k','Cloud Tasks + Cloud Run jobs for scans · committed-use discounts','Long scans do not belong in request handlers here either - serverless just makes the queue nearly free to add.'],
+  ['10k-100k','Multi-region · read caching in front of hot namespaces','Read-unit spend concentrates on hot code books; per-tenant isolation returns.'],
+  ['100k-1M','Own the inference','Same as every tab: at this scale the bill is tokens, and GPUs you operate beat rates you rent.'],
+];
+const VPS_ROADMAP = [
+  ['1-100','One CX23/CX33 runs app + Qdrant · Firestore stays managed','Nothing technical. You own patching, monitoring and backups from day one.'],
+  ['100-1k','2-3 CX boxes · \u20ac6.5 load balancer · Qdrant on its own box','Ops load. Every 3 a.m. restart is yours; there is no platform underneath you.'],
+  ['1k-10k','CX53 fleet · queue + workers · config management','Hand-managed fleets stop scaling - infrastructure-as-code becomes mandatory, which is a hire.'],
+  ['10k-1M','Dedicated metal · sharded Qdrant cluster · ops rotation','You are running a hosting operation inside a stair company. Cheapest infra on the page; most expensive org chart.'],
+];
+
+let arch = 'render';
+
 function render(){
-  const d = calc();
+  const d  = calc();
+  const sv = calcServerless(d);
+  const vp = calcVps(d);
+
   $('vSeats').textContent = d.seats.toLocaleString();
   $('vComp').textContent = $('comp').value;
   $('vInsp').textContent = $('insp').value;
   $('vEst').textContent = $('est').value;
   $('vTend').textContent = $('tend').value;
-  $('vPeak').textContent = (+$('peak').value/10).toFixed(1)+'×';
+  $('vWarm').textContent = $('warm').value;
+  $('vReg').textContent = $('reg').value;
+  $('vPeak').textContent = (+$('peak').value/10).toFixed(1)+'\u00d7';
 
-  $('tier').innerHTML = `<div class="tname">Tier ${d.tierIdx+1} · ${d.tier.name}</div>
-    <div class="tsub">${d.tier.sub}</div>`;
+  // ---- the three options, side by side, always visible ----
+  const options = [
+    {key:'render', label:'Managed \u00b7 Render',            total:d.total,  infra:d.infraCost},
+    {key:'srv',    label:'Serverless \u00b7 Cloud Run',      total:sv.total, infra:sv.infra},
+    {key:'vps',    label:'Raw VPS \u00b7 Hetzner',           total:vp.total, infra:vp.infra},
+  ];
+  const cheapest = options.reduce((a,b)=>b.total<a.total?b:a);
+  $('compare').innerHTML = '<div class="cmp">' + options.map(o=>
+    `<div class="c ${o.key===arch?'on':''}">${o.label}${o.key===cheapest.key?' \u00b7 <span style="color:var(--good);font-weight:700">cheapest</span>':''}
+     <b>${money(o.total)}/mo</b>infra ${money(o.infra)} \u00b7 AI ${money(d.aiCost)}</div>`).join('') + '</div>'
+    + `<p class="hint" style="margin-top:8px">The AI line is identical on every tab \u2014 architecture moves the
+       <b>infrastructure</b> slice only, which is ${(Math.max(...options.map(o=>o.infra))/Math.max(1,cheapest.total)*100).toFixed(0)}% of the bill at its worst here.
+       The real difference between these options is who carries the operations.</p>`;
+
+  const active = arch==='srv' ? sv : arch==='vps' ? vp : d;
+  const tiers  = arch==='srv' ? SRV_TIERS : arch==='vps' ? VPS_TIERS : TIERS;
+  const tier   = tiers.find(t=>d.seats<=t.max);
+  const tierIdx= tiers.indexOf(tier);
+  $('tier').innerHTML = `<div class="tname">Tier ${tierIdx+1} \u00b7 ${tier.name}</div><div class="tsub">${tier.sub}</div>`;
 
   $('kpis').innerHTML = [
     ['Peak concurrent scans', Math.ceil(d.peakConc), 'in flight at once'],
     ['Jobs / month', fmt(d.jobsMo), 'across all modules'],
     ['AI calls / month', fmt(d.callsMo), 'model round-trips'],
     ['Tokens / month', fmt(d.tokens), 'in + out'],
-    ['Monthly total', money(d.total), 'all-in run rate'],
-    ['Cost per seat', money(d.total/Math.max(1,d.seats)), 'per month'],
+    ['Monthly total', money(active.total), 'this architecture'],
+    ['Cost per seat', money(active.total/Math.max(1,d.seats)), 'per month'],
   ].map(([k,v,u])=>`<div class="kpi"><div class="k">${k}</div><div class="v">${v}</div><div class="u">${u}</div></div>`).join('');
 
-  const parts = [['Pro · Inspector vision',d.proCost,'var(--accent)'],
-                 ['Segmentation',d.samCost,'var(--crit)'],
-                 ['Flash · everything else',d.flashCost,'var(--warn)'],
-                 ['Render compute',d.infraCost,'var(--steel)'],
-                 ['Firestore',d.fsCost,'var(--good)']];
+  const aiParts = [['Pro \u00b7 Inspector vision',d.proCost,'var(--accent)'],
+                   ['Segmentation',d.samCost,'var(--crit)'],
+                   ['Flash \u00b7 everything else',d.flashCost,'var(--warn)']];
+  const infraParts = arch==='srv'
+    ? [['Cloud Run + egress',sv.cmpCost+sv.reqCost+sv.egress,'var(--steel)'],['Pinecone',sv.pcCost,'#7c5bc0'],['Firestore',d.fsCost,'var(--good)']]
+    : arch==='vps'
+    ? [['Hetzner fleet',vp.infra,'var(--steel)'],['Firestore',d.fsCost,'var(--good)']]
+    : [['Render compute',d.infraCost,'var(--steel)'],['Firestore',d.fsCost,'var(--good)']];
+  const parts = [...aiParts, ...infraParts];
   $('costbar').innerHTML = parts.map(([n,v,c])=>
-    `<span style="width:${(v/d.total*100).toFixed(2)}%;background:${c}" title="${n}"></span>`).join('');
+    `<span style="width:${(v/active.total*100).toFixed(2)}%;background:${c}" title="${n}"></span>`).join('');
   $('costlegend').innerHTML = parts.map(([n,v,c])=>
-    `<span><i style="background:${c}"></i>${n} <b>${money(v)}</b> · ${(v/d.total*100).toFixed(0)}%</span>`).join('');
+    `<span><i style="background:${c}"></i>${n} <b>${money(v)}</b> \u00b7 ${(v/active.total*100).toFixed(0)}%</span>`).join('');
 
   const [cpuS,cpuT] = health(d.peakConc, 40, 90);
   const [qS,qT]     = health(d.qGb, 24, 56);
-  const cards = [
-    ['Render · web service', cpuS, cpuT, 'Node waits on remote APIs far more than it computes, so sizing follows CONCURRENCY, not seats. Peak in-flight scans come from Little\'s Law: arrival rate × how long each holds a connection.',
-      [['Peak concurrent scans', Math.ceil(d.peakConc)],
-       ['Needs', d.needCpu.toFixed(1)+' vCPU · '+d.needRam.toFixed(1)+' GB'],
-       ['Plan', d.web.plan.n+' ('+d.web.plan.cpu+' CPU / '+d.web.plan.ram+' GB)'],
-       ['Instances', d.web.count + (d.webN>1 && d.web.count===d.webN ? ' (connection-bound)' : '')],
-       ['Compute cost', money(d.webCost)+'/mo']],
-      d.webN>1 ? 'Multiple instances needed for CONNECTIONS, not CPU — a scan holds an SSE connection open for its whole life. This is the point to move scans onto background workers.' : ''],
-    ['Qdrant · private service', qS, qT, 'Render has no managed vector database, so this is a Private Service with a persistent disk. RAM is the binding constraint — the index wants to be resident.',
-      [['Total vectors', fmt(d.vectors)],
-       ['Code books', fmt(d.codeVectors)+' · '+d.regions+' region'+(d.regions>1?'s':'')],
-       ['RAM for index', (d.qGb<1 ? (d.qGb*1000).toFixed(0)+' MB' : d.qGb.toFixed(1)+' GB')],
-       ['Plan', d.colocated ? 'Shares the web instance' : d.offLadder ? 'Off the standard ladder' : d.qdr.plan.n+' ('+d.qdr.plan.ram+' GB)'],
-       ['Disk '+d.diskGb+' GB', money(d.diskCost)+'/mo'],
-       ['Qdrant cost', money(d.qdrCost+d.diskCost)+'/mo']],
-      d.qGb>2000 ? 'Terabytes of index. This is vector search as its own service with its own team — and per-tenant knowledge almost certainly needs ageing out rather than keeping forever.'
-        : d.qGb>56 ? 'Past a single machine. Shard by region — the code books already partition that way, and tenant filtering is already how retrieval is scoped.'
-        : d.qGb>24 ? 'Give it a dedicated box; it should not compete with Node for memory.' : ''],
-    ['Firestore', 'good', 'Scales itself', 'Serverless — it will not fall over. What grows is the bill and the shape of your queries. A different database is an analytics decision, not a capacity one.',
-      [['Organisations', d.orgs.toLocaleString()],['Ops / month', fmt(d.fsOps)],['Est. cost', money(d.fsCost)]],
-      d.orgs > 20000
-        ? 'Past roughly 20k organisations, tenant data wants sharding across database instances — and analytics should have left for a warehouse long before this.'
-        : 'Real ceiling is the 1 MB per-document limit, which this codebase can already hit by storing an image in a doc rather than in Storage.'],
-    ['AI inference', d.aiCost>d.infraCost*8?'warn':'good', d.aiCost>d.infraCost*8?'Dominant cost':'Proportionate',
-      'Scales with SCANS, not seats. Inspector is the cost centre twice over: it is the only workload on Pro, and it is the only one paying per-element segmentation.',
-      [['Pro · Inspector vision', money(d.proCost)],
+  const gbTxt = g => g<1 ? (g*1000).toFixed(0)+' MB' : g.toFixed(1)+' GB';
+  const fsCard = ['Firestore', 'good', 'Scales itself', 'Serverless on every tab \u2014 it will not fall over. What grows is the bill and the 1 MB document ceiling, which this codebase can already hit by storing an image in a doc.',
+      [['Organisations', d.orgs.toLocaleString()],['Ops / month', fmt(d.fsOps)],['Est. cost', money(d.fsCost)]], ''];
+  const aiCard = ['AI inference \u2014 identical on every tab', d.aiCost>active.infra*8?'warn':'good', d.aiCost>active.infra*8?'Dominant cost':'Proportionate',
+      'Scales with SCANS, not seats, and no architecture choice touches it. Inspector is the cost centre twice over: the only workload on Pro, and the only one paying per-element segmentation.',
+      [['Pro \u00b7 Inspector vision', money(d.proCost)],
        ['Segmentation ('+fmt(d.samCalls)+')', money(d.samCost)],
-       ['Flash · all other calls', money(d.flashCost)],
-       ['Total tokens', fmt(d.tokens)],
-       ['Share of spend', (d.aiCost/d.total*100).toFixed(0)+'%']],
-      d.aiCost > 60000
-        ? 'At this volume, running the embedding and segmentation models yourself is plainly cheaper than per-token pricing. That is a hiring decision as much as a technical one.'
-        : 'Biggest levers, in order: cache repeated queries, cut tokens per scan, then negotiate rate. Instance size is not on the list.'],
-  ];
-  const col = s => s==='crit'?'var(--crit)':s==='warn'?'var(--warn)':'var(--good)';
-  $('cards').innerHTML = cards.map(([t,s,st,why,rows,flag])=>`<div class="card">
-    <h3><span class="dot" style="background:${col(s)}"></span>${t}
-      <span style="margin-left:auto;font-size:11px;font-weight:700;color:${col(s)};text-transform:uppercase;letter-spacing:.09em">${st}</span></h3>
+       ['Flash \u00b7 all other calls', money(d.flashCost)],
+       ['Share of this option', (d.aiCost/active.total*100).toFixed(0)+'%']],
+      'Biggest levers, in order: cache repeated queries, cut tokens per scan, negotiate rate. Changing hosting is not on the list.'];
+
+  let cards;
+  if (arch==='srv'){
+    cards = [
+      ['Cloud Run', cpuS, cpuT, 'Bills per vCPU-second and GiB-second while a request is open. Scans hold SSE streams, so billed time follows CONNECTION time \u2014 shared across ~45 streams per instance \u2014 plus any always-warm minimum.',
+        [['Peak instances', sv.peakInst],
+         ['Warm minimum', sv.minInst + (sv.minInst===0?' (cold starts)':'')],
+         ['Billed instance-hours', fmt(sv.instH)+' h/mo'],
+         ['Compute + requests', money(sv.cmpCost+sv.reqCost)+'/mo'],
+         ['Requests', fmt(sv.reqMo)+'/mo']],
+        sv.minInst===0 ? 'Scale-to-zero: the first search after an idle spell pays a 2\u20135 second cold start. One warm instance removes it for '+money(730*3600*(CR.vcpuS+2*CR.memS))+'/mo.' : ''],
+      ['Pinecone \u00b7 serverless vectors', d.qGb>100?'warn':'good', sv.inStarter?'Free tier':'Standard',
+        'No machine to size \u2014 storage is billed per GB and queries per read unit (1 RU per GB of namespace, 0.25 minimum). Retrieval is already scoped to one region\u2019s code book, which keeps queries cheap.',
+        [['Index storage', gbTxt(sv.storeGB)],
+         ['Namespace searched', gbTxt(sv.nsGB)],
+         ['Read units / month', fmt(sv.ruMo)],
+         ['Plan', sv.inStarter?'Starter \u2014 $0':'Standard ($50 min)'],
+         ['Pinecone cost', money(sv.pcCost)+'/mo']],
+        sv.inStarter ? 'Inside the free tier: 2 GB and 1M read units cover this entire deployment.' : ''],
+      fsCard, aiCard];
+  } else if (arch==='vps'){
+    cards = [
+      ['Hetzner fleet', cpuS, cpuT, 'The cheapest iron on the page \u2014 20 TB of traffic included per server makes egress free. The price not shown is operations: patching, monitoring, backups and incident response are yours.',
+        [['Shape', vp.colocated?'One box runs app + index':'App fleet + index box'],
+         ['Web', vp.web.plan.n+' \u00d7 '+vp.web.count+' ('+vp.web.plan.cpu+'c/'+vp.web.plan.ram+'GB)'],
+         ['Qdrant', vp.colocated?'colocated':(vp.qdrBox.sharded?'CX53 \u00d7 '+vp.qdrBox.count+' (sharded cluster)':vp.qdrBox.plan.n+' \u00b7 '+vp.qdrBox.plan.ram+' GB')],
+         ['Servers + 20% backups + LB', '\u20ac'+(vp.serverEur+vp.extrasEur).toFixed(2)+'/mo'],
+         ['At '+vp.fx.toFixed(2)+' USD/EUR', money(vp.infra)+'/mo']],
+        vp.sharded ? 'The index no longer fits the largest shared box \u2014 this is a self-managed sharded cluster, a different operational animal.' :
+        vp.servers>1 ? 'More than one box: you now own a load balancer, deploy orchestration and monitoring across a fleet.' : ''],
+      ['Self-managed Qdrant', qS, qT, 'Same index, no managed service under it. Snapshots, upgrades and the 3 a.m. OOM are in-house.',
+        [['Total vectors', fmt(d.vectors)],
+         ['RAM for index', gbTxt(d.qGb)],
+         ['Where', vp.colocated?'On the web box':'Own machine'],
+         ['Backups', 'Yours to script and test']], ''],
+      fsCard, aiCard];
+  } else {
+    cards = [
+      ['Render \u00b7 web service', cpuS, cpuT, 'Node waits on remote APIs far more than it computes, so sizing follows CONCURRENCY, not seats. Peak in-flight scans come from Little\u2019s Law: arrival rate \u00d7 how long each holds a connection.',
+        [['Peak concurrent scans', Math.ceil(d.peakConc)],
+         ['Needs', d.needCpu.toFixed(1)+' vCPU \u00b7 '+d.needRam.toFixed(1)+' GB'],
+         ['Plan', d.web.plan.n+' ('+d.web.plan.cpu+' CPU / '+d.web.plan.ram+' GB)'],
+         ['Instances', d.web.count + (d.webN>1 && d.web.count===d.webN ? ' (connection-bound)' : '')],
+         ['Compute cost', money(d.webCost)+'/mo']],
+        d.webN>1 ? 'Multiple instances needed for CONNECTIONS, not CPU \u2014 a scan holds an SSE connection open for its whole life. This is the point to move scans onto background workers.' : ''],
+      ['Qdrant \u00b7 private service', qS, qT, 'Render has no managed vector database, so this is a Private Service with a persistent disk. RAM is the binding constraint \u2014 the index wants to be resident.',
+        [['Total vectors', fmt(d.vectors)],
+         ['Code books', fmt(d.codeVectors)+' \u00b7 '+d.regions+' region'+(d.regions>1?'s':'')],
+         ['RAM for index', gbTxt(d.qGb)],
+         ['Plan', d.colocated ? 'Shares the web instance' : d.offLadder ? 'Off the standard ladder' : d.qdr.plan.n+' ('+d.qdr.plan.ram+' GB)'],
+         ['Disk '+d.diskGb+' GB', money(d.diskCost)+'/mo'],
+         ['Qdrant cost', money(d.qdrCost+d.diskCost)+'/mo']],
+        d.qGb>56 ? 'Past a single machine \u2014 shard by region; the code books already partition that way.' :
+        d.qGb>24 ? 'Give it a dedicated box; it should not compete with Node for memory.' : ''],
+      fsCard, aiCard];
+  }
+  const col = st => st==='crit'?'var(--crit)':st==='warn'?'var(--warn)':'var(--good)';
+  $('cards').innerHTML = cards.map(([t,st,lab,why,rows,flag])=>`<div class="card">
+    <h3><span class="dot" style="background:${col(st)}"></span>${t}
+      <span style="margin-left:auto;font-size:11px;font-weight:700;color:${col(st)};text-transform:uppercase;letter-spacing:.09em">${lab}</span></h3>
     <p class="why">${why}</p>
     ${rows.map(([k,v])=>`<div class="row"><span>${k}</span><b>${v}</b></div>`).join('')}
-    ${flag?`<div class="flag" style="background:color-mix(in srgb,${col(s)} 13%,transparent);color:${col(s)}">${flag}</div>`:''}
+    ${flag?`<div class="flag" style="background:color-mix(in srgb,${col(st)} 13%,transparent);color:${col(st)}">${flag}</div>`:''}
   </div>`).join('');
 
-  // The finding that falls out of the model rather than being asserted:
-  // per-seat cost collapses early, then flattens and never improves again.
-  const perSeat = d.total/Math.max(1,d.seats);
-  const marginal = (d.aiCost/Math.max(1,d.seats));
+  const perSeat = active.total/Math.max(1,d.seats);
+  const marginal = d.aiCost/Math.max(1,d.seats);
   $('floor').innerHTML = d.seats < 100
-    ? `At <b>${d.seats.toLocaleString()}</b> seats you are paying <b>${money(perSeat)}/seat</b> — almost all of it
-       the minimum viable server, not usage. That number falls fast with the next few customers.`
-    : `At <b>${d.seats.toLocaleString()}</b> seats the cost per seat is <b>${money(perSeat)}</b>, and roughly
-       <b>${money(marginal)}</b> of that is inference alone. <b>This is the floor.</b> Servers amortise across
-       customers; tokens do not — every new seat brings its own scans. Growth will not make a seat cheaper than
-       about ${money(marginal)}/month. Only fewer or cheaper tokens per scan will.`;
+    ? `At <b>${d.seats.toLocaleString()}</b> seats this option costs <b>${money(perSeat)}/seat</b> \u2014 mostly
+       fixed floor, not usage. It falls fast with the next few customers.`
+    : `At <b>${d.seats.toLocaleString()}</b> seats this option costs <b>${money(perSeat)}/seat</b>, and roughly
+       <b>${money(marginal)}</b> of that is inference \u2014 identical on every tab. <b>That is the floor.</b>
+       Infrastructure amortises across customers; tokens do not. No hosting choice moves a seat below about
+       ${money(marginal)}/month \u2014 only fewer or cheaper tokens per scan will.`;
 
-  const mixRows = d.mix.map(m=>`<tr><td><b>${m.label}</b></td>
+  $('mix').innerHTML = d.mix.map(m=>`<tr><td><b>${m.label}</b></td>
       <td class="seats">${fmt(m.jobs)}</td>
       <td class="seats">${m.conc<1?m.conc.toFixed(2):Math.ceil(m.conc)}</td>
       <td class="seats">${money(m.cost)}</td>
-      <td class="seats">${(m.cost/d.aiCost*100).toFixed(0)}%</td></tr>`).join('');
-  $('mix').innerHTML = mixRows;
+      <td class="seats">${(m.cost/Math.max(0.01,d.aiCost)*100).toFixed(0)}%</td></tr>`).join('');
 
-  $('roadmap').innerHTML = ROADMAP.map((r,i)=>
-    `<tr class="${i===d.tierIdx?'on':''}"><td class="seats">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('');
+  const road = arch==='srv' ? SRV_ROADMAP : arch==='vps' ? VPS_ROADMAP : ROADMAP;
+  $('roadmap').innerHTML = road.map((r,i)=>
+    `<tr class="${i===Math.min(tierIdx,road.length-1)?'on':''}"><td class="seats">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('');
 
   $('assume').innerHTML = ASSUME.map(([h,b])=>`<li><b style="color:var(--ink)">${h}</b><br>${b}</li>`).join('');
 
-  $('foot').innerHTML = `<b>How to read this:</b> the shapes and breakpoints come from how AscendOS is actually
-    built — 768-dimension vectors across four Qdrant collections, streamed scans held open over SSE, three model
-    calls per Compass search and roughly thirteen per tender. The dollar figures are estimates built on the
-    assumptions above, and the token counts are the softest of them. Log real per-scan usage and the picture
-    sharpens considerably. Nothing here is a measurement of a running system at scale.`;
+  $('foot').innerHTML = `<b>How to read this:</b> the workload shapes come from how AscendOS is actually built
+    \u2014 768-dimension vectors, scans streamed over SSE, three model calls per Compass search, ~13 per tender \u2014
+    and the idle floor is calibrated to the 1-core/2 GB box serving ~10 seats today. Vendor rates were verified
+    August 2026 (sources in the README); where a published range exists the expensive end is used, and two Hetzner
+    rungs are interpolated and flagged. The soft input remains tokens per scan, on every tab equally. This is a
+    planning model, not a bill.`;
 }
 
 const SNAPS = [1,10,50,250,1000,5000,25000,100000,1000000];
@@ -510,6 +722,13 @@ $('snaps').addEventListener('click', e => {
   const n = e.target.dataset && e.target.dataset.n;
   if (!n) return;
   $('seats').value = posFromSeats(+n);
+  render();
+});
+$('tabs').addEventListener('click', e => {
+  const a = e.target.dataset && e.target.dataset.arch;
+  if (!a) return;
+  arch = a;
+  document.querySelectorAll('.tabbtn').forEach(b=>b.classList.toggle('on', b.dataset.arch===a));
   render();
 });
 
