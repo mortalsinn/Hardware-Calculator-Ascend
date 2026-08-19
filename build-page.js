@@ -101,7 +101,13 @@ const page = `<!doctype html>
  dt{font-weight:600;color:var(--ink);margin-top:11px}
  dd{margin:2px 0 0}
  footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);color:var(--mut);font-size:12.5px}
- @media print{.bar{display:none}body{font-size:11px}table{font-size:9.5px}
+ .fallback{font-size:12.5px;color:var(--mut);max-width:80ch;margin:-14px 0 22px;line-height:1.5}
+ #raw{width:100%;height:290px;margin:0 0 24px;font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
+   border:1px solid var(--line);border-radius:8px;padding:11px;background:var(--panel);color:var(--ink);
+   white-space:pre;overflow:auto;resize:vertical}
+ #raw[hidden]{display:none}
+ .btn:focus-visible,#raw:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+ @media print{.fallback,#raw{display:none}.bar{display:none}body{font-size:11px}table{font-size:9.5px}
    .scroll{overflow:visible;border:0}h2{page-break-after:avoid}tr{page-break-inside:avoid}}
  @media (prefers-color-scheme:dark){
   :root{--ink:#e8ecf3;--mut:#96a0b3;--line:#2a3140;--bg:#12151c;--panel:#1a1f29;
@@ -115,9 +121,14 @@ options. This is a hardware specification: server counts, CPU cores and memory. 
 pricing — costs depend on vendor and contract, and live in the interactive planner.</p>
 
 <div class="bar">
-  <button class="btn" id="dl">Download spreadsheet (CSV)</button>
+  <a class="btn" id="dl" download="AscendOS-Hardware-Requirements.csv">Download spreadsheet (CSV)</a>
+  <button class="btn alt" id="cp">Copy CSV to clipboard</button>
+  <button class="btn alt" id="sh">Show raw CSV</button>
   <a class="btn alt" href="index.html">Interactive planner</a>
 </div>
+<p class="fallback">If the download does nothing, this page is inside a sandbox that blocks downloads &mdash;
+use <b>Copy CSV to clipboard</b> and paste into a blank spreadsheet, or <b>Show raw CSV</b> to select it by hand.</p>
+<textarea id="raw" spellcheck="false" hidden></textarea>
 
 <h2>What the numbers say</h2>
 <div class="cards">
@@ -192,14 +203,42 @@ Regenerate with <code>node build-hardware.js</code> after any model change.
 ${SEATS.length} rows per scenario &middot; 20 to 840 seats in steps of 20.</footer>
 </div>
 <script>
- var CSV_B64="${b64}";
- document.getElementById('dl').addEventListener('click',function(){
-   var bin=atob(CSV_B64),b=new Uint8Array(bin.length);
-   for(var i=0;i<bin.length;i++)b[i]=bin.charCodeAt(i);
-   var u=URL.createObjectURL(new Blob([b],{type:'text/csv'})),a=document.createElement('a');
-   a.href=u;a.download='AscendOS-Hardware-Requirements.csv';a.click();
-   setTimeout(function(){URL.revokeObjectURL(u)},1000);
- });
+var CSV_B64="${b64}";
+(function(){
+  var bin=atob(CSV_B64), b=new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++) b[i]=bin.charCodeAt(i);
+  var text=new TextDecoder('utf-8').decode(b);
+
+  // THREE ROUTES, because a sandboxed iframe can block a programmatic download
+  // outright -- and it fails SILENTLY, which reads as a broken page.
+  // 1. a plain anchor: no click handler, so there is nothing to block.
+  document.getElementById('dl').href='data:text/csv;charset=utf-8;base64,'+CSV_B64;
+
+  // 2. clipboard, with the pre-async-API fallback for locked-down frames.
+  var cp=document.getElementById('cp');
+  cp.addEventListener('click',function(){
+    var done=function(ok){cp.textContent=ok?'Copied \u2713':'Copy failed \u2014 use Show raw CSV';
+      setTimeout(function(){cp.textContent='Copy CSV to clipboard'},2600);};
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){done(true)},legacy);
+    } else legacy();
+    function legacy(){
+      var t=document.createElement('textarea');t.value=text;
+      t.style.cssText='position:fixed;left:-9999px;top:0';
+      document.body.appendChild(t);t.focus();t.select();
+      var ok=false;try{ok=document.execCommand('copy')}catch(e){}
+      document.body.removeChild(t);done(ok);
+    }
+  });
+
+  // 3. show it and select it.
+  var sh=document.getElementById('sh'), raw=document.getElementById('raw');
+  sh.addEventListener('click',function(){
+    if(raw.hidden){raw.value=text;raw.hidden=false;raw.focus();raw.select();
+      sh.textContent='Hide raw CSV';raw.scrollIntoView({block:'nearest'});}
+    else {raw.hidden=true;sh.textContent='Show raw CSV';}
+  });
+})();
 </script>
 </body></html>`;
 
