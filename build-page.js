@@ -1,5 +1,5 @@
 const fs = require('fs'); const path = require('path');
-const { SEATS, SCENARIOS, data, CSV, USAGE } = require('./build-hardware.js');
+const { SEATS, SCENARIOS, data, CSV, USAGE, CORPUS, CORPUS_GROWTH, ASSUMPTIONS } = require('./build-hardware.js');
 
 const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 const b64 = Buffer.from(CSV, 'utf8').toString('base64');
@@ -33,10 +33,17 @@ ${seatList.map(n => { const r = data[scenarioKey][SEATS.indexOf(n)];
    <td>${r.hi.vcpu.toFixed(1)}</td><td>${r.hi.appRam.toFixed(1)}</td></tr>`;}).join('\n')}
 </tbody></table></div>`;
 
-const indexTable = (seatList) => `<div class="scroll"><table class="narrow">
-<thead><tr><th class="t">Seats</th><th>Index RAM GB</th><th>Index disk GB</th></tr></thead>
-<tbody>${seatList.map(n => { const r = data.insp250[SEATS.indexOf(n)].hi;
- return `<tr><td class="t"><b>${n}</b></td><td>${r.indexGb.toFixed(1)}</td><td>${r.indexDisk}</td></tr>`;}).join('')}
+// The index is not a function of load. It is a function of how much building
+// code has been ingested, which grows with TIME.
+const corpusTable = () => `<div class="scroll"><table>
+<thead><tr>
+ <th class="t">Code editions kept</th><th>Code books<br><span class="lt">14 jurisdictions each</span></th>
+ <th>Building code<br>GB</th><th>Customer data<br>GB at 840 seats</th>
+ <th class="key">Index RAM<br>GB</th><th>Index disk<br>GB</th><th class="t">When</th></tr></thead>
+<tbody>${CORPUS_GROWTH.map(g => `<tr${g.editions===CORPUS.editionsToday?' class="now"':''}>
+ <td class="t"><b>${g.editions}</b></td><td>${g.books}</td><td>${g.codeGb}</td><td>${g.tenantGb840}</td>
+ <td class="key">${g.totalGb840}</td><td>${g.diskGb840}</td>
+ <td class="t">${g.yearsFromNow===0?'<b>today</b>':'in about '+g.yearsFromNow+' years'}</td></tr>`).join('')}
 </tbody></table></div>`;
 
 const page = `<!doctype html>
@@ -94,6 +101,10 @@ const page = `<!doctype html>
  th.key,td.key{background:var(--accentb)}
  thead th.key{background:#16406f}
  td.key{font-weight:700;color:var(--ink)}
+ td.src{color:var(--fade);font-size:12px}
+ tbody tr.now td{background:#fff4dc;font-weight:600}
+ @media (prefers-color-scheme:dark){tbody tr.now td{background:#33290f}}
+ td.t,th.t{white-space:normal}
  @media (prefers-color-scheme:dark){thead th.key{background:#2a5a94}}
  dl{margin:0;font-size:13.5px;color:var(--mut);max-width:88ch}
  dt{font-weight:600;color:var(--ink);margin-top:14px}
@@ -132,8 +143,8 @@ const page = `<!doctype html>
 <div class="masthead">
   <div><h1>AscendOS &mdash; Hardware Requirements</h1>
   <p class="for">Prepared for ShiftIT &middot; what the software needs, not what to buy</p></div>
-  <div class="meta">Sized at busy usage: ${USAGE.high.compass} Compass searches / seat / day<br>
-  and ${USAGE.high.inspector} Inspector scans / user / day<br>20&ndash;840 seats</div>
+  <div class="meta">Busy usage: ${USAGE.high.compass} Compass + ${USAGE.high.estimating} estimating / seat / day,<br>
+  ${USAGE.high.inspector} Inspector scans / user / day<br>20&ndash;840 seats &middot; tender scans excluded</div>
 </div>
 
 <div class="bar">
@@ -167,28 +178,35 @@ its own page. If a download does nothing, this page is inside a sandbox that blo
   spinner at the same instant, during the busiest hour of the day.
   <br><br>Take 840 seats. Read the row left to right and it builds itself:
   <table class="arith">
-   <tr><td>840 people each run about 20 searches in a day</td><td class="v">18,550 jobs a day</td></tr>
-   <tr><td>the busy hour carries 3&times; its even share of those</td><td class="v">6,956 in that hour</td></tr>
+   <tr><td>840 seats &times; (${USAGE.high.compass} searches + ${USAGE.high.estimating} estimating jobs), plus 250 &times; ${USAGE.high.inspector} scans</td><td class="v">${data.insp250[SEATS.indexOf(840)].jobsPerDay.toLocaleString('en')} jobs a day</td></tr>
+   <tr><td>the busy hour carries 3&times; its even share of those</td><td class="v">${data.insp250[SEATS.indexOf(840)].jobsPerBusyHour.toLocaleString('en')} in that hour</td></tr>
    <tr><td>each one occupies a core for 12&ndash;55 seconds</td><td class="v">most finish before the next arrives</td></tr>
-   <tr class="tot"><td>so at any given instant, mid-flight</td><td class="v"><b>31 jobs running at once</b></td></tr>
+   <tr class="tot"><td>so at any given instant, mid-flight</td><td class="v"><b>${data.insp250[SEATS.indexOf(840)].hi.concurrent.toFixed(0)} jobs running at once</b></td></tr>
   </table>
-  Nearly 7,000 searches an hour sounds enormous; 31 running simultaneously does not. Both are the same
+  Eight and a half thousand jobs an hour sounds enormous; ${data.insp250[SEATS.indexOf(840)].hi.concurrent.toFixed(0)} running simultaneously does not. Both are the same
   fact. A search takes seconds and then the core is free again, so they overlap far less than the daily
   total suggests. <b>That overlap is the entire hardware question</b> &mdash; and it is why 840 seats need
   ${last('insp250').vcpu.toFixed(1)} vCPU rather than hundreds.
-  <br><br><b>A number below 1 is normal too.</b> At 20 seats it is 1.3, and for Compass alone 0.5 &mdash;
-  meaning a job is in progress about half the busy hour and nothing is running the rest of it.
+  <br><br><b>A number below 1 is normal too.</b> At 20 seats without Code Inspector it is
+  ${data.compass[0].hi.concurrent.toFixed(1)} &mdash; meaning a job is in progress about that share of the busy hour and nothing is
+  running the rest of it.
   <br><br>It is an average, not a ceiling: arrivals are random, so short moments with two or three times
   the figure still happen, and the platform needs headroom to absorb them.</div>
 
   <h3>The two scenarios</h3>
-  <p class="lede"><b>Light case</b> is every seat running Code Compass and nothing else. <b>Heavy case</b>
-  adds 250 people also running Code Inspector &mdash; the most demanding configuration we would expect. Any
-  real deployment sits between the two, so they bracket the answer rather than predicting it.</p>
-  <p class="lede">Both are stated at the <b>busy end of expected usage</b>: ${USAGE.high.compass} Code Compass searches per seat
-  per working day, ${USAGE.high.inspector} Code Inspector scans per user. A platform sized on average usage is short on every
-  busy day, so there is no point publishing the average. <b>If usage settles at the quiet end (${USAGE.low.compass} and ${USAGE.low.inspector}),
-  every figure here is about a quarter lower.</b></p>
+  <p class="lede">The <b>first table</b> is every seat running Code Compass and the estimating modules.
+  The <b>second</b> adds 250 people also running Code Inspector &mdash; the most demanding configuration we
+  would expect. Any real deployment sits between the two, so they bracket the answer rather than
+  predicting it.</p>
+  <p class="lede">Both are stated at the <b>busy end of expected usage</b>: ${USAGE.high.compass} Code Compass searches and
+  ${USAGE.high.estimating} estimating jobs per seat per working day, plus ${USAGE.high.inspector} Code Inspector scans per user. A platform
+  sized on average usage is short on every busy day, so there is no point publishing the average.
+  <b>If usage settles at the quiet end (${USAGE.low.compass}, ${USAGE.low.estimating} and ${USAGE.low.inspector}), every figure here is about a quarter lower.</b></p>
+  <div class="note"><b>Tender scans are excluded.</b> They are the heaviest job the platform runs &mdash;
+  about 95 seconds and 13 model API calls each, against 12 seconds for a Compass search &mdash; and no rate
+  has been established for them. They are left out rather than guessed at. If tenders are going to run
+  regularly, these figures need revisiting: even one per seat per week would add roughly 5 to the
+  &ldquo;running at the same time&rdquo; column at 840 seats.</div>
 
   <div class="note"><b>What the figures cover.</b> vCPU and RAM are the <b>application tier only</b>. The
   search index is listed separately because it is a fixed working set that grows with the size of the
@@ -204,33 +222,60 @@ its own page. If a download does nothing, this page is inside a sandbox that blo
   busiest hour, and how many are therefore running at the same moment. That last figure is what the
   hardware has to cope with, and the two columns after it are the answer. Between these nine points the
   requirement rises smoothly &mdash; there is no threshold or step change anywhere in the range.</p>
-  <h3>Light case &mdash; every seat running Code Compass, nothing else</h3>
+  <h3>Without Code Inspector &mdash; every seat running Code Compass and Estimating</h3>
   ${chainTable('compass','searches',STAGES)}
 
-  <h3>Heavy case &mdash; the same, plus 250 people also running Code Inspector</h3>
+  <h3>All modules &mdash; the same, plus 250 people also running Code Inspector</h3>
   ${chainTable('insp250','jobs',STAGES)}
 
   <h3>Search index &mdash; sized separately, and never added to the above</h3>
-  <p class="lede">The index does not grow with load. It grows with the size of the building-code corpus
-  we have ingested, so it tracks seats only because more customers means more of their own documents.</p>
-  ${indexTable(STAGES)}
+  <div class="note"><b>The index does not grow with load, and barely with customers. It grows with
+  time.</b> It holds the ingested building codes: one book per jurisdiction, per edition. Canada has a
+  national code plus 10 provinces and 3 territories &mdash; ${CORPUS.jurisdictions} jurisdictions &mdash; and a new National
+  Building Code lands roughly every ${CORPUS.yearsPerEdition} years. Older editions are kept deliberately, because
+  comparing across editions is a feature rather than an archive. <b>So this figure rises on a calendar,
+  not on a seat count</b>, and it never falls.</div>
+  ${corpusTable()}
+  <p class="lede" style="margin-top:10px">The customer-data column is separate: each customer
+  organisation contributes about ${(CORPUS.vectorsPerOrg/1000)}k vectors of their own shop knowledge and visual standards.
+  At 840 seats that is roughly ${Math.ceil(840/CORPUS.seatsPerOrg)} organisations. It is the smaller of the two, and unlike the code
+  corpus it does track seats.</p>
 
   <div class="note"><b>At the top of the range:</b> 840 seats with 250 Inspector users comes to
   <b>${last('insp250').vcpu.toFixed(1)} vCPU and ${last('insp250').appRam.toFixed(1)} GB</b> for the application tier, plus
-  <b>${last('insp250').indexGb.toFixed(1)} GB of RAM and ${last('insp250').indexDisk} GB of disk</b> for the search index. Code Compass alone at the
-  same seat count needs ${last('compass').vcpu.toFixed(1)} vCPU and ${last('compass').appRam.toFixed(1)} GB.</div>
+  <b>${last('insp250').indexGb.toFixed(1)} GB of RAM and ${last('insp250').indexDisk} GB of disk</b> for the search index at today&rsquo;s corpus.
+  Without Code Inspector the same seat count needs ${last('compass').vcpu.toFixed(1)} vCPU and ${last('compass').appRam.toFixed(1)} GB.
+  <b>The index figure is the one that will keep climbing</b> whatever happens to seat numbers.</div>
 </section>
 
 <section class="panel" id="p-detail">
   <h2>Full detail</h2>
   <p class="lede">The same figures at every 20 seats, if a specific number is needed. Columns are
   identical to the load stage tables.</p>
-  <h3>Light case &mdash; Code Compass only</h3>
+  <h3>Without Code Inspector &mdash; Compass and Estimating</h3>
   ${chainTable('compass','searches',SEATS)}
-  <h3>Heavy case &mdash; plus 250 Code Inspector users</h3>
+  <h3>All modules &mdash; plus 250 Code Inspector users</h3>
   ${chainTable('insp250','jobs',SEATS)}
-  <h3>Search index</h3>
-  ${indexTable(SEATS)}
+
+</section>
+
+<section class="panel" id="p-assume">
+  <h2>Assumptions</h2>
+  <p class="lede">Every input these figures depend on, and where each one came from. If any of it is
+  wrong the numbers move, so it is all on one page rather than buried in a model.</p>
+  <div class="scroll"><table>
+   <thead><tr><th class="t">Input</th><th class="t">Value</th><th class="t">Source</th></tr></thead>
+   <tbody>${ASSUMPTIONS.map(([k,v,src]) => `<tr><td class="t"><b>${esc(k)}</b></td><td class="t">${esc(v)}</td><td class="t src">${esc(src)}</td></tr>`).join('')}</tbody>
+  </table></div>
+  <div class="note"><b>The one open item.</b> Tender scans are excluded because no usage rate has been
+  established for them, and they are by some distance the heaviest job the platform runs &mdash; roughly 95
+  seconds and 13 model API calls each. Everything else above is either measured or stated. If tender
+  scanning is going to be part of normal use, tell us the expected rate and these figures will need
+  redoing.</div>
+  <div class="note"><b>Derived, not assumed.</b> The vCPU and memory figures come from the two
+  coefficients at the bottom of the table applied to the concurrency figure, which itself comes from the
+  usage rates and job durations above it. Nothing in the requirement columns is a judgement call laid on
+  top &mdash; change an input and the whole chain moves with it.</div>
 </section>
 
 <section class="panel" id="p-plat">
@@ -291,6 +336,7 @@ so the two cannot disagree. ${SEATS.length} detail rows &middot; 20 to 840 seats
  <button class="tab" role="tab" aria-selected="true"  aria-controls="p-start"  data-t="start">Start here</button>
  <button class="tab" role="tab" aria-selected="false" aria-controls="p-req"    data-t="req">Requirements by load</button>
  <button class="tab" role="tab" aria-selected="false" aria-controls="p-detail" data-t="detail">Full detail</button>
+ <button class="tab" role="tab" aria-selected="false" aria-controls="p-assume" data-t="assume">Assumptions</button>
  <button class="tab" role="tab" aria-selected="false" aria-controls="p-plat"   data-t="plat">Platform requirements</button>
 </nav>
 <script>
@@ -350,4 +396,4 @@ var XLSX_B64="${xb64}";
 </body></html>`;
 
 fs.writeFileSync(path.join(__dirname,'hardware.html'), page);
-console.log('hardware.html', (page.length/1024).toFixed(1)+'KB | 4 tabs | xlsx embedded:', xb64?(xb64.length/1024).toFixed(0)+'KB':'NO');
+console.log('hardware.html', (page.length/1024).toFixed(1)+'KB | '+(page.match(/class="tab"/g)||[]).length+' tabs | xlsx embedded:', xb64?(xb64.length/1024).toFixed(0)+'KB':'NO');

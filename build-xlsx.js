@@ -10,10 +10,11 @@
 // 20 seats, and the constraints the platform has to satisfy whatever shape
 // it ends up being.
 // ========================================================
-const { SEATS, SCENARIOS, data, USAGE } = require('./build-hardware.js');
+const { SEATS, SCENARIOS, data, USAGE, CORPUS, CORPUS_GROWTH, ASSUMPTIONS } = require('./build-hardware.js');
 const { write, S } = require('./xlsx.js');
 
 const at = (k, n) => data[k][SEATS.indexOf(n)];
+const H840 = at('insp250', 840);
 const STAGES = [20, 100, 200, 300, 400, 500, 600, 700, 840];
 const U = `${USAGE.low.compass}-${USAGE.high.compass}`;
 const I = `${USAGE.low.inspector}-${USAGE.high.inspector}`;
@@ -46,8 +47,10 @@ const chainRow = (key, n) => {
           [+r.hi.concurrent.toFixed(1), S.splitNum],
           N1(+r.hi.vcpu.toFixed(1)), N1(+r.hi.appRam.toFixed(1))];
 };
-const ixRow = (n) => { const r = data.insp250[SEATS.indexOf(n)].hi;
-  return [[n, S.left], N1(+r.indexGb.toFixed(1)), [r.indexDisk, S.num]]; };
+const CORPUS_W = [13, 15, 14, 17, 13, 12, 18];
+const corpusRow = (g) => [[g.editions, S.left], [g.books, S.num], N1(g.codeGb), N1(g.tenantGb840),
+  [g.totalGb840, g.editions === CORPUS.editionsToday ? S.splitNum : S.num1],
+  [g.diskGb840, S.num], [g.yearsFromNow === 0 ? 'today' : 'in about ' + g.yearsFromNow + ' years', S.left]];
 
 const chainBlock = (title, key, unit, seatList) => ([
   band(title, CHAIN_H(unit).length),
@@ -70,18 +73,19 @@ const readme = { name: 'Read Me', cols: RW, rows: [
   [B('The one column worth understanding: "running at the same time"')],
   prose('It is not a fraction of a machine, and it is not how many people are logged in. It is how many searches are being worked on SIMULTANEOUSLY - how many people are sitting watching a spinner at the same instant, during the busiest hour of the day.', RW),
   prose('Take the 840-seat row. Read it left to right and it builds itself:', RW),
-  prose('   840 people each run about 20 searches in a day    =  18,550 jobs a day', RW, S.plain),
-  prose('   the busy hour carries 3x its even share of those  =   6,956 in that hour', RW, S.plain),
-  prose('   each one occupies a core for 12-55 seconds        =  most finish before the next arrives', RW, S.plain),
-  prose('   so at any given instant, mid-flight               =  31 RUNNING AT ONCE', RW, S.bold),
-  prose('Nearly 7,000 searches an hour sounds enormous; 31 running simultaneously does not. Both are the same fact. A search takes seconds and then the core is free again, so they overlap far less than the daily total suggests. That overlap is the entire hardware question, and it is why 840 seats need about 10 vCPU rather than hundreds.', RW),
-  prose('A number below 1 is normal too. At 20 seats it is 1.3, and for Compass alone 0.5 - meaning a job is in progress about half the busy hour and nothing is running the rest of it.', RW),
+  prose(`   840 seats x (${USAGE.high.compass} searches + ${USAGE.high.estimating} estimating jobs), plus 250 x ${USAGE.high.inspector} scans  =  ${H840.jobsPerDay.toLocaleString('en')} jobs a day`, RW, S.plain),
+  prose(`   the busy hour carries 3x its even share of those             =  ${H840.jobsPerBusyHour.toLocaleString('en')} in that hour`, RW, S.plain),
+  prose('   each one occupies a core for 12-55 seconds                   =  most finish before the next arrives', RW, S.plain),
+  prose(`   so at any given instant, mid-flight                          =  ${H840.hi.concurrent.toFixed(0)} RUNNING AT ONCE`, RW, S.bold),
+  prose(`Eight and a half thousand jobs an hour sounds enormous; ${H840.hi.concurrent.toFixed(0)} running simultaneously does not. Both are the same fact. A job takes seconds and then the core is free again, so they overlap far less than the daily total suggests. That overlap is the entire hardware question, and it is why 840 seats need about ${H840.hi.vcpu.toFixed(0)} vCPU rather than hundreds.`, RW),
+  prose(`A number below 1 is normal too. At 20 seats without Code Inspector it is ${data.compass[0].hi.concurrent.toFixed(1)} - meaning a job is in progress about that share of the busy hour and nothing is running the rest of it.`, RW),
   prose('It is an average, not a ceiling: arrivals are random, so short moments with two or three times the figure still happen, and the platform needs headroom to absorb them.', RW),
   prose('Job lengths differ by module: a Compass search runs about 12 seconds, an Inspector photo scan about 55. That is why a few hundred Inspector users move the figure more than several hundred extra Compass seats do.', RW),
   spacer(),
   [B('The two cases')],
-  prose('LIGHT CASE - every seat running Code Compass and nothing else. HEAVY CASE - the same, plus 250 people also running Code Inspector, the most demanding configuration we would expect. Any real deployment sits between the two, so they bracket the answer rather than predicting it.', RW),
-  prose(`Both are stated at the BUSY end of expected usage: ${USAGE.high.compass} Code Compass searches per seat per working day and ${USAGE.high.inspector} Code Inspector scans per user. A platform sized on average usage is short on every busy day, so there is no point publishing the average. If usage settles at the quiet end (${USAGE.low.compass} and ${USAGE.low.inspector}), every figure here is about a quarter lower.`, RW),
+  prose('WITHOUT CODE INSPECTOR - every seat running Code Compass and the estimating modules. ALL MODULES - the same, plus 250 people also running Code Inspector, the most demanding configuration we would expect. Any real deployment sits between the two, so they bracket the answer rather than predicting it.', RW),
+  prose(`Both are stated at the BUSY end of expected usage: ${USAGE.high.compass} Code Compass searches and ${USAGE.high.estimating} estimating jobs per seat per working day, plus ${USAGE.high.inspector} Code Inspector scans per user. A platform sized on average usage is short on every busy day, so there is no point publishing the average. If usage settles at the quiet end (${USAGE.low.compass}, ${USAGE.low.estimating} and ${USAGE.low.inspector}), every figure here is about a quarter lower.`, RW),
+  prose('TENDER SCANS ARE EXCLUDED. They are the heaviest job the platform runs - about 95 seconds and 13 model API calls each, against 12 seconds for a Compass search - and no rate has been established for them. They are left out rather than guessed at. If tenders are going to run regularly these figures need revisiting: even one per seat per week would add roughly 5 to the "running at the same time" column at 840 seats.', RW),
   prose('The busiest hour is taken at 3x the flat daily average, because usage clusters at the start of the day and after lunch rather than spreading evenly.', RW),
   spacer(),
   [B('What the figures cover, and what they do not')],
@@ -100,12 +104,13 @@ const stages = { name: 'Requirements by load', cols: CHAIN_W, freeze: { y: 7 }, 
   prose('"Running at the same time" is an average across the busy hour. A value below 1 is normal and means the work is intermittent - it is not a fraction of a machine. Full explanation on the Read Me sheet.', CHAIN_W),
   prose('vCPU and RAM cover the APPLICATION TIER only. The search index is sized separately below and is never added to them.', CHAIN_W),
   spacer(),
-  ...chainBlock('LIGHT CASE  -  every seat running Code Compass, nothing else', 'compass', 'searches', STAGES),
-  ...chainBlock('HEAVY CASE  -  the same, plus 250 people also running Code Inspector', 'insp250', 'jobs', STAGES),
-  band('SEARCH INDEX  -  sized separately, never added to the above', 3),
-  prose('The index does not grow with load. It grows with the size of the building-code corpus ingested, so it tracks seats only because more customers means more of their own documents.', IX_W),
-  { cells: ['Seats','Index RAM GB','Index disk GB'].map(H), height: 20 },
-  ...STAGES.map(ixRow),
+  ...chainBlock('WITHOUT CODE INSPECTOR  -  every seat running Code Compass and Estimating', 'compass', 'jobs', STAGES),
+  ...chainBlock('ALL MODULES  -  the same, plus 250 people also running Code Inspector', 'insp250', 'jobs', STAGES),
+  band('SEARCH INDEX  -  driven by TIME, not by load', 7),
+  prose('The index holds the ingested building codes: one book per jurisdiction, per edition. Canada has a national code plus 10 provinces and 3 territories - 14 jurisdictions - and a new National Building Code lands roughly every 4 years. Older editions are kept deliberately, because comparing across editions is a feature rather than an archive. So this figure rises on a calendar, not on a seat count, and it never falls.', CORPUS_W),
+  { cells: ['Code editions\nkept','Code books\n14 per edition','Building code\nGB','Customer data\nGB at 840 seats','INDEX RAM\nGB','Index disk\nGB','When'].map(H), height: 30 },
+  ...CORPUS_GROWTH.map(corpusRow),
+  prose('The customer-data column is separate: each customer organisation contributes about 5,000 vectors of their own shop knowledge and visual standards, and at 840 seats that is roughly 105 organisations. It is the smaller of the two, and unlike the code corpus it does track seats.', CORPUS_W),
   spacer(10),
   prose('Between these nine points the requirement rises smoothly - there is no threshold or step change anywhere in this range. The Full detail sheet gives every 20 seats if a specific figure is needed.', CHAIN_W),
 ]};
@@ -115,14 +120,30 @@ const detail = { name: 'Full detail', cols: CHAIN_W, freeze: { y: 4 }, rows: [
   [T('Every 20 seats, 20 to 840')],
   prose('The same figures as the Load stages sheet, at every increment. Columns are identical.', CHAIN_W),
   spacer(),
-  ...chainBlock('LIGHT CASE  -  Code Compass only', 'compass', 'searches', SEATS),
-  ...chainBlock('HEAVY CASE  -  plus 250 Code Inspector users', 'insp250', 'jobs', SEATS),
-  band('SEARCH INDEX', 3),
-  { cells: ['Seats','Index RAM GB','Index disk GB'].map(H), height: 20 },
-  ...SEATS.map(ixRow),
+  ...chainBlock('WITHOUT CODE INSPECTOR  -  Compass and Estimating', 'compass', 'jobs', SEATS),
+  ...chainBlock('ALL MODULES  -  plus 250 Code Inspector users', 'insp250', 'jobs', SEATS),
 ]};
 
-// ---------------------------------------------------------------- 4. Constraints
+// ------------------------------------------------------- 4. Assumptions
+// Every input on one page. Two of these were wrong for several drafts
+// precisely because they lived only inside the code where nobody could
+// challenge them.
+const AW = [34, 46, 40];
+const assumptions = { name: 'Assumptions', cols: AW, freeze: { y: 4 }, rows: [
+  [T('Assumptions')],
+  prose('Every input these figures depend on, and where each one came from. If any of it is wrong the numbers move.', AW),
+  spacer(),
+  { cells: ['Input', 'Value', 'Source'].map(H), height: 20 },
+  ...ASSUMPTIONS.map(([k, v, src]) => [[k, S.left], [v, S.left], [src, S.left]]),
+  spacer(),
+  [B('The one open item')],
+  prose('Tender scans are excluded because no usage rate has been established for them, and they are by some distance the heaviest job the platform runs - roughly 95 seconds and 13 model API calls each. Everything else above is either measured or stated. If tender scanning is going to be part of normal use, these figures need redoing.', AW),
+  spacer(),
+  [B('Derived, not assumed')],
+  prose('The vCPU and memory figures come from the two coefficients at the bottom of the table applied to the concurrency figure, which itself comes from the usage rates and job durations above it. Nothing in the requirement columns is a judgement laid on top - change an input and the whole chain moves with it.', AW),
+]};
+
+// ---------------------------------------------------------------- 5. Constraints
 const CW = [112];
 const constraints = { name: 'Platform requirements', cols: CW, rows: [
   spacer(4),
@@ -155,5 +176,5 @@ const constraints = { name: 'Platform requirements', cols: CW, rows: [
 ]};
 
 const OUT = 'AscendOS-Hardware-Requirements.xlsx';
-const size = write(OUT, [readme, stages, detail, constraints]);
-console.log(`${OUT}  ${(size/1024).toFixed(1)}KB  |  4 sheets  |  ${STAGES.length} load stages, ${SEATS.length} detail rows`);
+const size = write(OUT, [readme, stages, detail, assumptions, constraints]);
+console.log(`${OUT}  ${(size/1024).toFixed(1)}KB  |  5 sheets  |  ${STAGES.length} load stages, ${SEATS.length} detail rows`);
