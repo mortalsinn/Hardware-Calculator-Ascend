@@ -14,8 +14,8 @@ const at = (k,n) => data[k][SEATS.indexOf(n)];
 const last = k => data[k][data[k].length-1].hi;
 const lastLo = k => data[k][data[k].length-1].lo;
 const splitAt = (k,b) => { const a=data[k];
-  for (let i=1;i<a.length;i++) if (a[i-1][b].mgColocated && !a[i][b].mgColocated) return a[i].seats;
-  return a[0][b].mgColocated ? null : 20; };
+  for (let i=1;i<a.length;i++) if (a[i-1][b].azVmColocated && !a[i][b].azVmColocated) return a[i].seats;
+  return a[0][b].azVmColocated ? null : 20; };
 
 // A row is worth a second look when the index moves onto its own machine:
 // total cores and memory can legitimately FALL there, because one shared box
@@ -37,8 +37,12 @@ const conc = r => [`${r.lo.concurrent.toFixed(1)} <span class="dash">&ndash;</sp
 
 const HW_COLS = [['Seats','t'],['Peak concurrent<br><span class="lt">low &ndash; high</span>','rng'],
   ['Web tier','t'],['Index host','t'],['Machines',''],['Total<br>vCPU',''],['Total<br>RAM GB',''],['Index<br>disk GB','']];
-const SV_COLS = [['Seats','t'],['Peak concurrent<br><span class="lt">low &ndash; high</span>','rng'],
-  ['Peak<br>instances',''],['Warm<br>instances',''],['Peak<br>vCPU',''],['Peak<br>RAM GB',''],['Search index','t']];
+const CA_COLS = [['Seats','t'],['Peak concurrent<br><span class="lt">low &ndash; high</span>','rng'],
+  ['Peak<br>replicas',''],['Warm<br>replicas',''],['Replica<br>vCPU',''],['Replica<br>RAM GB',''],
+  ['Index host<br><span class="lt">separate machine</span>','t'],['Machines','']];
+const IX_COLS = [['Seats','t'],['Index<br>RAM GB',''],['Index<br>disk GB',''],
+  ['Self-hosted VM<br><span class="lt">Qdrant</span>','t'],['AI Search tier<br><span class="lt">alternative</span>','t'],
+  ['Partitions',''],['Vector quota<br>needed GB','']];
 
 const optionPanel = (id, letter, title, blurb, cols, cells, splitKey, foot) => `
 <section class="panel" id="p-${id}">
@@ -151,7 +155,7 @@ const page = `<!doctype html>
 
 <div class="masthead">
   <div><h1>AscendOS &mdash; Hardware Requirements</h1>
-  <p class="for">Prepared for ShiftIT &middot; hardware specification only, no pricing</p></div>
+  <p class="for">Prepared for ShiftIT &middot; Microsoft Azure &middot; hardware specification only, no pricing</p></div>
   <div class="meta">Code Compass ${U} searches / seat / day<br>
   Code Inspector ${I} scans / user / day<br>20&ndash;840 seats in steps of 20</div>
 </div>
@@ -171,56 +175,120 @@ If the download button does nothing, this page is inside a sandbox that blocks d
 
 <section class="panel on" id="p-summary">
   <h2><span class="badge">&#9632;</span>Summary</h2>
-  <p class="lede">The three options are alternatives, not layers &mdash; you would supply one of them.
-  Each has its own tab with the full 20-seat detail. Hardware is sized on the high end of the
-  usage range; a fleet sized on average usage is under-provisioned on every busy day.</p>
+  <p class="lede">Three ways to run AscendOS on Azure. They are alternatives, not layers &mdash; you would
+  supply one of them. Each has its own tab with the full 20-seat detail. Hardware is sized on the high
+  end of the usage range, because a fleet sized on average usage is under-provisioned on every busy day.</p>
 
   <div class="cards">
-   <div class="card"><h4>840 seats, Compass only</h4><div class="n">${last('compass').mgCpu} vCPU &middot; ${last('compass').mgRam} GB</div>
-    <p>${lastLo('compass').concurrent.toFixed(0)}&ndash;${last('compass').concurrent.toFixed(0)} jobs in flight at peak &mdash; ${last('compass').mgMachines} managed instances, or ${last('compass').vpMachines} VPS servers.</p></div>
-   <div class="card"><h4>The planning threshold</h4><div class="n">${splitAt('compass','hi')} seats</div>
-    <p>Where the search index needs its own machine. With 250 Inspector users it arrives at ${splitAt('insp250','hi')} seats.</p></div>
+   <div class="card"><h4>840 seats, Compass only</h4><div class="n">${last('compass').azAppCpu} vCPU &middot; ${last('compass').azAppRam} GB</div>
+    <p>${lastLo('compass').concurrent.toFixed(0)}&ndash;${last('compass').concurrent.toFixed(0)} jobs in flight at peak. ${esc(last('compass').azAppWeb)} on App Service, or ${last('compass').azVmMachines} VMs.</p></div>
+   <div class="card"><h4>The index cannot share</h4><div class="n">Always separate</div>
+    <p>On App Service and Container Apps the vector index needs its own machine at every seat count &mdash; neither has block storage.</p></div>
    <div class="card"><h4>200 vs 250 Inspector</h4><div class="n">Identical at 840</div>
-    <p>Both need ${last('insp250').mgMachines} machines. They differ lower down, where 250 crosses the threshold sooner.</p></div>
+    <p>Both need ${last('insp250').azAppMachines} machines on App Service. They differ lower down the range.</p></div>
   </div>
 
+  <div class="note"><b>Does Azure change the requirement? No.</b> Peak concurrency, cores, memory and
+  disk are properties of the workload, not the vendor &mdash; those columns are identical whoever hosts it.
+  What Azure changes is the ladder of purchasable units, and two things about the deployment&rsquo;s shape:
+  the search index can never share a machine on options A or C, and App Service Standard&rsquo;s 10-instance
+  cap makes Premium v3 the tier for this range.</div>
+
   <h3>What to quote, at key seat counts</h3>
-  <p class="sub">Sized on high usage. Full detail on the option tabs.</p>
+  <p class="sub">Sized on high usage. Totals include the index host. Full detail on the option tabs.</p>
   <div class="scroll"><table>
   <thead><tr><th class="t">Seats</th><th class="t">Usage scenario</th><th>Peak<br>concurrent</th>
-   <th>A&nbsp;Machines</th><th>A&nbsp;vCPU</th><th>A&nbsp;RAM</th>
-   <th>B&nbsp;Machines</th><th>B&nbsp;vCPU</th><th>B&nbsp;RAM</th>
-   <th>C&nbsp;Peak&nbsp;inst</th><th>C&nbsp;vCPU</th><th>C&nbsp;RAM</th></tr></thead>
+   <th class="t">A&nbsp;App&nbsp;Service</th><th>A&nbsp;Mach</th><th>A&nbsp;vCPU</th><th>A&nbsp;RAM</th>
+   <th class="t">B&nbsp;VMs</th><th>B&nbsp;Mach</th><th>B&nbsp;vCPU</th><th>B&nbsp;RAM</th>
+   <th>C&nbsp;Replicas</th><th class="t">C&nbsp;Index</th></tr></thead>
   <tbody>${KEY_SEATS.flatMap(n => SCENARIOS.map((sc,i) => { const h = at(sc.key,n).hi;
     return `<tr><td class="t">${i===0?`<b>${n}</b>`:''}</td><td class="t">${esc(sc.title)}</td>
-    <td>${h.concurrent.toFixed(1)}</td><td>${h.mgMachines}</td><td>${h.mgCpu}</td><td>${h.mgRam}</td>
-    <td>${h.vpMachines}</td><td>${h.vpCpu}</td><td>${h.vpRam}</td>
-    <td>${h.svPeak}</td><td>${h.svCpu}</td><td>${h.svRam}</td></tr>`;})).join('')}</tbody></table></div>
+    <td>${h.concurrent.toFixed(1)}</td>
+    <td class="t">${esc(h.azAppWeb)}</td><td>${h.azAppMachines}</td><td>${h.azAppCpu}</td><td>${h.azAppRam}</td>
+    <td class="t">${esc(h.azVmWeb)}</td><td>${h.azVmMachines}</td><td>${h.azVmCpu}</td><td>${h.azVmRam}</td>
+    <td>${h.azCaPeak}</td><td class="t">${esc(h.azCaIdx)}</td></tr>`;})).join('')}</tbody></table></div>
 
-  <div class="note"><b>Where the index needs its own machine</b>, by scenario and by where usage lands
-  in the range. This is the one step change in the whole document; everything else is a smooth curve.
+  <div class="note"><b>Where the index needs its own machine on Option B</b>, the only option where it
+  can share at all. On A and C it is separate from the first seat.
   <div class="scroll"><table style="max-width:620px;margin-top:9px">
   <thead><tr><th class="t">Scenario</th><th>Low usage (${USAGE.low.compass}/${USAGE.low.inspector} per day)</th><th>High usage (${USAGE.high.compass}/${USAGE.high.inspector} per day)</th></tr></thead>
-  <tbody>${SCENARIOS.map(sc=>`<tr><td class="t">${esc(sc.title)}</td><td>${splitAt(sc.key,'lo')||'—'} seats</td><td>${splitAt(sc.key,'hi')||'—'} seats</td></tr>`).join('')}</tbody></table></div></div>
+  <tbody>${SCENARIOS.map(sc=>`<tr><td class="t">${esc(sc.title)}</td><td>${splitAt(sc.key,'lo')||'&mdash;'} seats</td><td>${splitAt(sc.key,'hi')||'&mdash;'} seats</td></tr>`).join('')}</tbody></table></div></div>
 </section>
 
-${optionPanel('a','A','Managed platform (PaaS)',
- 'Fixed instance sizes; the platform handles deploys, scaling and failover. Most instances, because each one is small &mdash; and the fewest moving parts for us to operate. Plan names shown are Render&rsquo;s; equivalent tiers from any provider are fine.',
- HW_COLS, r => { const h=r.hi; return [`<b>${r.seats}</b>`, ...conc(r), esc(h.mgWeb), esc(h.mgIndex), h.mgMachines, h.mgCpu, h.mgRam, h.indexDisk]; },
- 'mgColocated',
- 'Shaded rows are where the search index moves onto its own machine. Totals can fall there: one shared box had to satisfy the larger demand in every dimension at once, so two right-sized machines total less than one oversized one.')}
+${optionPanel('a','A','App Service &mdash; managed platform (PaaS)',
+ 'Premium v3 instances behind the platform&rsquo;s own load balancer. Premium rather than Standard is deliberate: HTTP-driven autoscaling is Premium-only, Standard cannot be made zone-redundant, and Standard caps at 10 instances &mdash; a ceiling this range reaches. P0v3 (1 vCPU / 4 GB) is the scaling unit because 1-core steps waste the least; <b>P1v3 or P2v3 substitute directly at half or a quarter of the count.</b> The search index is always a separate machine here &mdash; see the Search index tab.',
+ HW_COLS, r => { const h=r.hi; return [`<b>${r.seats}</b>`, ...conc(r), esc(h.azAppWeb), esc(h.azAppIdx), h.azAppMachines, h.azAppCpu, h.azAppRam, h.indexDisk]; },
+ null,
+ 'Instance count stays well inside the 30-instance Premium v3 limit across this whole range. Zone redundancy, if required, enforces a minimum of two instances and bills for both.')}
 
-${optionPanel('b','B','Raw VPS',
- 'Plain virtual servers. Far more CPU and RAM per machine, so the fleet stays small &mdash; but patching, monitoring, backups and failover become an operational responsibility. Plan names shown are Hetzner&rsquo;s; equivalent specs elsewhere are fine, the vCPU and RAM totals are what matter.',
- HW_COLS, r => { const h=r.hi; return [`<b>${r.seats}</b>`, ...conc(r), esc(h.vpWeb), esc(h.vpIndex), h.vpMachines, h.vpCpu, h.vpRam, h.indexDisk]; },
- 'vpColocated',
- 'Shaded rows are where the search index moves onto its own server.')}
+${optionPanel('b','B','Virtual Machines &mdash; raw infrastructure',
+ 'Bsv2 burstable VMs, the right family for this workload: short CPU spikes on a low average. B2s_v2 and larger bank credits at a 40% base, and average utilisation here sits well below that, so credits accumulate rather than drain. <b>Note there is no Azure equivalent of AWS &ldquo;Unlimited&rdquo; mode</b> &mdash; an exhausted credit bank throttles to base and cannot be bought past. Sized for fewest machines, since operating them is the real cost of this option.',
+ HW_COLS, r => { const h=r.hi; return [`<b>${r.seats}</b>`, ...conc(r), esc(h.azVmWeb), esc(h.azVmIdx), h.azVmMachines, h.azVmCpu, h.azVmRam, h.indexDisk]; },
+ 'azVmColocated',
+ 'Shaded rows are where the search index moves onto its own VM. This is the only option of the three where it can share the web machine at all, because it is the only one with block storage.')}
 
-${optionPanel('c','C','Serverless (request-scaled containers)',
- 'Each instance is 1 vCPU / 2 GB and exists only while requests are in flight. <b>These figures are not comparable to A and B</b> &mdash; there is no standing fleet, so a low instance count does not mean less capacity. Warm instances are those held alive to avoid a 2&ndash;5 second cold start.',
- SV_COLS, r => { const h=r.hi; return [`<b>${r.seats}</b>`, ...conc(r), h.svPeak, h.svWarm, h.svCpu, h.svRam, 'managed service']; },
- 'mgColocated',
- 'The search index cannot run serverless and remains a managed service in this option.')}
+${optionPanel('c','C','Container Apps &mdash; request-scaled containers',
+ 'Replicas exist only while requests are in flight and scale to zero. Allocation is fixed at a 1 vCPU : 2 GiB ratio, capped at 4 vCPU / 8 GiB per replica. <b>This option is unavoidably a hybrid:</b> Container Apps offers only ephemeral storage and Azure Files, so the search index cannot live here and needs its own machine regardless. Replica count follows a configured concurrency threshold, not a platform limit &mdash; Container Apps has no per-replica request cap.',
+ CA_COLS, r => { const h=r.hi; return [`<b>${r.seats}</b>`, ...conc(r), h.azCaPeak, h.azCaWarm, h.azCaCpu, h.azCaRam, esc(h.azCaIdx), h.azCaMachines]; },
+ null,
+ 'One replica absorbs this whole range at the assumed 45 concurrent requests per replica. For availability rather than capacity, run at least two.')}
+
+<section class="panel" id="p-index">
+  <h2><span class="badge">&#9679;</span>Search index &mdash; the one real decision</h2>
+  <p class="lede">Code Compass answers against a vector index of the ingested building codes. It is
+  currently Qdrant, self-hosted. On Azure this is the only part of the platform where the hosting
+  choice is forced rather than preferred, so it is worth deciding deliberately.</p>
+
+  <div class="note"><b>Qdrant requires block-level storage with a POSIX filesystem, and explicitly
+  does not run on network filesystems.</b> That single requirement rules out two of the three
+  options above as a home for it:
+  <ul style="margin:8px 0 0;padding-left:20px">
+   <li><b>App Service</b> &mdash; persistent <code>/home</code> is an SMB share, which cannot take the
+   exclusive file locks a database needs; local disk does not survive a restart. No configuration
+   gives durable, lockable and adequately sized disk together.</li>
+   <li><b>Container Apps</b> &mdash; offers ephemeral storage and Azure Files (SMB/NFS) only. No block
+   storage exists. Ephemeral volumes are destroyed on every scale-in and revision change.</li>
+   <li><b>Virtual Machines or AKS</b> &mdash; managed disks are block storage. Either works.</li>
+  </ul></div>
+
+  <div class="note"><b>There is no first-party managed Qdrant on Azure.</b> The Marketplace listing
+  is Qdrant Cloud, operated by Qdrant Solutions GmbH on their own infrastructure and sold through
+  Marketplace for billing convenience &mdash; it does not deploy into your subscription. The Container Apps
+  add-on that previously offered Qdrant in preview has been retired.</div>
+
+  <h3>The two viable routes</h3>
+  <p class="sub">Both are shown per seat count below. They are alternatives, not additions.</p>
+  <div class="scroll">${(() => {
+    const rows = data.insp250;
+    return `<table><thead><tr>${IX_COLS.map(c=>`<th${c[1]?` class="${c[1]}"`:''}>${c[0]}</th>`).join('')}</tr></thead><tbody>
+${rows.map(r => { const h=r.hi; return `<tr><td class="t"><b>${r.seats}</b></td><td>${h.indexGb.toFixed(1)}</td><td>${h.indexDisk}</td>
+  <td class="t">${esc(h.azCaIdx)}</td><td class="t">${esc(h.azSearchTier)}</td><td>${h.azSearchPart}</td><td>${h.azSearchGb.toFixed(1)}</td></tr>`;}).join('\n')}
+</tbody></table>`; })()}</div>
+
+  <dl>
+  <dt>Route 1 &mdash; keep Qdrant, on a VM or AKS</dt><dd>No application change. A single burstable VM
+  with a Premium SSD data disk covers this entire range; AKS with <code>managed-csi-premium</code> is the
+  same thing with orchestration. The index must fit in memory, which is what the Index RAM column
+  sizes. Note that VM disk IOPS are capped by <em>both</em> disk size and VM size &mdash; a larger disk does
+  nothing if the VM tier is the bottleneck.</dd>
+
+  <dt>Route 2 &mdash; Azure AI Search</dt><dd>Fully managed, native vector and hybrid search, no machine
+  to operate. The governing limit is the vector index quota per partition, which is a memory limit on
+  the graph &mdash; not the larger storage quota. Sizing allows for graph overhead and deleted-document
+  slack on top of the raw vectors, which is why the quota needed exceeds the index RAM figure.
+  <b>This is an API rewrite, not a drop-in replacement for the Qdrant client</b> &mdash; the cost is
+  engineering time, not hardware.</dd>
+
+  <dt>Which tier</dt><dd>Basic carries 5 GB of vector quota per partition and covers this range until
+  the index approaches that ceiling, at which point S1 (35 GB) is the next single-partition step.
+  Sharding a smaller tier across partitions reaches the same quota but is a more fragile deployment
+  for no benefit; the table above always shows the smallest tier that fits on one partition.</dd>
+
+  <dt>Regional caveat</dt><dd>The higher post-2024 quotas are not available in every region &mdash; Israel
+  Central, Qatar Central, Spain Central and South India remain on the older, smaller limits. Confirm
+  the target region before committing to a tier.</dd>
+  </dl>
+</section>
 
 <section class="panel" id="p-notes">
   <h2><span class="badge">?</span>Assumptions &amp; method</h2>
@@ -228,9 +296,16 @@ ${optionPanel('c','C','Serverless (request-scaled containers)',
   deployment you have in mind, the figures move accordingly.</p>
 <dl>
 <dt>What the workload is</dt><dd>AscendOS is browser-delivered. Code Compass answers building-code
-questions against an ingested corpus; Code Inspector analyses site photographs. Both are short,
+questions against an ingested vector corpus; Code Inspector analyses site photographs. Both are short,
 bursty jobs that hold a CPU core briefly and release it, so the fleet is sized on how many run at
-the same instant &mdash; not on seat count.</dd>
+the same instant &mdash; not on seat count. Both spend most of their time waiting on a model API rather
+than computing, which is why concurrency rather than raw compute drives the sizing.</dd>
+
+<dt>What does <em>not</em> change with the vendor</dt><dd>Peak concurrency, required cores, required
+memory and index size are properties of the workload. They would be identical on any provider. Only
+the ladder of purchasable units changes &mdash; plus, on Azure, two constraints on the deployment&rsquo;s shape:
+the index cannot share a machine on App Service or Container Apps, and Standard&rsquo;s instance cap forces
+Premium for this range.</dd>
 
 <dt>Usage assumed</dt><dd>Code Compass ${U} searches per seat per working day. Code Inspector ${I}
 scans per user per working day, for the subset of users named in each block.</dd>
@@ -257,8 +332,34 @@ expressed as its equivalent fleet-wide rate. The model is linear in job volume, 
 scans a day is exactly the same total work, and the same peak concurrency, as the equivalent
 average spread across all seats.</dd>
 
-<dt>What is not here</dt><dd>Pricing, of any kind. Also excluded: developer and staging environments,
-CI, and off-site backup targets &mdash; this is the production serving fleet only.</dd>
+<dt>Azure-specific constraints reflected in these tables</dt><dd>App Service Premium v3 is used
+throughout rather than Standard: HTTP-driven autoscaling is Premium-only, Standard cannot be made
+zone-redundant, and Standard caps at 10 instances. Premium v4 exists and is GA, but its vCPU and RAM
+are identical to v3 &mdash; the gain is faster processors and NVMe local storage, so <b>no extra capacity
+should be budgeted for v4</b>. Note Premium v4 has no stable outbound IP addresses; if anything
+downstream IP-allowlists us, that requires a NAT Gateway or staying on v3.</dd>
+
+<dt>Why Bsv2 for the VM option</dt><dd>The workload is short spikes on a low average, which is
+exactly what burstable credits are for. B2s_v2 and larger bank at a 40% base and average utilisation
+here sits well below it, so credits accumulate rather than drain. Two cautions: the original Bs-series
+is retiring in November 2028 and has no 1-vCPU successor, and there is no Azure equivalent of AWS
+&ldquo;Unlimited&rdquo; mode &mdash; an exhausted bank throttles to base and cannot be bought past.</dd>
+
+<dt>Things to confirm against your own subscription</dt><dd>Regional vCPU quota is not published by
+Microsoft and varies by subscription type, age and region; a new subscription can have very low or
+zero quota in a given region. Quota and capacity are also checked separately, so sufficient quota does
+not guarantee the region has the sizes available. Confirm before committing to a region.</dd>
+
+<dt>A known Azure surprise worth designing around</dt><dd>Each App Service instance gets only 128
+preallocated SNAT ports, and closed connections are not reclaimed for four minutes. An application
+that opens connections rapidly to the same host exhausts this and sees intermittent 5xx errors. There
+is no metric for it, so it cannot be autoscaled on. Connection pooling, private endpoints or a NAT
+Gateway are the mitigations. Relevant here because every job calls out to a model API.</dd>
+
+<dt>What is not here</dt><dd>Pricing, of any kind. Also excluded: high availability and redundancy,
+which is a separate decision that would at minimum double the web tier; developer and staging
+environments; CI; and off-site backup targets. This is the production serving fleet only.</dd>
+
 </dl>
 <p class="foot">Generated from the same model as the interactive planner, so the two cannot disagree.
 ${SEATS.length} rows per scenario &middot; 20 to 840 seats in steps of 20.</p>
@@ -267,9 +368,10 @@ ${SEATS.length} rows per scenario &middot; 20 to 840 seats in steps of 20.</p>
 </div>
 <nav class="tabs" role="tablist" aria-label="Worksheets">
  <button class="tab" role="tab" aria-selected="true"  aria-controls="p-summary" data-t="summary">Summary</button>
- <button class="tab" role="tab" aria-selected="false" aria-controls="p-a" data-t="a">A &middot; Managed platform</button>
- <button class="tab" role="tab" aria-selected="false" aria-controls="p-b" data-t="b">B &middot; Raw VPS</button>
- <button class="tab" role="tab" aria-selected="false" aria-controls="p-c" data-t="c">C &middot; Serverless</button>
+ <button class="tab" role="tab" aria-selected="false" aria-controls="p-a" data-t="a">A &middot; App Service</button>
+ <button class="tab" role="tab" aria-selected="false" aria-controls="p-b" data-t="b">B &middot; Virtual Machines</button>
+ <button class="tab" role="tab" aria-selected="false" aria-controls="p-c" data-t="c">C &middot; Container Apps</button>
+ <button class="tab" role="tab" aria-selected="false" aria-controls="p-index" data-t="index">Search index</button>
  <button class="tab" role="tab" aria-selected="false" aria-controls="p-notes" data-t="notes">Assumptions</button>
 </nav>
 <script>
