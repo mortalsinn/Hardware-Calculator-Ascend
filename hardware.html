@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="AscendOS hardware requirements by seat count.">
+<title>AscendOS · Hardware Requirements</title>
+<style>
+ :root{--paper:#fff;--ink:#111820;--muted:#5d6b7a;--line:#d7dee7;--accent:#e2661a;--band:#f4f7fa;--step:#fff4ec}
+ @media(prefers-color-scheme:dark){:root{--paper:#0d1219;--ink:#e4eaf1;--muted:#8a99a9;--line:#243140;--accent:#f5822f;--band:#151d27;--step:#231a12}}
+ :root[data-theme="dark"]{--paper:#0d1219;--ink:#e4eaf1;--muted:#8a99a9;--line:#243140;--accent:#f5822f;--band:#151d27;--step:#231a12}
+ :root[data-theme="light"]{--paper:#fff;--ink:#111820;--muted:#5d6b7a;--line:#d7dee7;--accent:#e2661a;--band:#f4f7fa;--step:#fff4ec}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding:30px 18px 60px}
+ .wrap{max-width:1180px;margin:0 auto}
+ .eyebrow{font:700 11px/1 ui-monospace,monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+ h1{font-size:clamp(22px,3.4vw,30px);margin:10px 0 8px;letter-spacing:-.02em;font-weight:800;text-wrap:balance}
+ h2{font-size:17px;margin:38px 0 4px;font-weight:800;letter-spacing:-.01em}
+ .lede{color:var(--muted);max-width:70ch;margin:0}
+ .sub{color:var(--muted);margin:0 0 10px;font-size:13px}
+ .hl{background:var(--band);border:1px solid var(--line);border-left:4px solid var(--accent);
+     border-radius:8px;padding:11px 14px;margin:0 0 12px;font-size:13.5px}
+ .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+ table{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+ th,td{padding:6px 11px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+ th{position:sticky;top:0;background:var(--band);font-size:10px;letter-spacing:.07em;text-transform:uppercase;
+    color:var(--muted);font-weight:700}
+ td.n{text-align:right;font-family:ui-monospace,monospace}
+ td.tot{font-weight:700}
+ tr.step{background:var(--step)}
+ tr.step td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+ tbody tr:last-child td{border-bottom:0}
+ .btn{display:inline-block;margin:16px 8px 0 0;padding:9px 16px;border-radius:8px;border:1px solid var(--accent);
+      background:var(--accent);color:#fff;font:700 13px system-ui;cursor:pointer;text-decoration:none}
+ .btn.alt{background:transparent;color:var(--accent)}
+ footer{margin-top:34px;color:var(--muted);font-size:12.5px;max-width:78ch;line-height:1.6}
+ @media print{.btn{display:none}body{padding:0}th{position:static}.hl{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <div class="eyebrow">AscendOS · Capacity Planning</div>
+ <h1>Hardware requirements by seat count</h1>
+ <p class="lede">Server sizing for Code Compass from 20 to 840 seats, in steps of 20, with two scenarios
+ layering Code Inspector on top. Figures are produced by the same model as the interactive planner, so the
+ two cannot disagree. Sizing shown is for the managed-platform option (Render); the highlighted rows are the
+ points where another instance is required.</p>
+ <a class="btn" href="hardware.csv" download>Download spreadsheet (CSV)</a>
+ <a class="btn alt" href="index.html">Open the interactive planner</a>
+ <h2>Code Compass only</h2>
+  <p class="sub">Every seat runs 5 Compass searches per working day. No Inspector, no Estimating.</p>
+  <div class="hl">At 840 seats: <b>5.3</b> scans running at once ·
+    <b>Standard x4</b> (4 vCPU / 8 GB provisioned) ·
+    search index <b>4.2 GB</b> · <b>$1,904/month</b>
+    (<b>$2</b> per seat)</div>
+  <div class="scroll"><table>
+    <thead><tr>
+      <th>Seats</th><th>Peak concurrent</th><th>vCPU req.</th><th>App RAM GB</th><th>Index RAM GB</th>
+      <th>Instances</th><th>Prov. vCPU</th><th>Prov. RAM</th><th>Infra $/mo</th><th>AI $/mo</th><th>Total $/mo</th>
+    </tr></thead><tbody><tr>
+      <td class="n">20</td>
+      <td class="n">0.1</td>
+      <td class="n">0.4</td>
+      <td class="n">1.2</td>
+      <td class="n">0.4</td>
+      <td>Standard x1</td>
+      <td class="n">1</td>
+      <td class="n">2</td>
+      <td class="n">$50</td>
+      <td class="n">$30</td>
+      <td class="n tot">$81</td>
+    </tr><tr>
+      <td class="n">40</td>
+      <td class="n">0.3</td>
+      <td class="n">0.4</td>
+      <td class="n">1.3</td>
+      <td class="n">0.5</td>
+      <td>Standard x1</td>
+      <td class="n">1</td>
+      <td class="n">2</td>
+      <td class="n">$54</td>
+      <td class="n">$60</td>
+      <td class="n tot">$116</td>
+    </tr><tr>
+      <td class="n">60</td>
+      <td class="n">0.4</td>
+      <td class="n">0.5</td>
+      <td class="n">1.3</td>
+      <td class="n">0.6</td>
+      <td>Standard x1</td>
+      <td class="n">1</td>
+      <td class="n">2</td>
+      <td class="n">$58</td>
+      <td class="n">$90</td>
+      <td class="n tot">$150</td>
+    </tr><tr class="step">
+      <td class="n">80</td>
+      <td class="n">0.5</td>
+      <td class="n">0.5</td>
+      <td class="n">1.4</td>
+      <td class="n">0.7</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$86</td>
+      <td class="n">$120</td>
+      <td class="n tot">$210</td>
+    </tr><tr>
+      <td class="n">100</td>
+      <td class="n">0.6</td>
+      <td class="n">0.5</td>
+      <td class="n">1.4</td>
+      <td class="n">0.8</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$90</td>
+      <td class="n">$150</td>
+      <td class="n tot">$245</td>
+    </tr><tr>
+      <td class="n">120</td>
+      <td class="n">0.8</td>
+      <td class="n">0.6</td>
+      <td class="n">1.5</td>
+      <td class="n">0.9</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$94</td>
+      <td class="n">$180</td>
+      <td class="n tot">$279</td>
+    </tr><tr>
+      <td class="n">140</td>
+      <td class="n">0.9</td>
+      <td class="n">0.6</td>
+      <td class="n">1.5</td>
+      <td class="n">1.0</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$98</td>
+      <td class="n">$209</td>
+      <td class="n tot">$314</td>
+    </tr><tr>
+      <td class="n">160</td>
+      <td class="n">1.0</td>
+      <td class="n">0.6</td>
+      <td class="n">1.5</td>
+      <td class="n">1.1</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$102</td>
+      <td class="n">$239</td>
+      <td class="n tot">$349</td>
+    </tr><tr>
+      <td class="n">180</td>
+      <td class="n">1.1</td>
+      <td class="n">0.7</td>
+      <td class="n">1.6</td>
+      <td class="n">1.2</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$105</td>
+      <td class="n">$269</td>
+      <td class="n tot">$383</td>
+    </tr><tr>
+      <td class="n">200</td>
+      <td class="n">1.3</td>
+      <td class="n">0.7</td>
+      <td class="n">1.6</td>
+      <td class="n">1.3</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$109</td>
+      <td class="n">$299</td>
+      <td class="n tot">$418</td>
+    </tr><tr>
+      <td class="n">220</td>
+      <td class="n">1.4</td>
+      <td class="n">0.8</td>
+      <td class="n">1.7</td>
+      <td class="n">1.4</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$113</td>
+      <td class="n">$329</td>
+      <td class="n tot">$453</td>
+    </tr><tr>
+      <td class="n">240</td>
+      <td class="n">1.5</td>
+      <td class="n">0.8</td>
+      <td class="n">1.7</td>
+      <td class="n">1.4</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$116</td>
+      <td class="n">$359</td>
+      <td class="n tot">$487</td>
+    </tr><tr>
+      <td class="n">260</td>
+      <td class="n">1.6</td>
+      <td class="n">0.8</td>
+      <td class="n">1.8</td>
+      <td class="n">1.5</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$120</td>
+      <td class="n">$389</td>
+      <td class="n tot">$522</td>
+    </tr><tr>
+      <td class="n">280</td>
+      <td class="n">1.8</td>
+      <td class="n">0.9</td>
+      <td class="n">1.8</td>
+      <td class="n">1.6</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$124</td>
+      <td class="n">$419</td>
+      <td class="n tot">$556</td>
+    </tr><tr>
+      <td class="n">300</td>
+      <td class="n">1.9</td>
+      <td class="n">0.9</td>
+      <td class="n">1.9</td>
+      <td class="n">1.7</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$128</td>
+      <td class="n">$449</td>
+      <td class="n tot">$591</td>
+    </tr><tr>
+      <td class="n">320</td>
+      <td class="n">2.0</td>
+      <td class="n">0.9</td>
+      <td class="n">1.9</td>
+      <td class="n">1.8</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$132</td>
+      <td class="n">$479</td>
+      <td class="n tot">$626</td>
+    </tr><tr>
+      <td class="n">340</td>
+      <td class="n">2.1</td>
+      <td class="n">1.0</td>
+      <td class="n">1.9</td>
+      <td class="n">1.9</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$135</td>
+      <td class="n">$509</td>
+      <td class="n tot">$660</td>
+    </tr><tr>
+      <td class="n">360</td>
+      <td class="n">2.3</td>
+      <td class="n">1.0</td>
+      <td class="n">2.0</td>
+      <td class="n">2.0</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$139</td>
+      <td class="n">$539</td>
+      <td class="n tot">$695</td>
+    </tr><tr class="step">
+      <td class="n">380</td>
+      <td class="n">2.4</td>
+      <td class="n">1.1</td>
+      <td class="n">2.0</td>
+      <td class="n">2.1</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$168</td>
+      <td class="n">$569</td>
+      <td class="n tot">$755</td>
+    </tr><tr>
+      <td class="n">400</td>
+      <td class="n">2.5</td>
+      <td class="n">1.1</td>
+      <td class="n">2.1</td>
+      <td class="n">2.2</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$171</td>
+      <td class="n">$599</td>
+      <td class="n tot">$789</td>
+    </tr><tr>
+      <td class="n">420</td>
+      <td class="n">2.6</td>
+      <td class="n">1.1</td>
+      <td class="n">2.1</td>
+      <td class="n">2.3</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$175</td>
+      <td class="n">$628</td>
+      <td class="n tot">$824</td>
+    </tr><tr>
+      <td class="n">440</td>
+      <td class="n">2.8</td>
+      <td class="n">1.2</td>
+      <td class="n">2.2</td>
+      <td class="n">2.4</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$179</td>
+      <td class="n">$658</td>
+      <td class="n tot">$858</td>
+    </tr><tr>
+      <td class="n">460</td>
+      <td class="n">2.9</td>
+      <td class="n">1.2</td>
+      <td class="n">2.2</td>
+      <td class="n">2.5</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$183</td>
+      <td class="n">$688</td>
+      <td class="n tot">$893</td>
+    </tr><tr>
+      <td class="n">480</td>
+      <td class="n">3.0</td>
+      <td class="n">1.3</td>
+      <td class="n">2.3</td>
+      <td class="n">2.5</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$187</td>
+      <td class="n">$718</td>
+      <td class="n tot">$928</td>
+    </tr><tr>
+      <td class="n">500</td>
+      <td class="n">3.1</td>
+      <td class="n">1.3</td>
+      <td class="n">2.3</td>
+      <td class="n">2.7</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$190</td>
+      <td class="n">$748</td>
+      <td class="n tot">$962</td>
+    </tr><tr>
+      <td class="n">520</td>
+      <td class="n">3.3</td>
+      <td class="n">1.3</td>
+      <td class="n">2.3</td>
+      <td class="n">2.7</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$194</td>
+      <td class="n">$778</td>
+      <td class="n tot">$997</td>
+    </tr><tr>
+      <td class="n">540</td>
+      <td class="n">3.4</td>
+      <td class="n">1.4</td>
+      <td class="n">2.4</td>
+      <td class="n">2.8</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$198</td>
+      <td class="n">$808</td>
+      <td class="n tot">$1,032</td>
+    </tr><tr>
+      <td class="n">560</td>
+      <td class="n">3.5</td>
+      <td class="n">1.4</td>
+      <td class="n">2.4</td>
+      <td class="n">2.9</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$201</td>
+      <td class="n">$838</td>
+      <td class="n tot">$1,066</td>
+    </tr><tr>
+      <td class="n">580</td>
+      <td class="n">3.6</td>
+      <td class="n">1.4</td>
+      <td class="n">2.5</td>
+      <td class="n">3.0</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$205</td>
+      <td class="n">$868</td>
+      <td class="n tot">$1,101</td>
+    </tr><tr>
+      <td class="n">600</td>
+      <td class="n">3.8</td>
+      <td class="n">1.5</td>
+      <td class="n">2.5</td>
+      <td class="n">3.1</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$209</td>
+      <td class="n">$898</td>
+      <td class="n tot">$1,136</td>
+    </tr><tr>
+      <td class="n">620</td>
+      <td class="n">3.9</td>
+      <td class="n">1.5</td>
+      <td class="n">2.6</td>
+      <td class="n">3.2</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$213</td>
+      <td class="n">$928</td>
+      <td class="n tot">$1,170</td>
+    </tr><tr>
+      <td class="n">640</td>
+      <td class="n">4.0</td>
+      <td class="n">1.5</td>
+      <td class="n">2.6</td>
+      <td class="n">3.3</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$217</td>
+      <td class="n">$958</td>
+      <td class="n tot">$1,205</td>
+    </tr><tr class="step">
+      <td class="n">660</td>
+      <td class="n">4.1</td>
+      <td class="n">1.6</td>
+      <td class="n">2.6</td>
+      <td class="n">3.4</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$245</td>
+      <td class="n">$988</td>
+      <td class="n tot">$1,264</td>
+    </tr><tr>
+      <td class="n">680</td>
+      <td class="n">4.3</td>
+      <td class="n">1.6</td>
+      <td class="n">2.7</td>
+      <td class="n">3.5</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$249</td>
+      <td class="n">$1,017</td>
+      <td class="n tot">$1,299</td>
+    </tr><tr>
+      <td class="n">700</td>
+      <td class="n">4.4</td>
+      <td class="n">1.7</td>
+      <td class="n">2.7</td>
+      <td class="n">3.6</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$253</td>
+      <td class="n">$1,047</td>
+      <td class="n tot">$1,334</td>
+    </tr><tr>
+      <td class="n">720</td>
+      <td class="n">4.5</td>
+      <td class="n">1.7</td>
+      <td class="n">2.8</td>
+      <td class="n">3.7</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$256</td>
+      <td class="n">$1,077</td>
+      <td class="n tot">$1,368</td>
+    </tr><tr>
+      <td class="n">740</td>
+      <td class="n">4.6</td>
+      <td class="n">1.7</td>
+      <td class="n">2.8</td>
+      <td class="n">3.8</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$260</td>
+      <td class="n">$1,107</td>
+      <td class="n tot">$1,403</td>
+    </tr><tr>
+      <td class="n">760</td>
+      <td class="n">4.8</td>
+      <td class="n">1.8</td>
+      <td class="n">2.9</td>
+      <td class="n">3.8</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$264</td>
+      <td class="n">$1,137</td>
+      <td class="n tot">$1,437</td>
+    </tr><tr>
+      <td class="n">780</td>
+      <td class="n">4.9</td>
+      <td class="n">1.8</td>
+      <td class="n">2.9</td>
+      <td class="n">3.9</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$268</td>
+      <td class="n">$1,167</td>
+      <td class="n tot">$1,472</td>
+    </tr><tr>
+      <td class="n">800</td>
+      <td class="n">5.0</td>
+      <td class="n">1.9</td>
+      <td class="n">3.0</td>
+      <td class="n">4.0</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$272</td>
+      <td class="n">$1,197</td>
+      <td class="n tot">$1,507</td>
+    </tr><tr>
+      <td class="n">820</td>
+      <td class="n">5.1</td>
+      <td class="n">1.9</td>
+      <td class="n">3.0</td>
+      <td class="n">4.1</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$603</td>
+      <td class="n">$1,227</td>
+      <td class="n tot">$1,869</td>
+    </tr><tr>
+      <td class="n">840</td>
+      <td class="n">5.3</td>
+      <td class="n">1.9</td>
+      <td class="n">3.0</td>
+      <td class="n">4.2</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$607</td>
+      <td class="n">$1,257</td>
+      <td class="n tot">$1,904</td>
+    </tr></tbody></table></div>
+<h2>Code Compass + 200 Inspector users</h2>
+  <p class="sub">All seats run Compass. 200 of them also run Code Inspector 5 times per working day.</p>
+  <div class="hl">At 840 seats: <b>11.0</b> scans running at once ·
+    <b>Standard x5</b> (5 vCPU / 10 GB provisioned) ·
+    search index <b>4.2 GB</b> · <b>$5,068/month</b>
+    (<b>$6</b> per seat)</div>
+  <div class="scroll"><table>
+    <thead><tr>
+      <th>Seats</th><th>Peak concurrent</th><th>vCPU req.</th><th>App RAM GB</th><th>Index RAM GB</th>
+      <th>Instances</th><th>Prov. vCPU</th><th>Prov. RAM</th><th>Infra $/mo</th><th>AI $/mo</th><th>Total $/mo</th>
+    </tr></thead><tbody><tr>
+      <td class="n">20</td>
+      <td class="n">0.7</td>
+      <td class="n">0.6</td>
+      <td class="n">1.4</td>
+      <td class="n">0.4</td>
+      <td>Standard x1</td>
+      <td class="n">1</td>
+      <td class="n">2</td>
+      <td class="n">$53</td>
+      <td class="n">$341</td>
+      <td class="n tot">$395</td>
+    </tr><tr class="step">
+      <td class="n">40</td>
+      <td class="n">1.4</td>
+      <td class="n">0.8</td>
+      <td class="n">1.7</td>
+      <td class="n">0.5</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$84</td>
+      <td class="n">$683</td>
+      <td class="n tot">$769</td>
+    </tr><tr>
+      <td class="n">60</td>
+      <td class="n">2.1</td>
+      <td class="n">1.0</td>
+      <td class="n">1.9</td>
+      <td class="n">0.6</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$90</td>
+      <td class="n">$1,024</td>
+      <td class="n tot">$1,117</td>
+    </tr><tr>
+      <td class="n">80</td>
+      <td class="n">2.8</td>
+      <td class="n">1.2</td>
+      <td class="n">2.2</td>
+      <td class="n">0.7</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$96</td>
+      <td class="n">$1,365</td>
+      <td class="n tot">$1,466</td>
+    </tr><tr>
+      <td class="n">100</td>
+      <td class="n">3.5</td>
+      <td class="n">1.4</td>
+      <td class="n">2.4</td>
+      <td class="n">0.8</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$103</td>
+      <td class="n">$1,706</td>
+      <td class="n tot">$1,814</td>
+    </tr><tr>
+      <td class="n">120</td>
+      <td class="n">4.2</td>
+      <td class="n">1.6</td>
+      <td class="n">2.7</td>
+      <td class="n">0.9</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$109</td>
+      <td class="n">$2,048</td>
+      <td class="n tot">$2,163</td>
+    </tr><tr>
+      <td class="n">140</td>
+      <td class="n">4.9</td>
+      <td class="n">1.8</td>
+      <td class="n">2.9</td>
+      <td class="n">1.0</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$115</td>
+      <td class="n">$2,389</td>
+      <td class="n tot">$2,512</td>
+    </tr><tr class="step">
+      <td class="n">160</td>
+      <td class="n">5.6</td>
+      <td class="n">2.0</td>
+      <td class="n">3.2</td>
+      <td class="n">1.1</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$147</td>
+      <td class="n">$2,730</td>
+      <td class="n tot">$2,885</td>
+    </tr><tr>
+      <td class="n">180</td>
+      <td class="n">6.3</td>
+      <td class="n">2.2</td>
+      <td class="n">3.4</td>
+      <td class="n">1.2</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$153</td>
+      <td class="n">$3,071</td>
+      <td class="n tot">$3,234</td>
+    </tr><tr>
+      <td class="n">200</td>
+      <td class="n">7.0</td>
+      <td class="n">2.4</td>
+      <td class="n">3.6</td>
+      <td class="n">1.3</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$159</td>
+      <td class="n">$3,413</td>
+      <td class="n tot">$3,582</td>
+    </tr><tr>
+      <td class="n">220</td>
+      <td class="n">7.1</td>
+      <td class="n">2.5</td>
+      <td class="n">3.7</td>
+      <td class="n">1.4</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$163</td>
+      <td class="n">$3,442</td>
+      <td class="n tot">$3,617</td>
+    </tr><tr>
+      <td class="n">240</td>
+      <td class="n">7.2</td>
+      <td class="n">2.5</td>
+      <td class="n">3.7</td>
+      <td class="n">1.4</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$167</td>
+      <td class="n">$3,472</td>
+      <td class="n tot">$3,651</td>
+    </tr><tr>
+      <td class="n">260</td>
+      <td class="n">7.4</td>
+      <td class="n">2.6</td>
+      <td class="n">3.8</td>
+      <td class="n">1.5</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$171</td>
+      <td class="n">$3,502</td>
+      <td class="n tot">$3,686</td>
+    </tr><tr>
+      <td class="n">280</td>
+      <td class="n">7.5</td>
+      <td class="n">2.6</td>
+      <td class="n">3.8</td>
+      <td class="n">1.6</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$174</td>
+      <td class="n">$3,532</td>
+      <td class="n tot">$3,721</td>
+    </tr><tr>
+      <td class="n">300</td>
+      <td class="n">7.6</td>
+      <td class="n">2.6</td>
+      <td class="n">3.9</td>
+      <td class="n">1.7</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$178</td>
+      <td class="n">$3,562</td>
+      <td class="n tot">$3,755</td>
+    </tr><tr>
+      <td class="n">320</td>
+      <td class="n">7.7</td>
+      <td class="n">2.7</td>
+      <td class="n">3.9</td>
+      <td class="n">1.8</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$182</td>
+      <td class="n">$3,592</td>
+      <td class="n tot">$3,790</td>
+    </tr><tr>
+      <td class="n">340</td>
+      <td class="n">7.9</td>
+      <td class="n">2.7</td>
+      <td class="n">3.9</td>
+      <td class="n">1.9</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$185</td>
+      <td class="n">$3,622</td>
+      <td class="n tot">$3,825</td>
+    </tr><tr>
+      <td class="n">360</td>
+      <td class="n">8.0</td>
+      <td class="n">2.7</td>
+      <td class="n">4.0</td>
+      <td class="n">2.0</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$189</td>
+      <td class="n">$3,652</td>
+      <td class="n tot">$3,859</td>
+    </tr><tr class="step">
+      <td class="n">380</td>
+      <td class="n">8.1</td>
+      <td class="n">2.8</td>
+      <td class="n">4.0</td>
+      <td class="n">2.1</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$218</td>
+      <td class="n">$3,682</td>
+      <td class="n tot">$3,919</td>
+    </tr><tr>
+      <td class="n">400</td>
+      <td class="n">8.2</td>
+      <td class="n">2.8</td>
+      <td class="n">4.1</td>
+      <td class="n">2.2</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$222</td>
+      <td class="n">$3,712</td>
+      <td class="n tot">$3,953</td>
+    </tr><tr>
+      <td class="n">420</td>
+      <td class="n">8.4</td>
+      <td class="n">2.9</td>
+      <td class="n">4.1</td>
+      <td class="n">2.3</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$225</td>
+      <td class="n">$3,742</td>
+      <td class="n tot">$3,988</td>
+    </tr><tr>
+      <td class="n">440</td>
+      <td class="n">8.5</td>
+      <td class="n">2.9</td>
+      <td class="n">4.2</td>
+      <td class="n">2.4</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$229</td>
+      <td class="n">$3,772</td>
+      <td class="n tot">$4,023</td>
+    </tr><tr>
+      <td class="n">460</td>
+      <td class="n">8.6</td>
+      <td class="n">2.9</td>
+      <td class="n">4.2</td>
+      <td class="n">2.5</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$233</td>
+      <td class="n">$3,802</td>
+      <td class="n tot">$4,057</td>
+    </tr><tr>
+      <td class="n">480</td>
+      <td class="n">8.7</td>
+      <td class="n">3.0</td>
+      <td class="n">4.3</td>
+      <td class="n">2.5</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$237</td>
+      <td class="n">$3,831</td>
+      <td class="n tot">$4,092</td>
+    </tr><tr>
+      <td class="n">500</td>
+      <td class="n">8.9</td>
+      <td class="n">3.0</td>
+      <td class="n">4.3</td>
+      <td class="n">2.7</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$240</td>
+      <td class="n">$3,861</td>
+      <td class="n tot">$4,127</td>
+    </tr><tr>
+      <td class="n">520</td>
+      <td class="n">9.0</td>
+      <td class="n">3.0</td>
+      <td class="n">4.3</td>
+      <td class="n">2.7</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$244</td>
+      <td class="n">$3,891</td>
+      <td class="n tot">$4,161</td>
+    </tr><tr>
+      <td class="n">540</td>
+      <td class="n">9.1</td>
+      <td class="n">3.1</td>
+      <td class="n">4.4</td>
+      <td class="n">2.8</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$248</td>
+      <td class="n">$3,921</td>
+      <td class="n tot">$4,196</td>
+    </tr><tr>
+      <td class="n">560</td>
+      <td class="n">9.2</td>
+      <td class="n">3.1</td>
+      <td class="n">4.4</td>
+      <td class="n">2.9</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$252</td>
+      <td class="n">$3,951</td>
+      <td class="n tot">$4,230</td>
+    </tr><tr>
+      <td class="n">580</td>
+      <td class="n">9.4</td>
+      <td class="n">3.2</td>
+      <td class="n">4.5</td>
+      <td class="n">3.0</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$255</td>
+      <td class="n">$3,981</td>
+      <td class="n tot">$4,265</td>
+    </tr><tr>
+      <td class="n">600</td>
+      <td class="n">9.5</td>
+      <td class="n">3.2</td>
+      <td class="n">4.5</td>
+      <td class="n">3.1</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$259</td>
+      <td class="n">$4,011</td>
+      <td class="n tot">$4,300</td>
+    </tr><tr>
+      <td class="n">620</td>
+      <td class="n">9.6</td>
+      <td class="n">3.2</td>
+      <td class="n">4.6</td>
+      <td class="n">3.2</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$263</td>
+      <td class="n">$4,041</td>
+      <td class="n tot">$4,334</td>
+    </tr><tr>
+      <td class="n">640</td>
+      <td class="n">9.7</td>
+      <td class="n">3.3</td>
+      <td class="n">4.6</td>
+      <td class="n">3.3</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$267</td>
+      <td class="n">$4,071</td>
+      <td class="n tot">$4,369</td>
+    </tr><tr class="step">
+      <td class="n">660</td>
+      <td class="n">9.9</td>
+      <td class="n">3.3</td>
+      <td class="n">4.6</td>
+      <td class="n">3.4</td>
+      <td>Standard x5</td>
+      <td class="n">5</td>
+      <td class="n">10</td>
+      <td class="n">$295</td>
+      <td class="n">$4,101</td>
+      <td class="n tot">$4,429</td>
+    </tr><tr>
+      <td class="n">680</td>
+      <td class="n">10.0</td>
+      <td class="n">3.3</td>
+      <td class="n">4.7</td>
+      <td class="n">3.5</td>
+      <td>Standard x5</td>
+      <td class="n">5</td>
+      <td class="n">10</td>
+      <td class="n">$627</td>
+      <td class="n">$4,131</td>
+      <td class="n tot">$4,791</td>
+    </tr><tr>
+      <td class="n">700</td>
+      <td class="n">10.1</td>
+      <td class="n">3.4</td>
+      <td class="n">4.7</td>
+      <td class="n">3.6</td>
+      <td>Standard x5</td>
+      <td class="n">5</td>
+      <td class="n">10</td>
+      <td class="n">$631</td>
+      <td class="n">$4,161</td>
+      <td class="n tot">$4,826</td>
+    </tr><tr>
+      <td class="n">720</td>
+      <td class="n">10.2</td>
+      <td class="n">3.4</td>
+      <td class="n">4.8</td>
+      <td class="n">3.7</td>
+      <td>Standard x5</td>
+      <td class="n">5</td>
+      <td class="n">10</td>
+      <td class="n">$634</td>
+      <td class="n">$4,191</td>
+      <td class="n tot">$4,860</td>
+    </tr><tr>
+      <td class="n">740</td>
+      <td class="n">10.4</td>
+      <td class="n">3.5</td>
+      <td class="n">4.8</td>
+      <td class="n">3.8</td>
+      <td>Standard x5</td>
+      <td class="n">5</td>
+      <td class="n">10</td>
+      <td class="n">$638</td>
+      <td class="n">$4,220</td>
+      <td class="n tot">$4,895</td>
+    </tr><tr>
+      <td class="n">760</td>
+      <td class="n">10.5</td>
+      <td class="n">3.5</td>
+      <td class="n">4.9</td>
+      <td class="n">3.8</td>
+      <td>Standard x5</td>
+      <td class="n">5</td>
+      <td class="n">10</td>
+      <td class="n">$642</td>
+      <td class="n">$4,250</td>
+      <td class="n tot">$4,929</td>
+    </tr><tr>
+      <td class="n">780</td>
+      <td class="n">10.6</td>
+      <td class="n">3.5</td>
+      <td class="n">4.9</td>
+      <td class="n">3.9</td>
+      <td>Standard x5</td>
+      <td class="n">5</td>
+      <td class="n">10</td>
+      <td class="n">$646</td>
+      <td class="n">$4,280</td>
+      <td class="n tot">$4,964</td>
+    </tr><tr>
+      <td class="n">800</td>
+      <td class="n">10.7</td>
+      <td class="n">3.6</td>
+      <td class="n">5.0</td>
+      <td class="n">4.0</td>
+      <td>Standard x5</td>
+      <td class="n">5</td>
+      <td class="n">10</td>
+      <td class="n">$650</td>
+      <td class="n">$4,310</td>
+      <td class="n tot">$4,999</td>
+    </tr><tr>
+      <td class="n">820</td>
+      <td class="n">10.9</td>
+      <td class="n">3.6</td>
+      <td class="n">5.0</td>
+      <td class="n">4.1</td>
+      <td>Standard x5</td>
+      <td class="n">5</td>
+      <td class="n">10</td>
+      <td class="n">$653</td>
+      <td class="n">$4,340</td>
+      <td class="n tot">$5,033</td>
+    </tr><tr>
+      <td class="n">840</td>
+      <td class="n">11.0</td>
+      <td class="n">3.6</td>
+      <td class="n">5.0</td>
+      <td class="n">4.2</td>
+      <td>Standard x5</td>
+      <td class="n">5</td>
+      <td class="n">10</td>
+      <td class="n">$657</td>
+      <td class="n">$4,370</td>
+      <td class="n tot">$5,068</td>
+    </tr></tbody></table></div>
+<h2>Code Compass + 250 Inspector users</h2>
+  <p class="sub">All seats run Compass. 250 of them also run Code Inspector 5 times per working day.</p>
+  <div class="hl">At 840 seats: <b>12.4</b> scans running at once ·
+    <b>Standard x5</b> (5 vCPU / 10 GB provisioned) ·
+    search index <b>4.2 GB</b> · <b>$6,028/month</b>
+    (<b>$7</b> per seat)</div>
+  <div class="scroll"><table>
+    <thead><tr>
+      <th>Seats</th><th>Peak concurrent</th><th>vCPU req.</th><th>App RAM GB</th><th>Index RAM GB</th>
+      <th>Instances</th><th>Prov. vCPU</th><th>Prov. RAM</th><th>Infra $/mo</th><th>AI $/mo</th><th>Total $/mo</th>
+    </tr></thead><tbody><tr>
+      <td class="n">20</td>
+      <td class="n">0.7</td>
+      <td class="n">0.6</td>
+      <td class="n">1.4</td>
+      <td class="n">0.4</td>
+      <td>Standard x1</td>
+      <td class="n">1</td>
+      <td class="n">2</td>
+      <td class="n">$53</td>
+      <td class="n">$341</td>
+      <td class="n tot">$395</td>
+    </tr><tr class="step">
+      <td class="n">40</td>
+      <td class="n">1.4</td>
+      <td class="n">0.8</td>
+      <td class="n">1.7</td>
+      <td class="n">0.5</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$84</td>
+      <td class="n">$683</td>
+      <td class="n tot">$769</td>
+    </tr><tr>
+      <td class="n">60</td>
+      <td class="n">2.1</td>
+      <td class="n">1.0</td>
+      <td class="n">1.9</td>
+      <td class="n">0.6</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$90</td>
+      <td class="n">$1,024</td>
+      <td class="n tot">$1,117</td>
+    </tr><tr>
+      <td class="n">80</td>
+      <td class="n">2.8</td>
+      <td class="n">1.2</td>
+      <td class="n">2.2</td>
+      <td class="n">0.7</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$96</td>
+      <td class="n">$1,365</td>
+      <td class="n tot">$1,466</td>
+    </tr><tr>
+      <td class="n">100</td>
+      <td class="n">3.5</td>
+      <td class="n">1.4</td>
+      <td class="n">2.4</td>
+      <td class="n">0.8</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$103</td>
+      <td class="n">$1,706</td>
+      <td class="n tot">$1,814</td>
+    </tr><tr>
+      <td class="n">120</td>
+      <td class="n">4.2</td>
+      <td class="n">1.6</td>
+      <td class="n">2.7</td>
+      <td class="n">0.9</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$109</td>
+      <td class="n">$2,048</td>
+      <td class="n tot">$2,163</td>
+    </tr><tr>
+      <td class="n">140</td>
+      <td class="n">4.9</td>
+      <td class="n">1.8</td>
+      <td class="n">2.9</td>
+      <td class="n">1.0</td>
+      <td>Standard x2</td>
+      <td class="n">2</td>
+      <td class="n">4</td>
+      <td class="n">$115</td>
+      <td class="n">$2,389</td>
+      <td class="n tot">$2,512</td>
+    </tr><tr class="step">
+      <td class="n">160</td>
+      <td class="n">5.6</td>
+      <td class="n">2.0</td>
+      <td class="n">3.2</td>
+      <td class="n">1.1</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$147</td>
+      <td class="n">$2,730</td>
+      <td class="n tot">$2,885</td>
+    </tr><tr>
+      <td class="n">180</td>
+      <td class="n">6.3</td>
+      <td class="n">2.2</td>
+      <td class="n">3.4</td>
+      <td class="n">1.2</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$153</td>
+      <td class="n">$3,071</td>
+      <td class="n tot">$3,234</td>
+    </tr><tr>
+      <td class="n">200</td>
+      <td class="n">7.0</td>
+      <td class="n">2.4</td>
+      <td class="n">3.6</td>
+      <td class="n">1.3</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$159</td>
+      <td class="n">$3,413</td>
+      <td class="n tot">$3,582</td>
+    </tr><tr>
+      <td class="n">220</td>
+      <td class="n">7.7</td>
+      <td class="n">2.7</td>
+      <td class="n">3.9</td>
+      <td class="n">1.4</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$165</td>
+      <td class="n">$3,754</td>
+      <td class="n tot">$3,931</td>
+    </tr><tr>
+      <td class="n">240</td>
+      <td class="n">8.4</td>
+      <td class="n">2.9</td>
+      <td class="n">4.1</td>
+      <td class="n">1.4</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$172</td>
+      <td class="n">$4,095</td>
+      <td class="n tot">$4,279</td>
+    </tr><tr>
+      <td class="n">260</td>
+      <td class="n">8.8</td>
+      <td class="n">3.0</td>
+      <td class="n">4.3</td>
+      <td class="n">1.5</td>
+      <td>Standard x3</td>
+      <td class="n">3</td>
+      <td class="n">6</td>
+      <td class="n">$177</td>
+      <td class="n">$4,281</td>
+      <td class="n tot">$4,471</td>
+    </tr><tr class="step">
+      <td class="n">280</td>
+      <td class="n">8.9</td>
+      <td class="n">3.0</td>
+      <td class="n">4.3</td>
+      <td class="n">1.6</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$206</td>
+      <td class="n">$4,311</td>
+      <td class="n tot">$4,530</td>
+    </tr><tr>
+      <td class="n">300</td>
+      <td class="n">9.0</td>
+      <td class="n">3.1</td>
+      <td class="n">4.4</td>
+      <td class="n">1.7</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$209</td>
+      <td class="n">$4,340</td>
+      <td class="n tot">$4,565</td>
+    </tr><tr>
+      <td class="n">320</td>
+      <td class="n">9.2</td>
+      <td class="n">3.1</td>
+      <td class="n">4.4</td>
+      <td class="n">1.8</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$213</td>
+      <td class="n">$4,370</td>
+      <td class="n tot">$4,600</td>
+    </tr><tr>
+      <td class="n">340</td>
+      <td class="n">9.3</td>
+      <td class="n">3.1</td>
+      <td class="n">4.5</td>
+      <td class="n">1.9</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$217</td>
+      <td class="n">$4,400</td>
+      <td class="n tot">$4,634</td>
+    </tr><tr>
+      <td class="n">360</td>
+      <td class="n">9.4</td>
+      <td class="n">3.2</td>
+      <td class="n">4.5</td>
+      <td class="n">2.0</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$220</td>
+      <td class="n">$4,430</td>
+      <td class="n tot">$4,669</td>
+    </tr><tr>
+      <td class="n">380</td>
+      <td class="n">9.5</td>
+      <td class="n">3.2</td>
+      <td class="n">4.5</td>
+      <td class="n">2.1</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$224</td>
+      <td class="n">$4,460</td>
+      <td class="n tot">$4,704</td>
+    </tr><tr>
+      <td class="n">400</td>
+      <td class="n">9.7</td>
+      <td class="n">3.2</td>
+      <td class="n">4.6</td>
+      <td class="n">2.2</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$228</td>
+      <td class="n">$4,490</td>
+      <td class="n tot">$4,738</td>
+    </tr><tr>
+      <td class="n">420</td>
+      <td class="n">9.8</td>
+      <td class="n">3.3</td>
+      <td class="n">4.6</td>
+      <td class="n">2.3</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$232</td>
+      <td class="n">$4,520</td>
+      <td class="n tot">$4,773</td>
+    </tr><tr>
+      <td class="n">440</td>
+      <td class="n">9.9</td>
+      <td class="n">3.3</td>
+      <td class="n">4.7</td>
+      <td class="n">2.4</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$236</td>
+      <td class="n">$4,550</td>
+      <td class="n tot">$4,807</td>
+    </tr><tr>
+      <td class="n">460</td>
+      <td class="n">10.0</td>
+      <td class="n">3.4</td>
+      <td class="n">4.7</td>
+      <td class="n">2.5</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$239</td>
+      <td class="n">$4,580</td>
+      <td class="n tot">$4,842</td>
+    </tr><tr>
+      <td class="n">480</td>
+      <td class="n">10.2</td>
+      <td class="n">3.4</td>
+      <td class="n">4.8</td>
+      <td class="n">2.5</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$243</td>
+      <td class="n">$4,610</td>
+      <td class="n tot">$4,877</td>
+    </tr><tr>
+      <td class="n">500</td>
+      <td class="n">10.3</td>
+      <td class="n">3.4</td>
+      <td class="n">4.8</td>
+      <td class="n">2.7</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$247</td>
+      <td class="n">$4,640</td>
+      <td class="n tot">$4,911</td>
+    </tr><tr>
+      <td class="n">520</td>
+      <td class="n">10.4</td>
+      <td class="n">3.5</td>
+      <td class="n">4.8</td>
+      <td class="n">2.7</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$250</td>
+      <td class="n">$4,670</td>
+      <td class="n tot">$4,946</td>
+    </tr><tr>
+      <td class="n">540</td>
+      <td class="n">10.5</td>
+      <td class="n">3.5</td>
+      <td class="n">4.9</td>
+      <td class="n">2.8</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$254</td>
+      <td class="n">$4,700</td>
+      <td class="n tot">$4,981</td>
+    </tr><tr>
+      <td class="n">560</td>
+      <td class="n">10.7</td>
+      <td class="n">3.5</td>
+      <td class="n">4.9</td>
+      <td class="n">2.9</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$258</td>
+      <td class="n">$4,729</td>
+      <td class="n tot">$5,015</td>
+    </tr><tr class="step">
+      <td class="n">580</td>
+      <td class="n">10.8</td>
+      <td class="n">3.6</td>
+      <td class="n">5.0</td>
+      <td class="n">3.0</td>
+      <td>Standard x5</td>
+      <td class="n">5</td>
+      <td class="n">10</td>
+      <td class="n">$287</td>
+      <td class="n">$4,759</td>
+      <td class="n tot">$5,075</td>
+    </tr><tr>
+      <td class="n">600</td>
+      <td class="n">10.9</td>
+      <td class="n">3.6</td>
+      <td class="n">5.0</td>
+      <td class="n">3.1</td>
+      <td>Standard x5</td>
+      <td class="n">5</td>
+      <td class="n">10</td>
+      <td class="n">$291</td>
+      <td class="n">$4,789</td>
+      <td class="n tot">$5,109</td>
+    </tr><tr>
+      <td class="n">620</td>
+      <td class="n">11.0</td>
+      <td class="n">3.7</td>
+      <td class="n">5.1</td>
+      <td class="n">3.2</td>
+      <td>Standard x5</td>
+      <td class="n">5</td>
+      <td class="n">10</td>
+      <td class="n">$294</td>
+      <td class="n">$4,819</td>
+      <td class="n tot">$5,144</td>
+    </tr><tr>
+      <td class="n">640</td>
+      <td class="n">11.2</td>
+      <td class="n">3.7</td>
+      <td class="n">5.1</td>
+      <td class="n">3.3</td>
+      <td>Standard x5</td>
+      <td class="n">5</td>
+      <td class="n">10</td>
+      <td class="n">$626</td>
+      <td class="n">$4,849</td>
+      <td class="n tot">$5,506</td>
+    </tr><tr>
+      <td class="n">660</td>
+      <td class="n">11.3</td>
+      <td class="n">3.7</td>
+      <td class="n">5.2</td>
+      <td class="n">3.4</td>
+      <td>Standard x5</td>
+      <td class="n">5</td>
+      <td class="n">10</td>
+      <td class="n">$630</td>
+      <td class="n">$4,879</td>
+      <td class="n tot">$5,541</td>
+    </tr><tr>
+      <td class="n">680</td>
+      <td class="n">11.4</td>
+      <td class="n">3.8</td>
+      <td class="n">5.2</td>
+      <td class="n">3.5</td>
+      <td>Standard x5</td>
+      <td class="n">5</td>
+      <td class="n">10</td>
+      <td class="n">$633</td>
+      <td class="n">$4,909</td>
+      <td class="n tot">$5,576</td>
+    </tr><tr>
+      <td class="n">700</td>
+      <td class="n">11.5</td>
+      <td class="n">3.8</td>
+      <td class="n">5.2</td>
+      <td class="n">3.6</td>
+      <td>Standard x5</td>
+      <td class="n">5</td>
+      <td class="n">10</td>
+      <td class="n">$637</td>
+      <td class="n">$4,939</td>
+      <td class="n tot">$5,610</td>
+    </tr><tr>
+      <td class="n">720</td>
+      <td class="n">11.7</td>
+      <td class="n">3.8</td>
+      <td class="n">5.3</td>
+      <td class="n">3.7</td>
+      <td>Standard x5</td>
+      <td class="n">5</td>
+      <td class="n">10</td>
+      <td class="n">$641</td>
+      <td class="n">$4,969</td>
+      <td class="n tot">$5,645</td>
+    </tr><tr>
+      <td class="n">740</td>
+      <td class="n">11.8</td>
+      <td class="n">3.9</td>
+      <td class="n">5.3</td>
+      <td class="n">3.8</td>
+      <td>Standard x5</td>
+      <td class="n">5</td>
+      <td class="n">10</td>
+      <td class="n">$644</td>
+      <td class="n">$4,999</td>
+      <td class="n tot">$5,680</td>
+    </tr><tr>
+      <td class="n">760</td>
+      <td class="n">11.9</td>
+      <td class="n">3.9</td>
+      <td class="n">5.4</td>
+      <td class="n">3.8</td>
+      <td>Standard x5</td>
+      <td class="n">5</td>
+      <td class="n">10</td>
+      <td class="n">$648</td>
+      <td class="n">$5,029</td>
+      <td class="n tot">$5,714</td>
+    </tr><tr class="step">
+      <td class="n">780</td>
+      <td class="n">12.0</td>
+      <td class="n">4.0</td>
+      <td class="n">5.4</td>
+      <td class="n">3.9</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$712</td>
+      <td class="n">$5,059</td>
+      <td class="n tot">$5,809</td>
+    </tr><tr>
+      <td class="n">800</td>
+      <td class="n">12.2</td>
+      <td class="n">4.0</td>
+      <td class="n">5.5</td>
+      <td class="n">4.0</td>
+      <td>Standard x4</td>
+      <td class="n">4</td>
+      <td class="n">8</td>
+      <td class="n">$806</td>
+      <td class="n">$5,089</td>
+      <td class="n tot">$5,933</td>
+    </tr><tr class="step">
+      <td class="n">820</td>
+      <td class="n">12.3</td>
+      <td class="n">4.0</td>
+      <td class="n">5.5</td>
+      <td class="n">4.1</td>
+      <td>Standard x5</td>
+      <td class="n">5</td>
+      <td class="n">10</td>
+      <td class="n">$835</td>
+      <td class="n">$5,118</td>
+      <td class="n tot">$5,993</td>
+    </tr><tr>
+      <td class="n">840</td>
+      <td class="n">12.4</td>
+      <td class="n">4.1</td>
+      <td class="n">5.5</td>
+      <td class="n">4.2</td>
+      <td>Standard x5</td>
+      <td class="n">5</td>
+      <td class="n">10</td>
+      <td class="n">$838</td>
+      <td class="n">$5,148</td>
+      <td class="n tot">$6,028</td>
+    </tr></tbody></table></div>
+ <footer><b>Method.</b> Every seat is assumed to run 5 Code Compass searches per working day; the Inspector
+ scenarios add 5 scans per day for the stated number of users. Concurrency is derived from job arrival rate
+ and how long each scan holds its connection, sized against a peak hour three times the daily average.
+ &ldquo;vCPU required&rdquo; and &ldquo;App RAM&rdquo; are the computed need; &ldquo;Instances&rdquo; is the
+ smallest sensible allocation that covers it, which is why provisioned capacity exceeds the requirement.
+ The search index is held in memory and sits on the application instances until it no longer fits, at which
+ point it moves to its own. Costs are in US dollars at published August 2026 rates. Regenerate with
+ <code>node build-hardware.js</code>.</footer>
+</div>
+</body>
+</html>
