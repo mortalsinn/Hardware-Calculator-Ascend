@@ -306,7 +306,8 @@ function fitRender(cpu, ram, {minRam=0, maxCount=24, minCount=1}={}){
     if (!best || cost < best.cost) best = {plan:p, count, cost};
   }
   const top = RENDER[RENDER.length-1];
-  return best || {plan:top, count:Math.max(1,Math.ceil(Math.max(cpu/top.cpu, ram/top.ram))), cost:top.$};
+  const topCount = Math.max(1, Math.ceil(Math.max(cpu/top.cpu, ram/top.ram)));
+  return best || {plan:top, count:topCount, cost:top.$*topCount};
 }
 const SEATS_PER_ORG = 8, WORK_HOURS = 8, WORK_DAYS = 21;
 const SAM_COST = 0.004;           // per mask call, external segmentation

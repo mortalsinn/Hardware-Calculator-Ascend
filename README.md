@@ -53,6 +53,17 @@ model's softest number; it says so on the page).
 
 ---
 
+## Verify it yourself
+
+```
+node verify.js
+```
+
+A clean-room re-implementation of the model — written separately, sharing no code with
+the page — recomputes every cost component at 10 and 10,000 seats and compares. All
+components currently agree to the cent across all three architectures. It reads the
+model out of `index.html` directly, so it always tests what is deployed.
+
 ## Accuracy, stated plainly
 
 **Verified (August 2026), from vendor pages:**
